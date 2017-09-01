@@ -164,8 +164,8 @@
       command: sleep '{{ sleep_interval }}'
 
     - name: Set dummy VM names in one string
-      # set_fact: dummy_vms_string="{{ dummy_vm_prefix }}-in-dockvols-{{ datastores | join(','+dummy_vm_prefix+'-in-dockvols-') }}"
-      set_fact: dummy_vms_string="{{ dummy_vm_prefix }}-{{ datastores | join(','+dummy_vm_prefix+'-in-dockvols-') }}"
+      set_fact: dummy_vms_string="{{ dummy_vm_prefix }}-in-dockvols-{{ datastores | join(','+dummy_vm_prefix+'-in-dockvols-') }}"
+      #set_fact: dummy_vms_string="{{ dummy_vm_prefix }}-{{ datastores | join(','+dummy_vm_prefix+'-in-dockvols-') }}"
       when: inventory_hostname in groups.local
 
     - name: Convert to list 

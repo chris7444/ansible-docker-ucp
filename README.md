@@ -210,7 +210,7 @@ All VMware-related variables should be here. All of them are mandatory and descr
 | datacenter | Name of the datacenter where the environment will be provisioned |
 | vm\_username | Username to log into the VMs. It needs to match the one from the VM Template, so unless you have created an user, you must use 'root' |
 | vm\_template | Name of the VM Template to be used. Note that this is the name from a vCenter perspective, not the hostname |
-| folder\_name | vCenter folder to deploy the VMs. If you do not wish to deploy in a particular folder, the value should be '/'. Note that you need to create this folder before you run the playbooks. |
+| folder\_name | vCenter folder to deploy the VMs. If you do not wish to deploy in a particular folder, the value should be '/'. If you want to deploy in a folder, you need to create this folder n vcenter BEFORE you run the playbooks. |
 | datastores | List of datastores to be used, in list format, i.e. ['Datastore1','Datastore2'...]. Please note that from a Simplivity perspective it's best practice to use just one Datastore. Using more than one will not provide any advantages in terms of reliability and will add additional complexity. |
 | disk2 | UNIX name of the second disk for the Docker VMs. Typically '/dev/sdb' |
 | disk2\_part | UNIX name of the partition of the second disk for the Docker VMs. Typically '/dev/sdb1' |

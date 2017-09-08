@@ -16,6 +16,20 @@
     - name: Reload firewalld configuration
       command: firewall-cmd --reload
 
+    - name: Install Required Pkgs for seboolean module
+      yum:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - libsemanage-python
+        - libselinux-python
+
+    - name: Enable HAPROXY to open non standard ports
+      seboolean:
+        name: haproxy_connect_any
+        state: yes
+        persistent: yes
+
     - name: Install haproxy
       yum:
         name: haproxy

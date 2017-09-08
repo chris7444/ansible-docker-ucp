@@ -14,6 +14,7 @@ defaults
     timeout server 50000
 frontend public
     option tcplog
+    log global
     bind *:80
     redirect scheme https code 301 if !{ ssl_fc }
     bind *:443

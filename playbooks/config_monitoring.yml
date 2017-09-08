@@ -1,5 +1,5 @@
 ---
-- hosts: ucp
+- hosts: ucp ucp_lb
   gather_facts: false
   become_user: root
   become: true
@@ -84,3 +84,22 @@
         body_format: json
         force_basic_auth: yes
       when: inventory_hostname in groups.ucp_main
+
+    # not really needed but if someone makes a change to haproxy
+    - name: Update haproxy.cfg on UCP Load Balancer
+      template:
+        src: ../templates/haproxy.cfg.ucp.j2
+        dest: /etc/haproxy/haproxy.cfg
+        owner: root
+        group: root
+        mode: 0644
+      when: inventory_hostname in groups.ucp_lb
+      notify: Enable and start haproxy service
+
+  handlers:
+    - name: Enable and start haproxy service
+      systemd:
+        name: haproxy
+        enabled: yes
+        state: restarted
+

@@ -12,8 +12,10 @@ defaults
     timeout connect 5000
     timeout client 50000
     timeout server 50000
+
 frontend public
     option tcplog
+    log global
     bind *:80
     redirect scheme https code 301 if !{ ssl_fc }
     bind *:443
@@ -23,3 +25,18 @@ backend servers
 {% for host in groups.ucp %}
     server {{ host }} {{ hostvars[host].ip_addr | ipaddr('address') }}:443 check 
 {% endfor %}
+
+frontend graf
+    bind *:3000
+    log global
+    mode http
+    option httplog
+    default_backend grafana
+
+backend grafana
+    mode http
+    balance source
+{% for host in groups.ucp %}
+    server g_{{host}} {{ hostvars[host].ip_addr | ipaddr('address') }}:3000 check
+{% endfor %}
+

@@ -281,6 +281,7 @@ To create a vault we'll create a new file group\_vars/vault and we'll add the fo
 
 ```
 ---
+docker_ee_url: 'yoururl'
 vcenter_password: 'xxx'
 vm_password: 'xxx'
 simplivity_password: 'xxx'

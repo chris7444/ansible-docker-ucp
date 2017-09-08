@@ -38,7 +38,7 @@ domain_name: 'am2.cloudra.local'
 ntp_servers: [' 10.12.2.1','0.us.pool.net.org','1.us.pool.net.org']
 
 # Docker configuration
-docker_ee_url: 'https://storebits.docker.com/ee/linux/sub-bee89908-9360-4f5c-a3e2-e059a8f88605'
+# docker_ee_url: is defined in group_vars/vault, should be kept secret
 rhel_version: '7.3'
 dtr_version: 'latest'
 ucp_version: 'latest'

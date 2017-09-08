@@ -246,7 +246,7 @@ All Docker-related variables should be here. All of them are mandatory and descr
 
 | Variable | Description |
 | --- | --- |
-| docker\_ee\_url | URL to your Docker EE packages |
+| docker\_ee\_url | Your docker_ee_url should be kept secret and you should define it in group_vars/vault
 | rhel\_version | Version of your RHEL OS, i.e: 7.3 |
 | dtr\_version | Version of the Docker DTR you wish to install. You can use a numeric version or latest for the most recent one |
 | ucp\_version | Version of the Docker UCP you wish to install. You can use a numeric version or latest for the most recent one |

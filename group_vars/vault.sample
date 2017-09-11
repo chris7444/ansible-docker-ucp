@@ -4,3 +4,6 @@ vcenter_password: 'xxxx'
 vm_password: 'xxxx'
 simplivity_password: 'xxxx'
 ucp_password: 'zzzz'
+redhat_user: 'your Red Hat username'
+redhat_pass: 'your red hat password'
+

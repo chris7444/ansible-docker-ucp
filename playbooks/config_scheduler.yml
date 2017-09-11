@@ -1,0 +1,54 @@
+---
+- hosts: local
+  connection: local
+  gather_facts: false
+
+  vars_files:
+    - ../group_vars/vars
+    - ../group_vars/vault
+
+  vars:
+    UCPIP: "{{groups.ucp_lb[0]}}.{{domain_name}}"
+    UCPUSER: "admin"
+    UCPPASSWORD: "{{ucp_password}}"
+
+  tasks:
+
+    - name: Retrieve a Toke for the Docker API
+      shell:
+        cmd: curl -sk -d  '{"username":"{{UCPUSER}}","password":"{{UCPPASSWORD}}"}' https://{{UCPIP}}/auth/login 
+      register:
+        login
+
+    - name: Remember the token
+      set_fact:
+        auth_token:  "{{(login.stdout | from_json).auth_token}}"
+
+    - name: Retrieve Docker-Datacenter Org ID
+      uri:
+        url: "https://{{UCPIP}}/accounts/?filter=orgs&limit=100&contains=docker-datacenter"
+        headers:
+          Content-Type: application/json
+          Authorization: Bearer {{ auth_token }}
+        method: GET
+        status_code: 200
+        body_format: json
+        force_basic_auth: yes
+        validate_certs: no
+      when: inventory_hostname in groups.local
+      register: resp
+
+    - name: Memorize Org ID
+      set_fact:
+        orgid:  "{{resp.json.accounts[0].id}}"
+
+    - name: Do not let users schedule on all nodes
+      uri:
+        url: "https://{{UCPIP}}/collectionGrants/{{orgid}}/swarm/scheduler" 
+        headers:
+          accept: application/json
+          Authorization: Bearer {{auth_token}}
+        method: DELETE
+        validate_certs: no
+        status_code: 204
+

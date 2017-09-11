@@ -40,22 +40,22 @@ Of course, the creation of the template could have been automated too, but since
 The steps to create a VM template are described below.
 
 1. Log in to vCenter and create a new Virtual Machine. 
-1. Provide a name for your template.
-1. Choose the location (host/cluster) where you wish to store your template.
-1. Choose a datastore where the template files will be stored.
-1. Choose the OS, in this case Linux, RHEL7 64bit.
-1. Pick the network to attach to your template. In this example we're only using one NIC but depending on how you plan to architect your environment you might want to add more than one.
-1. Create a primary disk. The chosen size in this case is 50GB but 20GB should be typically enough.
-1. Confirm that the settings are right and press Finish.
-1. The next step is to virtually insert the RHEL7 DVD, we do this by looking into the Settings of the newly created VM. Select your ISO file in the Datastore ISO File Device Type and make sure that the "Connect at power on" checkbox is checked.
-1. Finally, you can optionally remove the Floppy Disk as this is not required for the VM.
-1. Power on the server and open the console to install the OS. You should see something similar to this. Pick your language and hit Continue.
-1. Scroll down and click on Installation Destination.
-1. Select your installation drive and hit Done.
-1. Leave all the rest by default. Click Begin Installation.
-1. Select a root password.
-1. Press Done and wait for the install to finish. Reboot and login into the system using the VM console.
-2. Once we are logged into the system we need to configure a yum repository so we can install any packages required at a later stage. We can do this in three different ways:
+2. Provide a name for your template.
+3. Choose the location (host/cluster) where you wish to store your template.
+4. Choose a datastore where the template files will be stored.
+5. Choose the OS, in this case Linux, RHEL7 64bit.
+6. Pick the network to attach to your template. In this example we're only using one NIC but depending on how you plan to architect your environment you might want to add more than one.
+7. Create a primary disk. The chosen size in this case is 50GB but 20GB should be typically enough.
+8. Confirm that the settings are right and press Finish.
+9. The next step is to virtually insert the RHEL7 DVD, we do this by looking into the Settings of the newly created VM. Select your ISO file in the Datastore ISO File Device Type and make sure that the "Connect at power on" checkbox is checked.
+10. Finally, you can optionally remove the Floppy Disk as this is not required for the VM.
+11. Power on the server and open the console to install the OS. You should see something similar to this. Pick your language and hit Continue.
+12. Scroll down and click on Installation Destination.
+13. Select your installation drive and hit Done.
+14. Leave all the rest by default. Click Begin Installation.
+15. Select a root password.
+16. Press Done and wait for the install to finish. Reboot and login into the system using the VM console.
+17. Once we are logged into the system we need to configure a yum repository so we can install any packages required at a later stage. We can do this in three different ways:
 
 **Option 1:** Use Red Hat subscription manager to register your system. This is the easiest way and will give you automatically access to the official Red Hat repositories. It requires having a Red Hat Network account though, so if you don't have one, you can use either Option 2 or 3. For option run you would do:
 
@@ -186,12 +186,12 @@ In  the example above, the worker03 node would have 4 times more CPU and double 
 
 The different variables you can use are as described in the table below. They are all mandatory unless if specified otherwise:
 
-| Variable | Scope | Description |
-| --- | --- | --- |
-| ip\_addr | Node | IP address in CIDR format to be given to a node |
-| esxi\_host | Node | ESXi host where the node will be deployed. Please note that if the cluster is configured with DRS, this option will be overriden |
-| cpus | Node/Group | Number of CPUs to assign to a VM or a group of VMs |
-| RAM | Node/Group | Amount of RAM in MB to assign to a VM or a group of VMs |
+| Variable     | Scope      | Description                              |
+| ------------ | ---------- | ---------------------------------------- |
+| ip\_addr     | Node       | IP address in CIDR format to be given to a node |
+| esxi\_host   | Node       | ESXi host where the node will be deployed. Please note that if the cluster is configured with DRS, this option will be overriden |
+| cpus         | Node/Group | Number of CPUs to assign to a VM or a group of VMs |
+| RAM          | Node/Group | Amount of RAM in MB to assign to a VM or a group of VMs |
 | disk2\_usage | Node/Group | Size of the second disk in GB to attach to a VM or a group of VMs. This variable is only mandatory on Docker nodes (UCP, DTR, worker) and NFS node. It is not required for the logger node or the load balancers. |
 | node\_policy | Node/Group | Simplivity backup policy to assign to a VM or a group of VMs. The name has to match one of the backup policies defined in the group\_vars/vars file described in the next section |
 
@@ -203,75 +203,75 @@ Once our inventory is ready, the next step is to modify the group variables to m
 
 All VMware-related variables should be here. All of them are mandatory and described in the Table 2 below.
 
-| Variable | Description |
-| --- | --- |
-| vcenter\_hostname | IP or hostname of the vCenter appliance |
-| vcenter\_username | Username to log in to the vCenter appliance. It might include a domain i.e. '[administrator@vsphere.local](mailto:administrator@vsphere.local)' |
-| datacenter | Name of the datacenter where the environment will be provisioned |
-| vm\_username | Username to log into the VMs. It needs to match the one from the VM Template, so unless you have created an user, you must use 'root' |
-| vm\_template | Name of the VM Template to be used. Note that this is the name from a vCenter perspective, not the hostname |
-| folder\_name | vCenter folder to deploy the VMs. If you do not wish to deploy in a particular folder, the value should be '/'. If you want to deploy in a folder, you need to create this folder n vcenter BEFORE you run the playbooks. |
-| datastores | List of datastores to be used, in list format, i.e. ['Datastore1','Datastore2'...]. Please note that from a Simplivity perspective it's best practice to use just one Datastore. Using more than one will not provide any advantages in terms of reliability and will add additional complexity. |
-| disk2 | UNIX name of the second disk for the Docker VMs. Typically '/dev/sdb' |
-| disk2\_part | UNIX name of the partition of the second disk for the Docker VMs. Typically '/dev/sdb1' |
+| Variable                 | Description                              |
+| ------------------------ | ---------------------------------------- |
+| vcenter\_hostname        | IP or hostname of the vCenter appliance  |
+| vcenter\_username        | Username to log in to the vCenter appliance. It might include a domain i.e. '[administrator@vsphere.local](mailto:administrator@vsphere.local)' |
+| datacenter               | Name of the datacenter where the environment will be provisioned |
+| vm\_username             | Username to log into the VMs. It needs to match the one from the VM Template, so unless you have created an user, you must use 'root' |
+| vm\_template             | Name of the VM Template to be used. Note that this is the name from a vCenter perspective, not the hostname |
+| folder\_name             | vCenter folder to deploy the VMs. If you do not wish to deploy in a particular folder, the value should be '/'. If you want to deploy in a folder, you need to create this folder n vcenter BEFORE you run the playbooks. |
+| datastores               | List of datastores to be used, in list format, i.e. ['Datastore1','Datastore2'...]. Please note that from a Simplivity perspective it's best practice to use just one Datastore. Using more than one will not provide any advantages in terms of reliability and will add additional complexity. |
+| disk2                    | UNIX name of the second disk for the Docker VMs. Typically '/dev/sdb' |
+| disk2\_part              | UNIX name of the partition of the second disk for the Docker VMs. Typically '/dev/sdb1' |
 | vsphere\_plugin\_version | Version of the vSphere plugin for Docker. The default is 'latest' but you could pick a specific version, i.e. '0.12' |
 
 ### Simplivity configuration
 
 All Simplivity-related variables should be here. All of them are mandatory and described in the Table 3 below.
 
-| Variable | Description |
-| --- | --- |
-| simplivity\_username | Username to log in to the Simplivity Omnistack appliances. It might include a domain i.e. ' [administrator@vsphere.local](mailto:administrator@vsphere.local)' |
-| omnistack\_ovc | List of Omnistack hosts to be used, in list format, i.e. ['omni1.local','onmi2.local'...] |
-| backup\_policies | List of dictionaries containing the different backup policies to be used along with the scheduling information. Any number of backup policies can be created and they need to match the node\_policy variables defined in the inventory. The format is as follows:backup\_policies: - name: daily'   days: 'All'   start\_time: '11:30'   frequency: '1440'   retention: '10080' - name: 'hourly'   days: 'All'   start\_time: '00:00'   frequency: '60'   retention: '2880' |
-| dummy\_vm\_prefix | In order to be able to backup the Docker volumes, a number of "dummy" VMs need to be spin up. This variable will set a recognizable prefix for them |
+| Variable                | Description                              |
+| ----------------------- | ---------------------------------------- |
+| simplivity\_username    | Username to log in to the Simplivity Omnistack appliances. It might include a domain i.e. ' [administrator@vsphere.local](mailto:administrator@vsphere.local)' |
+| omnistack\_ovc          | List of Omnistack hosts to be used, in list format, i.e. ['omni1.local','onmi2.local'...] |
+| backup\_policies        | List of dictionaries containing the different backup policies to be used along with the scheduling information. Any number of backup policies can be created and they need to match the node\_policy variables defined in the inventory. The format is as follows:backup\_policies: - name: daily'   days: 'All'   start\_time: '11:30'   frequency: '1440'   retention: '10080' - name: 'hourly'   days: 'All'   start\_time: '00:00'   frequency: '60'   retention: '2880' |
+| dummy\_vm\_prefix       | In order to be able to backup the Docker volumes, a number of "dummy" VMs need to be spin up. This variable will set a recognizable prefix for them |
 | docker\_volumes\_policy | Backup policy to use for the Docker Volumes |
 
 ### Networking configuration
 
 All network-related variables should be here. All of them are mandatory and described in the Table 4 below.
 
-| Variable | Description |
-| --- | --- |
-| nic\_name | Name of the device, for RHEL this is typically ens192 and it is recommended to leave it as is |
-| gateway | IP address of the gateway to be used |
-| dns | List of DNS servers to be used, in list format, i.e. ['8.8.8.8','4.4.4.4'...] |
-| domain\_name | Domain name for your Virtual Machines |
-| ntp\_server | List of NTP servers to be used, in list format, i.e. ['1.2.3.4','0.us.pool.net.org'...] |
+| Variable     | Description                              |
+| ------------ | ---------------------------------------- |
+| nic\_name    | Name of the device, for RHEL this is typically ens192 and it is recommended to leave it as is |
+| gateway      | IP address of the gateway to be used     |
+| dns          | List of DNS servers to be used, in list format, i.e. ['8.8.8.8','4.4.4.4'...] |
+| domain\_name | Domain name for your Virtual Machines    |
+| ntp\_server  | List of NTP servers to be used, in list format, i.e. ['1.2.3.4','0.us.pool.net.org'...] |
 
 ### Docker configuration
 
-All Docker-related variables should be here. All of them are mandatory and described in the Table 5 below.
+Docker-related variables should be here except those who should be encrypted. All of them are mandatory and described in the Table below.
 
-| Variable | Description |
-| --- | --- |
-| docker\_ee\_url | Your docker_ee_url should be kept secret and you should define it in group_vars/vault
-| rhel\_version | Version of your RHEL OS, i.e: 7.3 |
-| dtr\_version | Version of the Docker DTR you wish to install. You can use a numeric version or latest for the most recent one |
-| ucp\_version | Version of the Docker UCP you wish to install. You can use a numeric version or latest for the most recent one |
-| images\_folder | Directory in the NTP server that will be mounted in the DTR nodes and that will host your Docker images |
-| license\_file | Full path to your Docker license file (it should be stored in your Ansible host) |
-| ucp\_username | Username of the administrator user for UCP and DTR, typically admin. |
+| Variable      | Description                              |
+| ------------- | ---------------------------------------- |
+| docker_ee_url | Your docker_ee_url should be kept secret and you should define it in group_vars/vault. The docker_ee_url is the URL documented here: https://docs.docker.com/engine/installation/linux/docker-ee/rhel/ |
+| rhel_version  | Version of your RHEL OS, i.e: 7.3        |
+| dtr_version   | Version of the Docker DTR you wish to install. You can use a numeric version or latest for the most recent one |
+| ucp_version   | Version of the Docker UCP you wish to install. You can use a numeric version or latest for the most recent one |
+| images_folder | Directory in the NFS server that will be mounted in the DTR nodes and that will host your Docker images |
+| license_file  | Full path to your Docker license file (it should be stored in your Ansible host) |
+| ucp_username  | Username of the administrator user for UCP and DTR, typically admin. |
 
 ### Monitoring configuration
 
 All Monitoring-related variables should be here. This section only include versions and it is recommended to leave it as is. All of them are specified in the Table 6 below.
 
-| Variable | Description |
-| --- | --- |
-| cadvisor\_version | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use 'v0.25.0' |
+| Variable                | Description                              |
+| ----------------------- | ---------------------------------------- |
+| cadvisor\_version       | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use 'v0.25.0' |
 | node\_exporter\_version | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use 'v1.14.0' |
-| prometheus\_version | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use 'v1.7.1' |
-| grafana\_version | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use '4.4.3' |
+| prometheus\_version     | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use 'v1.7.1' |
+| grafana\_version        | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use '4.4.3' |
 
 ### Environment configuration
 
 All Environment-related variables should be here. All of them are described in the Table 7 below.
 
-| Variable | Description |
-| --- | --- |
-| env | Dictionary containing all environment variables. It contains three entries described below. Please leave empty the proxy related settings if not required: <ul><li>http\_proxy: HTTP proxy URL, i.e. 'http://15.184.4.2:8080'. This variable defines the HTTP proxy url if your environment is behind a proxy.</li><li>https\_proxy: HTTP proxy URL, i.e. 'http://15.184.4.2:8080'. This variable defines the HTTPS proxy url if your environment is behind a proxy.</li><li>no\_proxy: List of hostnames or IPs that don't require proxy, i.e. 'localhost,127.0.0.1,.cloudra.local,10.10.174.'</li></ul>|
+| Variable | Description                              |
+| -------- | ---------------------------------------- |
+| env      | Dictionary containing all environment variables. It contains three entries described below. Please leave empty the proxy related settings if not required: <ul><li>http\_proxy: HTTP proxy URL, i.e. 'http://15.184.4.2:8080'. This variable defines the HTTP proxy url if your environment is behind a proxy.</li><li>https\_proxy: HTTP proxy URL, i.e. 'http://15.184.4.2:8080'. This variable defines the HTTPS proxy url if your environment is behind a proxy.</li><li>no\_proxy: List of hostnames or IPs that don't require proxy, i.e. 'localhost,127.0.0.1,.cloudra.local,10.10.174.'</li></ul> |
 
 ## Editing the vault
 

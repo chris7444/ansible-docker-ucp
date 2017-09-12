@@ -10,7 +10,7 @@ clh-ucp03 ip_addr='10.10.174.114/22' esxi_host='simply03.am2.cloudra.local'
 [ucp:vars]
 cpus='4'
 ram='8192'
-disk2_size='200'
+disk2_size='500'
 node_policy='clh-bronze'
 
 # DTR
@@ -18,14 +18,14 @@ node_policy='clh-bronze'
 clh-dtr01 ip_addr='10.10.174.115/22' esxi_host='simply01.am2.cloudra.local'
 
 [dtr]
-clh-dtr01 ip_addr='10.10.174.115/22'          esxi_host='simply01.am2.cloudra.local'
-clh-dtr02 ip_addr='10.10.174.116/22'          esxi_host='simply02.am2.cloudra.local'
-clh-dtr03 ip_addr='10.10.174.117/22' cpus='6' esxi_host='simply03.am2.cloudra.local'
+clh-dtr01 ip_addr='10.10.174.115/22' esxi_host='simply01.am2.cloudra.local'
+clh-dtr02 ip_addr='10.10.174.116/22' esxi_host='simply02.am2.cloudra.local'
+clh-dtr03 ip_addr='10.10.174.117/22' esxi_host='simply03.am2.cloudra.local'
 
 [dtr:vars]
-cpus='4' 
+cpus='2' 
 ram='16384' 
-disk2_size='200'
+disk2_size='500'
 node_policy='clh-gold'
 
 ## WORKER
@@ -36,8 +36,8 @@ clh-worker03 ip_addr='10.10.174.124/22' esxi_host='simply03.am2.cloudra.local'
 
 [worker:vars]
 cpus='4'
-ram='16384'
-disk2_size='200'
+ram='65536'
+disk2_size='500'
 node_policy='clh-bronze'
 
 ## LOAD BALANCERS
@@ -71,7 +71,7 @@ clh-nfs ip_addr='10.10.174.121/22'    esxi_host='simply03.am2.cloudra.local'
 [nfs:vars]
 cpus='2'
 ram='4096'
-disk2_size='200'
+disk2_size='500'
 node_policy='clh-gold'
 
 [logger]

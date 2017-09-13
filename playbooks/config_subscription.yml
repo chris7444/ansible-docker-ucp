@@ -11,11 +11,17 @@
   environment: "{{ env }}"
 
   tasks:
-    - name: Clean Any Sbscription Data
+    - name: Clean Any Subscription Data
       shell:
         cmd: subscription-manager clean
 
     - name: Register now
       shell:
-        cmd: subscription-manager register --username="{{redhat_user}}" --password="{{redhat_pass}}" --auto-attach
+        cmd: subscription-manager register --org="{{rhn_orgid}}" --activationkey="{{rhn_key}}" 
+        #cmd: subscription-manager register --username="{{redhat_user}}" --password="{{redhat_pass}}" --auto-attach
+      register: res
+
+    - name: 
+      debug:
+        var: res 
 

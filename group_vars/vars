@@ -27,7 +27,7 @@ backup_policies:
    start_time: '00:00'
    frequency: '60'
    retention: '43200'
-dummy_vm_prefix: 'dummyVM'
+dummy_vm_prefix: 'clh-VM'
 docker_volumes_policy: 'clh-gold'
 
 # Networking

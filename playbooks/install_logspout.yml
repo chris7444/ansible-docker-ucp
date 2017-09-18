@@ -1,0 +1,24 @@
+---
+- hosts: docker
+  gather_facts: false
+  become_user: root
+  become: true
+
+  vars_files:
+    - ../group_vars/vars
+
+  environment: "{{ env }}"
+
+  tasks:
+
+    - name: Copy the compose file for the global logspout service
+      template: src=../templates/logspout.yml.j2 dest=./logspout.yml
+      when: inventory_hostname in groups.ucp
+
+    - name: Deploy logspout stack
+      command: docker stack deploy --compose-file logspout.yml logspout
+      args:
+        chdir: ./
+      when: inventory_hostname in groups.ucp_main
+
+

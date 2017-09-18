@@ -23,11 +23,11 @@
         owner: root
         group: root
         mode: 0644
-      when: inventory_hostname in groups.ucp_main
+      when: inventory_hostname in groups.ucp
 
     - name: Copy docker compose file
       template: src=../monitoring/docker-compose.yml.j2 dest=/root/monitoring/docker-compose.yml
-      when: inventory_hostname in groups.ucp_main
+      when: inventory_hostname in groups.ucp
 
     - name: Deploy monitoring stack
       command: docker stack deploy --compose-file docker-compose.yml prom

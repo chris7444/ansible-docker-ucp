@@ -42,3 +42,9 @@
         name: docker-ee
         state: latest
         update_cache: yes
+
+    - name: Ensure Docker is started
+      systemd:
+        name: docker
+        enabled: yes
+        state: started

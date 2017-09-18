@@ -21,7 +21,3 @@
         #cmd: subscription-manager register --username="{{redhat_user}}" --password="{{redhat_pass}}" --auto-attach
       register: res
 
-    - name: 
-      debug:
-        var: res 
-

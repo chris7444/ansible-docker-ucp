@@ -1,5 +1,10 @@
 version: "3"
 
+volumes:
+  prometheus-data:
+    driver: vsphere
+
+
 networks:
   monitoring:
 
@@ -60,6 +65,7 @@ services:
     networks:
       - monitoring
     volumes:
+      - prometheus-data:/prometheus
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       -config.file=/etc/prometheus/prometheus.yml

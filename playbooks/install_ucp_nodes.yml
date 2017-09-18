@@ -23,7 +23,7 @@
       command: firewall-cmd --reload
 
     - name: Check if node already belongs to the swarm
-      shell: docker info | grep "Swarm{{ ":" }} inactive" | wc -l
+      shell: docker info | grep "Swarm{{":"}} inactive" | wc -l
       register: swarm_inactive
 
     - name: Copy the license

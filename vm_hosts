@@ -90,6 +90,9 @@ lbs
 nfs
 logger
 
+[vms:vars]
+disk1_size='100'
+
 # Local 
 [local]
 localhost ansible_connection=local

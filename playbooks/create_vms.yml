@@ -12,7 +12,7 @@
   environment: "{{ env }}"
 
   tasks:
-    - name: Create all VMs
+    - name: Create VMs without a data drive
       vmware_guest:
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
@@ -24,22 +24,39 @@
         name: "{{ inventory_hostname }}"
         template: "{{ vm_template }}"
         state: poweredon
+        disk:
+          - size_gb:  "{{ disk1_size }}"
+            type: thin
+            datastore: "{{ datastores | random }}"
         hardware:
           memory_mb: "{{ ram }}"
           num_cpus: "{{ cpus }}"
+      when: disk2_size is undefined
 
-    - name: Add secondary disks
-      vsphere_guest:
-        vcenter_hostname: "{{ vcenter_hostname }}"
+    - name: Create VMs with a data drive
+      vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
         password: "{{ vcenter_password }}"
-        guest: "{{ inventory_hostname }}"
-        state: reconfigured
-        vm_disk:
-          disk2:
-            size_gb: "{{ disk2_size }}"
+        validate_certs: no
+        esxi_hostname: "{{ esxi_host }}"
+        datacenter: "{{ datacenter }}"
+        folder: "{{ folder_name }}"
+        name: "{{ inventory_hostname }}"
+        template: "{{ vm_template }}"
+        state: poweredon
+        disk:
+          - size_gb:  "{{ disk1_size }}"
             type: thin
-            datastore: "{{ datastores | random }}"
+            datastore: "{{ datastore }}"
+          - size_gb:   "{{ disk2_size }}" 
+            type: thin
+            datastore: "{{ datastore }}"
+        hardware:
+          memory_mb: "{{ ram }}"
+          num_cpus: "{{ cpus }}"
+      vars:
+          datastore: "{{ datastores | random }}"
       when: disk2_size is defined
 
     - name: Wait for VMs to boot up

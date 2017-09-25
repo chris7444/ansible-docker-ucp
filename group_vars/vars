@@ -6,7 +6,7 @@ datacenter: 'DEVOPS'
 vm_username: 'root'
 vm_template: 'clh-tpl-simply02'
 folder_name: '/clh'
-datastores: ['Docker_DS01']
+datastores: ['Docker_CLH']
 disk2: '/dev/sdb'
 disk2_part: '/dev/sdb1'
 vsphere_plugin_version: '0.13' # was 0.12

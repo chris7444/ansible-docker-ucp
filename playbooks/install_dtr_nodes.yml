@@ -1,5 +1,6 @@
 ---
 - hosts: dtr
+  serial: 1
   gather_facts: false
   become_user: root
   become: true

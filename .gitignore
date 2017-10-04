@@ -2,3 +2,4 @@
 license.lic
 group_vars/vault
 *.svt2
+ansible.log

@@ -11,6 +11,7 @@ services:
     networks:
       - logging
     volumes:
+      - /etc/hostname:/etc/host_hostname:ro
       - /var/run/docker.sock:/var/run/docker.sock
     command:
       syslog://{{groups.logger[0]}}.{{domain_name}}:514

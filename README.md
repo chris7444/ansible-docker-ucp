@@ -1,10 +1,25 @@
 # Introduction
 
-The present document describes how to automate the provisioning of a Docker Enterprise Edition environment by using a set of Ansible playbooks. It also outlines a set of manual steps to harden, secure and audit the overall status of the system.
+Express Containers with Docker is a complete solution from Hewlett Packard Enterprise that includes all the hardware, software, professional services, and support you need to deploy an operational containers-as-a-service (CaaS) platform, allowing you to get up and running quickly and efficiently. The solution takes the HPE hyperconverged infrastructure and combines it with Docker’s enterprise-grade container platform, popular open source tools, along with deployment and advisory services from HPE Pointnext.
+
+Express Containers with Docker is ideal for customers either migrating legacy applications to containers, transitioning to a container DevOps development model or needing a hybrid environment to support container and non-containerized applications on a common VM platform.  Express Containers with Docker provides a solution for both IT development and IT operations, and comes in two versions.  The version for IT developers (Express Containers with Docker: Dev Edition) addresses the need to provide a cloud-like container development environment with built-in container tooling.  The version for IT operations (Express Containers with Docker: Ops Edition) addresses the need to have a production ready environment that is very easy to deploy and manage.  
+
+This document describes the best practices for deploying and operating the Express Containers with Docker: Ops Edition.   It describes how to automate the provisioning of the environment using a set of Ansible playbooks. It also outlines a set of manual steps to harden, secure and audit the overall status of the system. A corresponding document focused on setting up Express Containers with Docker: Dev Edition is also available. TODO.
+
+
+**Note**
+- The Ansible playbooks described in this document are only intended for Day 0 deployment automation of Docker EE on SimpliVity
+- The Ansible playbooks described in this document are not directly supported by HPE and are intended as an example of deploying Docker EE on HPE SimpliVity.  We welcome input from the user community via Github to help us prioritize all future bug fixes and feature enhancements
+
+
 
 ## About Docker Enterprise Edition
 
-Docker Enterprise Edition (EE) is designed for enterprise development and IT teams who build, ship and run business critical applications in production at scale. Docker EE is integrated, certified and supported to provide enterprises with the most secure container platform in the industry to modernize all applications. An application-centric platform, Docker EE is designed accelerate and secure across the entire software supply chain, from development to production running on any infrastructure.
+Docker Enterprise Edition (EE) is designed for enterprise development and IT teams who build, ship 
+and run business critical applications in production at scale. Docker EE is integrated, certified 
+and supported to provide enterprises with the most secure container platform in the industry to 
+modernize all applications. An application-centric platform, Docker EE is designed accelerate and 
+secure across the entire software supply chain, from development to production running on any infrastructure.
 
 More information about Docker Enterprise Edition can be found here: [https://www.docker.com/enterprise-edition](https://www.docker.com/enterprise-edition)
 

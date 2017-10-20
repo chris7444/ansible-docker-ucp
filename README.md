@@ -11,7 +11,8 @@ This document describes the best practices for deploying and operating the Expre
 - The Ansible playbooks described in this document are only intended for Day 0 deployment automation of Docker EE on SimpliVity
 - The Ansible playbooks described in this document are not directly supported by HPE and are intended as an example of deploying Docker EE on HPE SimpliVity.  We welcome input from the user community via Github to help us prioritize all future bug fixes and feature enhancements
 
-##About Ansible
+## About Ansible
+
 Ansible is an open-source automation engine that automates software provisioning, configuration management and application deployment.
 
 As with most configuration management software, Ansible has two types of server: the controlling machine and the nodes. A single controlling machine orchestrates the nodes by deploying modules to the nodes over SSH. The modules are temporarily stored on the nodes and communicate with the controlling machine through a JSON protocol over the standard output. When Ansible is not managing nodes, it does not consume resources because no daemons or programs are executing for Ansible in the background. Ansible uses one or more inventory files to manage the configuration of the multiple nodes in the system.

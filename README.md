@@ -215,14 +215,9 @@ It would be possible to automate the creation the template. However, as this is 
 
 1. Specify the name and location for your template, as shown in Figure 3.
 ![Specify name and location for the virtual machine][vmnamelocation]
-
 **Figure 3** Specify name and location for the virtual machine
-
 1. Choose the host/cluster on which you want to run this virtual machine, as shown in Figure 4.
-
 1. Choose a datastore where the template files will be stored, as shown in Figure 5.
-
-
 5. Choose the OS, in this case Linux, RHEL7 64bit.
 6. Pick the network to attach to your template. In this example we're only using one NIC but depending on how you plan to architect your environment you might want to add more than one.
 7. Create a primary disk. The chosen size in this case is 50GB but 20GB should be typically enough.

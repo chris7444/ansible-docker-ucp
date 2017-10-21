@@ -185,8 +185,15 @@ You will need assemble the information required to assign values to each and eve
 
 
 
+## Install vSphere Docker Volume Service driver on all ESXi hosts
 
+This is a one-off manual step. In order to be able to use Docker volumes using the vSphere driver, you must first install the latest release of the vSphere Docker Volume Service (vDVS) driver, which is available as a vSphere Installation Bundle (VIB). To perform this operation, login to each of the ESXi hosts in turn and then download and install the latest release of vDVS driver.
 
+'''
+# esxcli software vib install -v /tmp/vmware-esx-vmdkops-<version>.vib --no-sig-check
+'''
+
+More information on how to download and install the driver can be found here: https://vmware.github.io/docker-volume-vsphere/documentation/install.html#vib-installation-through-esxclilocalcli 
 
 
 

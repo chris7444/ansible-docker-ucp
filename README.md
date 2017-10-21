@@ -231,17 +231,17 @@ It would be possible to automate the creation the template. However, as this is 
 15. Click Begin Installation, using all the other default settings, and wait for the configuration of user settings dialog, shown in Figure 16.
 16. Select a root password, as shown in Figure 17.
 17. Click Done and wait for the install to finish. Reboot and log in into the system using the VM console.
-18.	The Red Hat packages required during the deployment of the solution come from two repositories: rhel-7-server-rpms and rhel 7 server extras rpms. The first repository can be found on the Red Hat DVD but the second cannot. Here are two options, they both require having a Red Hat Network account.
-  - Use Red Hat subscription manager to register your system. This is the easiest way and will automatically give you access to the official Red Hat repositories. It does require having a Red Hat Network account though, so if you don’t have one, you can use a different option. Use the subscription-manager register command as follows:
+18.	The Red Hat packages required during the deployment of the solution come from two repositories: ```rhel-7-server-rpms``` and ```rhel 7-server-extras-rpms```. The first repository can be found on the Red Hat DVD but the second cannot. There are two options, with both requiring a Red Hat Network account.
+  - Use Red Hat subscription manager to register your system. This is the easiest way and will automatically give you access to the official Red Hat repositories. It does require having a Red Hat Network account though, so if you don’t have one, you can use a different option. Use the ```subscription-manager register``` command as follows.
 ```
 # subscription-manager register --auto-attach
 ```
-If you are behind a proxy, you must configure this before running the above command to register:
+If you are behind a proxy, you must configure this before running the above command to register.
 ```
 # subscription-manager config --server.proxy_hostname=<proxy IP> --server.proxy_port=<proxy port>
 ```
 If you follow this “route”, the playbooks will automatically enable the “extras” repository on the VMs that need it.
-  - Use an internal repository. Instead of pulling the packages from Red Hat, you can create copies of the required repositories on a dedicated node. You can then configure the package manager to pull the packages from the dedicated node. Your /etc/yum.repos.d/redhat.repo could look something like this:
+  - Use an internal repository. Instead of pulling the packages from Red Hat, you can create copies of the required repositories on a dedicated node. You can then configure the package manager to pull the packages from the dedicated node. Your /etc/yum.repos.d/redhat.repo could look as follows.
 ```
 [RHEL7-Server]
 name=Red Hat Enterprise Linux $releasever - $basearch
@@ -257,7 +257,7 @@ enabled=1
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 ```
-The following articles explain how you can create a local mirror of the Red Hat repositories and how to share them:
+The following articles explain how you can create a local mirror of the Red Hat repositories and how to share them.
 https://access.redhat.com/solutions/23016
 https://access.redhat.com/solutions/7227
 Before converting the VM to a template, you will need to setup up access for the Ansible host to configure the individual VMs. This is explained in the next section. 

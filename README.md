@@ -66,8 +66,65 @@ The Operations environment is comprised of three HPE SimpliVity 380 Gen10 server
 
 
 ![Architecture Diagram][architecture]
+**Figure 1.** Solution Architecture
+
+The Ansible playbooks can be modified to fit your environment and your high availability (HA) needs. By default, the Ansible Playbooks will set up a 3 node environment.  HPE and Docker recommend a minimal starter configuration of 3 physical nodes for running Docker in production.  The distribution of the Docker and non-Docker modules over the 3 physical nodes via virtual machines (VMs) is as follows:
+
+- 3 Docker Universal Control Plane (UCP) VM nodes for HA and cluster management
+- 3 Docker Trusted Registry (DTR) VM nodes for HA of the container registry
+- 3 worker VM nodes for container workloads
+- Docker UCP load balancer VM to ensure access to UCP in the event of a node failure
+- Docker DTR load balancer VM to ensure access to DTR in the event of a node failure
+- Docker Swarm Worker node VM load balancer
+- Logging server VM for central logging 
+- NFS server VM for storage Docker DTR images
+
+These nodes are installed on VMs, spread across three SimpliVity servers. Each server will consist of:
+
+- At least one UCP node, but ideally 3 or 5, spread across the 3 SimpliVity servers
+- At least one DTR node, but ideally 3 or 5, spread across the 3 SimpliVity servers
+- At least one worker node, but ideally 3 or 5, spread across the 3 SimpliVity servers
+
+In addition to the above, the playbooks set up:
+
+- 3 load balancers, one for each set of nodes (one Worker load balancer, one DTR load balancer and one UCP load balancer)
+- 1 central logging server 
+- 1 NFS server
+- Docker persistent storage driver from VMware
+- Prometheus and Grafana monitoring tools
+- SimpliVity backup policy for data volumes and Docker images inside DTR
+
+These nodes can live in any of the hosts and they are not redundant.
 
 
+Sizing considerations
+
+This section describes sizing considerations. The vCPU allocations are described in Table 1 while the memory allocation is described in Table 2.
+
+Table 1 vCPU
+
+| vCPUs | simply01 | simply02 | simply03 |
+| ucp1  |	4      |          |	         |
+| ucp2  |          |4         |          |
+| ucp3	|          |          | 4        |
+| dtr1  | 2		   |          |          |
+
+dtr2		2	
+dtr3			2
+worker1	4		
+worker2		4	
+worker3			4
+ucb_lb	2		
+dtr_lb		2	
+worker_lb			2
+nfs			2
+logger		2	
+Total vCPU per node	12	14	14
+Total vCPU		40	
+Available CPUs	24	24	24
+Log Proc	48	48	48
+Total Log Proc
+(on two nodes)		96	
 
 
 

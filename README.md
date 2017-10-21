@@ -126,7 +126,9 @@ This section describes sizing considerations. The vCPU allocations are described
 | Total Log Proc (on two nodes) | | 96	
 
 
+
 **Table 2** Memory allocation
+
 | RAM | simply01 | simply02 | simply03 |
 |:------|:--------:|:--------:|:--------:|
 | ucp1  |	8      |          |	         |

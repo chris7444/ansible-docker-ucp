@@ -206,7 +206,7 @@ More information on how to download and install the driver can be found here: ht
 
 The very first step to our automated solution will be the creation of a VM Template that will be the base of all your nodes. In order to create a VM Template we will first create a Virtual Machine where the OS will be installed and then the Virtual Machine will be converted to a VM Template. Since the goal of the automation is get rid of as many repetitive tasks as possible, the VM Template will be created as lean as possible, so any additional software installs and/or system configuration will be done later by Ansible.
 
-It would be possible to automate the creation the template. However, as this is a one-off task, it is appropriate to do it manually. The steps to create a VM template manually are described below:
+It would be possible to automate the creation the template. However, as this is a one-off task, it is appropriate to do it manually. The steps to create a VM template manually are described below.
 
 ![Create New Virtual Machine][createnewvm]
 **Figure 2** Create New Virtual Machine
@@ -811,4 +811,4 @@ A much briefer video with a quick demo can be found here: https://vimeo.com/2293
 
 [architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
 [provisioning]: </images/provisioning.png> "Provisioning Steps"
-[createnewvm]: </images/create new virtual machine.png> "Figure 2. Create New Virtual Machine"
+[createnewvm]: </images/createnewvirtualmachine.png> "Figure 2. Create New Virtual Machine"

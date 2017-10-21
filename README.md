@@ -123,7 +123,7 @@ This section describes sizing considerations. The vCPU allocations are described
 | **Total vCPU**| 	   | **40**	
 | Available CPUs| 24 | 24	  | 24
 | Log Proc	| 48   | 	48	  | 48
-| **Total Log Proc** (on two nodes) | | 96	
+| **Total Log Proc** (on two nodes) | | **96**	
 
 
 
@@ -160,9 +160,13 @@ This section describes sizing considerations. The vCPU allocations are described
 
 
 
-# Steps to provision the environment
+# Provisioning the operations environment
 
-This section will describe in detail how to provision the environment described in the previous section.
+This section describes in detail how to provision the environment described previously in the architecture section. The figure below shows the high level steps this guide will take.
+
+![Provisioning steps][provisioning]
+
+
 
 ## Creation of a VM template
 
@@ -767,3 +771,4 @@ A much briefer video with a quick demo can be found here: https://vimeo.com/2293
 
 
 [architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
+[provisioning]: </images/provisioning.png> "Provisioning Steps"

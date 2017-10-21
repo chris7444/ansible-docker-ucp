@@ -101,7 +101,7 @@ Sizing considerations
 
 This section describes sizing considerations. The vCPU allocations are described in Table 1 while the memory allocation is described in Table 2.
 
-Table 1 vCPU
+**Table 1** vCPU
 
 | vCPUs | simply01 | simply02 | simply03 |
 |:------|:--------:|:--------:|:--------:|
@@ -112,18 +112,45 @@ Table 1 vCPU
 | dtr2  |          | 2	      |          |
 | dtr3  |          |          |  2       |
 | worker1 |4	   |          |          |	
-| worker2| 	| 	4	| 
-| worker3| 		| | 	4
-| ucb_lb| 	2| 		
-| dtr_lb| 	| 	2	
-| worker_lb	| 	| | 	2
-| nfs	| 	| | 	2
-| logger	| 	| 	2	
+| worker2| 	       | 	4	  | 
+| worker3| 		   |          | 	4
+| ucb_lb| 	2      | 		  | 
+| dtr_lb| 	       | 	2	  | 
+| worker_lb	| 	   |          |  2
+| nfs	| 	       |          |  2      | 
+| logger	| 	   |  2	      | 
 | Total vCPU per node|	12 |14|	       14|
-| Total vCPU| 		| 40	
-| Available CPUs| 	24	|24	| 24
-| Log Proc	| 48| 	48	| 48
-| Total Log Proc (on two nodes) 	| | 	96	
+| Total vCPU| 	   | 40	
+| Available CPUs| 24 | 24	  | 24
+| Log Proc	| 48   | 	48	  | 48
+| Total Log Proc (on two nodes) | | 96	
+
+
+**Table 2** Memory allocation
+| RAM | simply01 | simply02 | simply03 |
+|:------|:--------:|:--------:|:--------:|
+| ucp1  |	8      |          |	         |
+| ucp2  |          |8         |          |
+| ucp3	|          |          | 8        |
+| dtr1  | 16	   |          |          |
+| dtr2  |          | 16       |          |
+| dtr3  |          |          |  16      |
+| worker1 |64	   |          |          |	
+| worker2| 	       | 	64	  | 
+| worker3| 		   |          | 	64
+| ucb_lb| 	4      | 		  | 
+| dtr_lb| 	       | 	4	  | 
+| worker_lb	| 	   |          |  4
+| nfs	| 	       |          |  4      | 
+| logger	| 	   |  4	      | 
+| Total RAM required (per node)| 	92	| 96| 	96
+| Total RAM required| 	| 	284	
+| Available RAM	| 384	| 384| 	384
+| Total Available RAM (on two nodes)| | 		768	
+
+
+
+
 
 
 

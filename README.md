@@ -60,6 +60,18 @@ The following versions or higher are required to use the playbooks described in 
 - HPE SimpliVity Omni stack v TODO
 
 
+# Architecture
+
+The Operations environment is comprised of three HPE SimpliVity 380 Gen10 servers. Since the SimpliVity technology relies on VMware virtualization, the servers are managed using vCenter. The load among the three hosts will be shared as per Figure 1.
+
+
+![Architecture Diagram][architecture]
+
+
+
+
+
+
 # Steps to provision the environment
 
 This section will describe in detail how to provision the environment described in the previous section.
@@ -666,3 +678,4 @@ Please get in touch via Github if you have any questions.
 A much briefer video with a quick demo can be found here: https://vimeo.com/229389079
 
 
+[architecture] : <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/images/architecture.png> "Figure 1. Solution Architecture"

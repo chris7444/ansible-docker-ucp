@@ -109,22 +109,22 @@ Table 1 vCPU
 | ucp2  |          |4         |          |
 | ucp3	|          |          | 4        |
 | dtr1  | 2		   |          |          |
-| dtr2 | | 2	
-| dtr3 | | |  2
-| worker1	4		
-| worker2		4	
-| worker3			4
-| ucb_lb	2		
-| dtr_lb		2	
-| worker_lb			2
-| nfs			2
-| logger		2	
-| Total vCPU per node	12	14	14
-| Total vCPU		40	
-| Available CPUs	24	24	24
-| Log Proc	48	48	48
-| Total Log Proc
-| (on two nodes)		96	
+| dtr2  |          | 2	      |          |
+| dtr3  |          |          |  2       |
+| worker1 |4	   |          |          |	
+| worker2| 		4	
+| worker3| 			4
+| ucb_lb| 	2		
+| dtr_lb| 		2	
+| worker_lb	| 		2
+| nfs	| 		2
+| logger	| 	2	
+| Total vCPU per node|	12 |14|	       14|
+| Total vCPU| 		40	
+| Available CPUs| 	24	24	24
+| Log Proc	| 48	48	48
+| Total Log Proc| 
+| (on two nodes)| 		96	
 
 
 

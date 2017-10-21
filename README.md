@@ -208,7 +208,7 @@ The very first step to our automated solution will be the creation of a VM Templ
 
 It would be possible to automate the creation the template. However, as this is a one-off task, it is appropriate to do it manually. The steps to create a VM template manually are described below.
 
-1. Log in to vCenter and create a new Virtual Machine. 
+1. Log in to vCenter and create a new Virtual Machine. In the dialog box, shown in Figure 2, select ```Typical``` and press ```Next```. 
 ![Create New Virtual Machine][createnewvm]
 
 **Figure 2** Create New Virtual Machine
@@ -218,52 +218,80 @@ It would be possible to automate the creation the template. However, as this is 
 
 
 
-2. Provide a name for your template.
+2. Specify the name and location for your template, as shown in Figure 3.
 ![Specify name and location for the virtual machine][vmnamelocation]
 
 **Figure 3** Specify name and location for the virtual machine
 
-3. Choose the location (host/cluster) where you wish to store your template.
-4. Choose a datastore where the template files will be stored.
+3. Choose the host/cluster on which you want to run this virtual machine, as shown in Figure 4.
+
+4. Choose a datastore where the template files will be stored, as shown in Figure 5.
+
+
 5. Choose the OS, in this case Linux, RHEL7 64bit.
 6. Pick the network to attach to your template. In this example we're only using one NIC but depending on how you plan to architect your environment you might want to add more than one.
 7. Create a primary disk. The chosen size in this case is 50GB but 20GB should be typically enough.
 8. Confirm that the settings are right and press Finish.
-9. The next step is to virtually insert the RHEL7 DVD, we do this by looking into the Settings of the newly created VM. Select your ISO file in the Datastore ISO File Device Type and make sure that the "Connect at power on" checkbox is checked.
+9. The next step is to virtually insert the RHEL7 DVD, using the Settings of the newly created VM as shown in Figure 10. Select your ISO file in the Datastore ISO File Device Type and make sure that the “Connect at power on” checkbox is checked.
 10. Finally, you can optionally remove the Floppy Disk as this is not required for the VM.
-11. Power on the server and open the console to install the OS. You should see something similar to this. Pick your language and hit Continue.
-12. Scroll down and click on Installation Destination.
-13. Select your installation drive and hit Done.
-14. Leave all the rest by default. Click Begin Installation.
-15. Select a root password.
-16. Press Done and wait for the install to finish. Reboot and login into the system using the VM console.
-17. Once we are logged into the system we need to configure a yum repository so we can install any packages required at a later stage. We can do this in three different ways:
-
-**Option 1:** Use Red Hat subscription manager to register your system. This is the easiest way and will give you automatically access to the official Red Hat repositories. It requires having a Red Hat Network account though, so if you don't have one, you can use either Option 2 or 3. For option run you would do:
-
-```# subscription-manager register --auto-attach```
-
-If you are behind a proxy you will need to run this beforehand:
-
-```# subscription-manager config --server.proxy_hostname=<proxy IP> --server.proxy_port=<proxy port>```
-
-**Option 2:** Use a local repository by copying the DVD contents into Virtual Machine primary disk. The procedure on how to do this is explained here: [https://access.redhat.com/solutions/1355683](https://access.redhat.com/solutions/1355683)
-
-**Option 3:** Use an internal repository. Instead of pulling the packages locally after copying the DVD contents into the local drive, you could have a dedicated node with the Red Hat packages available and configure the repository to pull the packages from there. Your `/etc/yum.repos.d/redhat.repo` could look something like this:
+11. Power on the server and open the console to install the OS. On the welcome screen, as shown in Figure 12, pick your language and press ```Continue```.
+12. The installation summary screen will appear, as shown in Figure 13.
+13. Scroll down and click on Installation Destination, as shown in Figure 14.
+14. Select your installation drive, as shown in Figure 15, and click Done.
+15. Click Begin Installation, using all the other default settings, and wait for the configuration of user settings dialog, shown in Figure 16.
+16. Select a root password, as shown in Figure 17.
+17. Click Done and wait for the install to finish. Reboot and log in into the system using the VM console.
+18.	The Red Hat packages required during the deployment of the solution come from two repositories: rhel-7-server-rpms and rhel 7 server extras rpms. The first repository can be found on the Red Hat DVD but the second cannot. Here are two options, they both require having a Red Hat Network account.
+a.	Use Red Hat subscription manager to register your system. This is the easiest way and will automatically give you access to the official Red Hat repositories. It does require having a Red Hat Network account though, so if you don’t have one, you can use a different option. Use the subscription-manager register command as follows:
 
 ```
-[internal-rhel7-repo]
-name = Internal RHEL7 repository
-baseurl = http://redhat-node.your.domain/your/packages/directory
-enabled = 1
-gpgcheck = 0
+# subscription-manager register --auto-attach
 ```
 
-For additional information on how to configure a repository please check the Red Hat documentation: [https://access.redhat.com/documentation/en-US/Red\_Hat\_Enterprise\_Linux/7/html/System\_Administrators\_Guide/sec-Configuring\_Yum\_and\_Yum\_Repositories.html](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/System_Administrators_Guide/sec-Configuring_Yum_and_Yum_Repositories.html)
+If you are behind a proxy, you must configure this before running the above command to register:
 
-Please keep in mind that if you use option 2 or 3 you will need to have the RHEL extra packages available. This is required for Docker 17.06, which needs the `container-selinux` package.
 
-At this stage the only thing left to do is to power off the Virtual Machine and convert it to a VM Template, but before we do that we need to set up our Ansible host, as explained in the next section.
+```
+# subscription-manager config --server.proxy_hostname=<proxy IP> --server.proxy_port=<proxy port>
+```
+
+If you follow this “route”, the playbooks will automatically enable the “extras” repository on the VMs that need it.
+
+b.	Use an internal repository. Instead of pulling the packages from Red Hat, you can create copies of the required repositories on a dedicated node. You can then configure the package manager to pull the packages from the dedicated node. Your /etc/yum.repos.d/redhat.repo could look something like this:
+
+
+```
+[RHEL7-Server]
+name=Red Hat Enterprise Linux $releasever - $basearch
+baseurl=http://yourserver.example.com/rhel-7-server-rpms/
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+[RHEL7-Server-extras]
+name=Red Hat Enterprise Linux Extra pkg $releasever - $basearch
+baseurl=http://yourserver.example.com/rhel-7-server-extras-rpms/
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+```
+
+
+The following articles explain how you can create a local mirror of the Red Hat repositories and how to share them:
+
+https://access.redhat.com/solutions/23016
+https://access.redhat.com/solutions/7227
+
+Before converting the VM to a template, you will need to setup up access for the Ansible host to configure the individual VMs. This is explained in the next section. 
+
+
+
+
+
+
+
+
+
 
 ## Creating the Ansible node
 

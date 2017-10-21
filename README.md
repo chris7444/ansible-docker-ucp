@@ -208,11 +208,12 @@ The very first step to our automated solution will be the creation of a VM Templ
 
 It would be possible to automate the creation the template. However, as this is a one-off task, it is appropriate to do it manually. The steps to create a VM template manually are described below:
 
+![Create New Virtual Machine][createnewvm]
+**Figure 2** Create New Virtual Machine
 
 1. Log in to vCenter and create a new Virtual Machine. 
 
-![Create New Virtual Machine][Create New Virtual Machine]
-**Figure 2** Create New Virtual Machine
+
 
 
 2. Provide a name for your template.
@@ -810,4 +811,4 @@ A much briefer video with a quick demo can be found here: https://vimeo.com/2293
 
 [architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
 [provisioning]: </images/provisioning.png> "Provisioning Steps"
-[Create New Virtual Machine]: </images/create new virtual machine.png> "Figure 2. Create New Virtual Machine"
+[createnewvm]: </images/create new virtual machine.png> "Figure 2. Create New Virtual Machine"

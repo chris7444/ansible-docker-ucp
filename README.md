@@ -219,6 +219,10 @@ It would be possible to automate the creation the template. However, as this is 
 
 
 2. Provide a name for your template.
+![Specify name and location for the virtual machine][vmnamelocation]
+
+**Figure 3** Specify name and location for the virtual machine
+
 3. Choose the location (host/cluster) where you wish to store your template.
 4. Choose a datastore where the template files will be stored.
 5. Choose the OS, in this case Linux, RHEL7 64bit.
@@ -814,3 +818,5 @@ A much briefer video with a quick demo can be found here: https://vimeo.com/2293
 [architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
 [provisioning]: </images/provisioning.png> "Provisioning Steps"
 [createnewvm]: </images/createnewvirtualmachine.png> "Figure 2. Create New Virtual Machine"
+[vmnamelocation]: </images/vmnamelocation.png> "Figure 3. Specify name and location for the virtual machine" 
+

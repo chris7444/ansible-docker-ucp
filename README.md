@@ -241,7 +241,7 @@ If you are behind a proxy, you must configure this before running the above comm
 # subscription-manager config --server.proxy_hostname=<proxy IP> --server.proxy_port=<proxy port>
 ```
 If you follow this “route”, the playbooks will automatically enable the “extras” repository on the VMs that need it.
-  - Use an internal repository. Instead of pulling the packages from Red Hat, you can create copies of the required repositories on a dedicated node. You can then configure the package manager to pull the packages from the dedicated node. Your /etc/yum.repos.d/redhat.repo could look as follows.
+  - Use an internal repository. Instead of pulling the packages from Red Hat, you can create copies of the required repositories on a dedicated node. You can then configure the package manager to pull the packages from the dedicated node. Your ```/etc/yum.repos.d/redhat.repo``` could look as follows.
 ```
 [RHEL7-Server]
 name=Red Hat Enterprise Linux $releasever - $basearch
@@ -258,8 +258,8 @@ gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 ```
 The following articles explain how you can create a local mirror of the Red Hat repositories and how to share them.
-https://access.redhat.com/solutions/23016
-https://access.redhat.com/solutions/7227
+https://access.redhat.com/solutions/23016 https://access.redhat.com/solutions/7227
+
 Before converting the VM to a template, you will need to setup up access for the Ansible host to configure the individual VMs. This is explained in the next section. 
 
 

@@ -209,10 +209,11 @@ The very first step to our automated solution will be the creation of a VM Templ
 It would be possible to automate the creation the template. However, as this is a one-off task, it is appropriate to do it manually. The steps to create a VM template manually are described below.
 
 1. Log in to vCenter and create a new Virtual Machine. In the dialog box, shown in Figure 2, select ```Typical``` and press ```Next```. 
-![Create New Virtual Machine][createnewvm]
 
-**Figure 2** Create New Virtual Machine
-
+  ![Create New Virtual Machine][createnewvm]
+  
+  **Figure 2** Create New Virtual Machine
+  
 1. Specify the name and location for your template, as shown in Figure 3.
 ![Specify name and location for the virtual machine][vmnamelocation]
 **Figure 3** Specify name and location for the virtual machine
@@ -242,25 +243,26 @@ If you are behind a proxy, you must configure this before running the above comm
 ```
 If you follow this “route”, the playbooks will automatically enable the “extras” repository on the VMs that need it.
   - Use an internal repository. Instead of pulling the packages from Red Hat, you can create copies of the required repositories on a dedicated node. You can then configure the package manager to pull the packages from the dedicated node. Your ```/etc/yum.repos.d/redhat.repo``` could look as follows.
-  ```
-  [RHEL7-Server]
-  name=Red Hat Enterprise Linux $releasever - $basearch
-  baseurl=http://yourserver.example.com/rhel-7-server-rpms/
-  enabled=1
-  gpgcheck=1
-  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
-  
-  [RHEL7-Server-extras]
-  name=Red Hat Enterprise Linux Extra pkg $releasever - $basearch
-  baseurl=http://yourserver.example.com/rhel-7-server-extras-rpms/
-  enabled=1
-  gpgcheck=1
-  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
-  ```
-  The following articles explain how you can create a local mirror of the Red Hat repositories and how to share them.
-  https://access.redhat.com/solutions/23016 https://access.redhat.com/solutions/7227
+```
+[RHEL7-Server]
+name=Red Hat Enterprise Linux $releasever - $basearch
+baseurl=http://yourserver.example.com/rhel-7-server-rpms/
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 
-  Before converting the VM to a template, you will need to setup up access for the Ansible host to configure the individual VMs. This is explained in the next section. 
+[RHEL7-Server-extras]
+name=Red Hat Enterprise Linux Extra pkg $releasever - $basearch
+baseurl=http://yourserver.example.com/rhel-7-server-extras-rpms/
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+```
+The following articles explain how you can create a local mirror of the Red Hat repositories and how to share them.
+https://access.redhat.com/solutions/23016  
+https://access.redhat.com/solutions/7227
+
+Before converting the VM to a template, you will need to setup up access for the Ansible host to configure the individual VMs. This is explained in the next section. 
 
 
 

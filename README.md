@@ -64,6 +64,7 @@ The following versions or higher are required to use the playbooks described in 
 
 The Operations environment is comprised of three HPE SimpliVity 380 Gen10 servers. Since the SimpliVity technology relies on VMware virtualization, the servers are managed using vCenter. The load among the three hosts will be shared as per Figure 1.
 
+![Architecture Diagram](/images/architecture.png)
 
 ![Architecture Diagram][architecture]
 

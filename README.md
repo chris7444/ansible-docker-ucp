@@ -213,19 +213,14 @@ It would be possible to automate the creation the template. However, as this is 
 
 **Figure 2** Create New Virtual Machine
 
-
-
-
-
-
-2. Specify the name and location for your template, as shown in Figure 3.
+1. Specify the name and location for your template, as shown in Figure 3.
 ![Specify name and location for the virtual machine][vmnamelocation]
 
 **Figure 3** Specify name and location for the virtual machine
 
-3. Choose the host/cluster on which you want to run this virtual machine, as shown in Figure 4.
+1. Choose the host/cluster on which you want to run this virtual machine, as shown in Figure 4.
 
-4. Choose a datastore where the template files will be stored, as shown in Figure 5.
+1. Choose a datastore where the template files will be stored, as shown in Figure 5.
 
 
 5. Choose the OS, in this case Linux, RHEL7 64bit.
@@ -256,7 +251,6 @@ If you are behind a proxy, you must configure this before running the above comm
 ```
 
 If you follow this “route”, the playbooks will automatically enable the “extras” repository on the VMs that need it.
-
   1.	Use an internal repository. Instead of pulling the packages from Red Hat, you can create copies of the required repositories on a dedicated node. You can then configure the package manager to pull the packages from the dedicated node. Your /etc/yum.repos.d/redhat.repo could look something like this:
 
 

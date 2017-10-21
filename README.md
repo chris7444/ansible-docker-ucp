@@ -119,11 +119,14 @@ This section describes sizing considerations. The vCPU allocations are described
 | worker_lb	| 	   |          |  2
 | nfs	| 	       |          |  2      | 
 | logger	| 	   |  2	      | 
-| Total vCPU per node|	12 |14|	       14|
-| Total vCPU| 	   | 40	
+| **Total vCPU per node**|	**12** |**14**|	       **14**|
+| **Total vCPU**| 	   | **40**	
 | Available CPUs| 24 | 24	  | 24
 | Log Proc	| 48   | 	48	  | 48
-| Total Log Proc (on two nodes) | | 96	
+| **Total Log Proc** (on two nodes) | | 96	
+
+
+
 
 
 
@@ -145,10 +148,10 @@ This section describes sizing considerations. The vCPU allocations are described
 | worker_lb	| 	   |          |  4
 | nfs	| 	       |          |  4      | 
 | logger	| 	   |  4	      | 
-| Total RAM required (per node)| 	92	| 96| 	96
-| Total RAM required| 	| 	284	
+| **Total RAM required** (per node)| 	**92**	| **96**| 	**96**
+| **Total RAM required**| 	| 	**284**	
 | Available RAM	| 384	| 384| 	384
-| Total Available RAM (on two nodes)| | 		768	
+| **Total Available RAM** (on two nodes)| | 		**768**	
 
 
 

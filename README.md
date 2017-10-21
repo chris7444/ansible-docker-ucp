@@ -679,4 +679,4 @@ Please get in touch via Github if you have any questions.
 A much briefer video with a quick demo can be found here: https://vimeo.com/229389079
 
 
-[architecture] : <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/images/architecture.png> "Figure 1. Solution Architecture"
+[architecture]:<https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/images/architecture.png> "Figure 1. Solution Architecture"

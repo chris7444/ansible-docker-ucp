@@ -211,9 +211,11 @@ It would be possible to automate the creation the template. However, as this is 
 1. Log in to vCenter and create a new Virtual Machine. In the dialog box, shown in Figure 2, select ```Typical``` and press ```Next```.  
 ![Create New Virtual Machine][createnewvm]  
 **Figure 2** Create New Virtual Machine  
-2. Specify the name and location for your template, as shown in Figure 3.
-![Specify name and location for the virtual machine][vmnamelocation]
-**Figure 3** Specify name and location for the virtual machine
+  
+2. Specify the name and location for your template, as shown in Figure 3.  
+![Specify name and location for the virtual machine][vmnamelocation]  
+**Figure 3** Specify name and location for the virtual machine  
+  
 3. Choose the host/cluster on which you want to run this virtual machine, as shown in Figure 4.
 4. Choose a datastore where the template files will be stored, as shown in Figure 5.
 5. Choose the OS, in this case Linux, RHEL7 64bit.

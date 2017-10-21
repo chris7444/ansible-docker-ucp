@@ -104,7 +104,7 @@ This section describes sizing considerations. The vCPU allocations are described
 Table 1 vCPU
 
 | vCPUs | simply01 | simply02 | simply03 |
---------|:--------:|:--------:|:--------:|
+|-------|:--------:|:--------:|:--------:|
 | ucp1  |	4      |          |	         |
 | ucp2  |          |4         |          |
 | ucp3	|          |          | 4        |

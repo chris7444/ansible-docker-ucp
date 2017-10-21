@@ -210,6 +210,7 @@ It would be possible to automate the creation the template. However, as this is 
 
 
 1. Log in to vCenter and create a new Virtual Machine. 
+
 ![Create New Virtual Machine][Create New Virtual Machine]
 **Figure 2** Create New Virtual Machine
 

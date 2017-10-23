@@ -557,7 +557,7 @@ All Monitoring-related variables are described in Table 9. The variables determi
 | prom_persistent_vol_name | The name of the volume which will be used to store the monitoring data. The volume is created using the vsphere docker volume plugin. |
 | prom_persistent_vol_size | The size of the volume which will hold the monitoring data. The exact syntax is dictated by the vSphere Docker Volume plugin. The default value is 10GB. |
 
-###Logspout configuration
+### Logspout configuration
 
 All Logspout-related variables are described in Table 10.
 

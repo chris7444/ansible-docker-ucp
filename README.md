@@ -578,38 +578,45 @@ All Environment-related variables should be here. All of them are described in t
 
 ## Editing the vault
 
-Once our group variables file is ready, the next step is to create a vault file to match our environment. The vault file is essentially the same thing than the group variables but it will contain all sensitive variables and will be encrypted.
+Once your group variables file is ready, the next step is to create a vault file to match your environment. The vault file is essentially the same thing than the group variables but it will contain all sensitive variables and will be encrypted.
 
 To create a vault we'll create a new file group\_vars/vault and we'll add the following entries:
 
 ```
 ---
-docker_ee_url: 'yoururl'
 vcenter_password: 'xxx'
+docker_ee_url: 'yoururl'
 vm_password: 'xxx'
 simplivity_password: 'xxx'
 ucp_password: 'xxx'
+rhn_orgid: 'Red Hat Organization ID'
+rhn_key: 'Red Hat Activation Key'
 ```
+
+
+```rhn_orgid``` and ```rhn_key``` are the credentials needed to subscribe the virtual machines with Red Hat Customer Portal. For more info regarding activation keys see the following URL: https://access.redhat.com/articles/1378093
 
 To encrypt the vault you need to run the following command:
 
 ```# ansible-vault encrypt group_vars/vault```
 
-You will be prompted for a password that will decrypt the vault when required.
-
-Edit your vault anytime by running:
+You will be prompted for a password that will decrypt the vault when required. You can update the values in your vault by running:
 
 ```# ansible-vault edit group_vars/vault```
 
-The password you set on creation will be requested.
+You will be prompted for a password that will decrypt the vault when required. You can update the values in your vault by running:
+```
+# ansible-vault edit group_vars/vault
+```
 
-In order for ansible to be able to read the vault we'll need to specify a file where the password is stored, for instance in a file called .vault\_pass. Once the file is created, take the following precautions to avoid illegitimate access to this file:
+For Ansible to be able to read the vault, you need to specify a file where the password is stored, for instance in a file called ```.vault_pass```. Once the file is created, take the following precautions to avoid illegitimate access to this file:
 
-1. Change the permissions so only root can read it
+1. Change the permissions so only ```root``` can read it using  ```# chmod 600 .vault_pass```
 
-```# chmod 600 .vault_pass```
+2. Add the file to your ```.gitignore``` file if you're pushing the set of playbooks to a git repository.
 
-1. Add the file to your .gitignore file if you're pushing the set of playbooks to a git repository
+
+
 
 # Running the playbooks
 

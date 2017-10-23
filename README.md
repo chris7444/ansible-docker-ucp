@@ -464,14 +464,14 @@ All Simplivity-related variables should be here. All of them are mandatory and d
   </tr>
   <tr>
     <td>simplivity_username</td>
-	<td>Username to log in to the Simplivity Omnistack appliances. It might include a domain, for example, <a href="mailto:administrator@vsphere.local">administrator@vsphere.local</href> . Note: The corresponding password is stored in a separate file (<code>group_vars/vault</code>) with the variable named <code>simplivity_password</code>.</td>
+	<td>Username to log in to the Simplivity Omnistack appliances. It might include a domain, for example, <a href="mailto:administrator@vsphere.local">administrator@vsphere.local</a>. Note: The corresponding password is stored in a separate file (<code>group_vars/vault</code>) with the variable named <code>simplivity_password</code>.</td>
   </tr>
    <tr>
 	<td>backup_policies </td>
 	<td>
 	List of dictionaries containing the different backup policies to be used along with the scheduling information. Any number of backup policies can be created and they need to match the <code>node_policy</code> variables defined in the inventory. Times are indicated in minutes.  All months calculations use a 30-day month. All year calculations use a 365-day year. The format is as follows:
 <pre>
-backup\_policies:
+backup_policies:
  - name: daily'   
    days: 'All'   
    start\_time: '11:30'   

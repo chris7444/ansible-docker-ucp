@@ -466,10 +466,19 @@ All Simplivity-related variables should be here. All of them are mandatory and d
     <td>simplivity_username</td>
 	<td>Username to log in to the Simplivity Omnistack appliances. It might include a domain, for example, <a href="mailto:administrator@vsphere.local">administrator@vsphere.local</a>. Note: The corresponding password is stored in a separate file (<code>group_vars/vault</code>) with the variable named <code>simplivity_password</code>.</td>
   </tr>
+  <tr>
+    <td>omnistack_ovc</td>
+	<td>List of Omnistack hosts to be used, in list format, i.e. <code>[‘omni1.local’,’onmi2.local’...]</code>. If your OmniStack virtual machines do not have their names registered in DNS, you can use their IP addresses.  
+	</td>
+  </tr>
+    <td>rest_api_pause</td>
+	<td>TODO: Default value is 10.
+	</td>
+  </tr>	
    <tr>
 	<td>backup_policies </td>
 	<td>
-	List of dictionaries containing the different backup policies to be used along with the scheduling information. Any number of backup policies can be created and they need to match the <code>node_policy</code> variables defined in the inventory. Times are indicated in minutes.  All months calculations use a 30-day month. All year calculations use a 365-day year. The format is as follows:
+	List of dictionaries containing the different backup policies to be used along with the scheduling information. Any number of backup policies can be created and they need to match the <code>node_policy</code> variables defined in the inventory. Times are indicated in minutes.  All month calculations use a 30-day month. All year calculations use a 365-day year. The format is as follows:
 <pre>
 backup_policies:
  - name: daily'   
@@ -491,7 +500,7 @@ backup_policies:
   </tr>
   <tr>
 	<td>docker_volumes_policy</td>
-	<td> Backup policy to use for the Docker Volumes.</td>
+	<td>Backup policy to use for the Docker Volumes.</td>
   </tr>
 </table>
 

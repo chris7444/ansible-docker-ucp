@@ -484,7 +484,6 @@ backup_policies:
    retention: '2880'
 </pre>	
 	
-	</td>
   </tr>
   <tr>
   <td>dummy_vm_prefix</td>

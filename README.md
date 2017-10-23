@@ -341,11 +341,23 @@ This completes the creation of the VM Template.
 
 ## Prepare your Ansible configuration
 
-In the Ansible node, we need now to prepare the configuration to match your own environment, prior to deploying Docker Datacenter and the rest of the nodes. To do so, we will need to edit and modify three different files:
+On the Ansible node, retrieve the latest version of the playbooks using git.
+```
+# git clone https://github.com/HewlettPackard/Docker-SimpliVity
 
-- The inventory: `vm_hosts`
-- The group variables: `group_vars/vars`
-- The encrypted group variable: `group_vars/vault`
+```
+
+You now need to prepare the configuration to match your own environment, prior to deploying Docker EE and the rest of the nodes. To do so, you will need to edit and modify three different files:
+
+
+
+- ```vm_hosts``` (the inventory file)
+- ```group_vars/vars``` (the group variables file)
+- ```group_vars/vault``` (the encrypted group variable file)
+
+
+
+
 
 ## Editing the inventory
 

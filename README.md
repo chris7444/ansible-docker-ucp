@@ -283,14 +283,14 @@ In addition to the VM Template, we need another Virtual Machine where Ansible wi
 ```
 3. Configure the following yum repositories, rhel-7-server-rpms and rhel-7-server-extras-rpms as explained in the previous section.
 4. Configure the EPEL repository. See here for more information: http://fedoraproject.org/wiki/EPEL. Note that ```yum-config-manager``` comes with the Infrastructure Server base environment, if you did not select this environment you will have to install the ```yum-utils``` package.
-'''
+```
 # rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 # yum-config-manager --enable rhel-7-server-extras-rpms	
-'''
+```
 5. Install Ansible. Please note that version 2.2 is the minimum required. The instructions on how to install Ansible are described in its official website: http://docs.ansible.com/ansible/intro_installation.html
-'''
+```
 # yum install ansible
-'''
+```
 6. Make a list of all the hostnames and IPs that will be in your system and update your ```/etc/hosts``` file accordingly. This includes your UCP nodes, DTR nodes, worker nodes, NFS server, logger server and load balancers.
 7. Install the following packages which are a mandatory requirement for the playbooks to function as expected. (Update pip if requested).
 ```

@@ -408,7 +408,9 @@ node_policy='bronze'
 
 In  the example above, the ```worker03``` node would have 4 times more CPU and double the RAM compared to the rest of worker nodes.
 
-The different variables you can use are as described in the table below. They are all mandatory unless if specified otherwise:
+The different variables you can use are as described in Table 4 below. They are all mandatory unless if specified otherwise.
+
+**Table 4.** Variables
 
 | Variable     | Scope      | Description                              |
 | ------------ | ---------- | ---------------------------------------- |
@@ -417,7 +419,7 @@ The different variables you can use are as described in the table below. They ar
 | cpus         | Node/Group | Number of CPUs to assign to a VM or a group of VMs |
 | ram          | Node/Group | Amount of RAM in MB to assign to a VM or a group of VMs |
 | disk2\_usage | Node/Group | Size of the second disk in GB to attach to a VM or a group of VMs. This variable is only mandatory on Docker nodes (UCP, DTR, worker) and NFS node. It is not required for the logger node or the load balancers. |
-| node\_policy | Node/Group | Simplivity backup policy to assign to a VM or a group of VMs. The name has to match one of the backup policies defined in the ```group\_vars/vars``` file described in the next section. |
+| node\_policy | Node/Group | Simplivity backup policy to assign to a VM or a group of VMs. The name has to match one of the backup policies defined in the ```group_vars/vars``` file described in the next section. |
 
 
 
@@ -425,7 +427,7 @@ The different variables you can use are as described in the table below. They ar
 
 ## Editing the group variables
 
-Once the inventory is ready, the next step is to modify the group variables to match your environment. To do so, you need to edit the file ```group\_vars/vars``` under the cloned directory containing the playbooks. The variables here can be defined in any order but for the sake of clarity they have been divided into sections.
+Once the inventory is ready, the next step is to modify the group variables to match your environment. To do so, you need to edit the file ```group_vars/vars``` under the cloned directory containing the playbooks. The variables here can be defined in any order but for the sake of clarity they have been divided into sections.
 
 ### VMware configuration
 
@@ -451,15 +453,33 @@ All VMware-related variables are mandatory and are described in Table 5.
 
 ### Simplivity configuration
 
-All Simplivity-related variables should be here. All of them are mandatory and described in the Table 3 below.
+All Simplivity-related variables should be here. All of them are mandatory and described in the Table 6 below.
+
+**Table 6.** SimpliVity variables
 
 | Variable                | Description                              |
 | ----------------------- | ---------------------------------------- |
-| simplivity\_username    | Username to log in to the Simplivity Omnistack appliances. It might include a domain i.e. ' [administrator@vsphere.local](mailto:administrator@vsphere.local)' |
-| omnistack\_ovc          | List of Omnistack hosts to be used, in list format, i.e. ['omni1.local','onmi2.local'...] |
-| backup\_policies        | List of dictionaries containing the different backup policies to be used along with the scheduling information. Any number of backup policies can be created and they need to match the node\_policy variables defined in the inventory. The format is as follows:backup\_policies: - name: daily'   days: 'All'   start\_time: '11:30'   frequency: '1440'   retention: '10080' - name: 'hourly'   days: 'All'   start\_time: '00:00'   frequency: '60'   retention: '2880' |
-| dummy\_vm\_prefix       | In order to be able to backup the Docker volumes, a number of "dummy" VMs need to be spin up. This variable will set a recognizable prefix for them |
-| docker\_volumes\_policy | Backup policy to use for the Docker Volumes |
+| simplivity\_username    | Username to log in to the Simplivity Omnistack appliances. It might include a domain, for example, ' [administrator@vsphere.local](mailto:administrator@vsphere.local)'. Note: The corresponding password is stored in a separate file (```group_vars/vault```) with the variable named ```simplivity_password```. |
+| omnistack\_ovc          | List of Omnistack hosts to be used, in list format, i.e. ['```omni1.local```','```onmi2.local```',...] |
+| rest_api_pause          | TODO: Default value is 10 |
+| backup\_policies        | List of dictionaries containing the different backup policies to be used along with the scheduling information. Any number of backup policies can be created and they need to match the ```node_policy``` variables defined in the inventory. Times are indicated in minutes.  All months calculations use a 30-day month. All year calculations use a 365-day year. The format is as follows: The format is as follows:  
+```
+backup\_policies:
+ - name: daily'   
+   days: 'All'   
+   start\_time: '11:30'   
+   frequency: '1440'   
+   retention: '10080' 
+ - name: 'hourly'   
+   days: 'All'   
+   start\_time: '00:00'   
+   frequency: '60'   
+   retention: '2880' |
+| dummy\_vm\_prefix       | In order to be able to backup the Docker volumes, a number of "dummy" VMs need to spin up. This variable will set a recognizable prefix for them. |
+| docker\_volumes\_policy | Backup policy to use for the Docker Volumes. |
+
+
+
 
 ### Networking configuration
 

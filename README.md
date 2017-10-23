@@ -453,7 +453,7 @@ All VMware-related variables are mandatory and are described in Table 5.
 
 ### Simplivity configuration
 
-All Simplivity-related variables should be here. All of them are mandatory and described in the Table 6 below.
+All SimpliVity variables are mandatory and are described in Table 6.
 
 **Table 6.** SimpliVity variables
 
@@ -510,29 +510,37 @@ backup_policies:
 
 ### Networking configuration
 
-All network-related variables should be here. All of them are mandatory and described in the Table 4 below.
+All network-related variables are mandatory and are described in Table 7.
+
+**Table 7.** Network variables
 
 | Variable     | Description                              |
 | ------------ | ---------------------------------------- |
-| nic\_name    | Name of the device, for RHEL this is typically ens192 and it is recommended to leave it as is |
+| nic\_name    | Name of the device, for RHEL this is typically ```ens192``` and it is recommended to leave it as is. |
 | gateway      | IP address of the gateway to be used     |
-| dns          | List of DNS servers to be used, in list format, i.e. ['8.8.8.8','4.4.4.4'...] |
+| dns          | List of DNS servers to be used, in list format, i.e. ['```10.10.173.1```','```10.10.173.2```'...] |
 | domain\_name | Domain name for your Virtual Machines    |
-| ntp\_server  | List of NTP servers to be used, in list format, i.e. ['1.2.3.4','0.us.pool.net.org'...] |
+| ntp\_server  | List of NTP servers to be used, in list format, i.e. ['```1.2.3.4```','```0.us.pool.net.org```'...] |
+
+
+
 
 ### Docker configuration
 
-Docker-related variables should be here except those who should be encrypted. All of them are mandatory and described in the Table below.
+All Docker-related variables are mandatory and are described in Table 8.
 
 | Variable      | Description                              |
 | ------------- | ---------------------------------------- |
-| docker_ee_url | Your docker_ee_url should be kept secret and you should define it in group_vars/vault. The docker_ee_url is the URL documented here: https://docs.docker.com/engine/installation/linux/docker-ee/rhel/ |
-| rhel_version  | Version of your RHEL OS, i.e: 7.3        |
-| dtr_version   | Version of the Docker DTR you wish to install. You can use a numeric version or latest for the most recent one |
-| ucp_version   | Version of the Docker UCP you wish to install. You can use a numeric version or latest for the most recent one |
-| images_folder | Directory in the NFS server that will be mounted in the DTR nodes and that will host your Docker images |
-| license_file  | Full path to your Docker license file (it should be stored in your Ansible host) |
-| ucp_username  | Username of the administrator user for UCP and DTR, typically admin. |
+| docker_ee_url | Your ```docker_ee_url``` should be kept secret and you should define it in ```group_vars/vault```. The value for ```docker_ee_url``` is the URL documented at the following address: https://docs.docker.com/engine/installation/linux/docker-ee/rhel/. |
+| rhel_version  | Version of your RHEL OS, such as  ```7.3```. The playbooks were tested with RHEL 7.3. and RHEL 7.4.        |
+| dtr_version   | Version of the Docker DTR you wish to install. You can use a numeric version or ```latest``` for the most recent one. The playbooks where tested with 2.3.3. |
+| ucp_version   | Version of the Docker UCP you wish to install. You can use a numeric version or ```latest``` for the most recent one. The playbooks were tested with UCP 2.2.3. |
+| images_folder | Directory in the NFS server that will be mounted in the DTR nodes and that will host your Docker images. |
+| license_file  | Full path to your Docker license file (it should be stored in your Ansible host). |
+| ucp_username  | Username of the administrator user for UCP and DTR, typically ```admin```. Note: The corresponding password is stored in a separate file (```group_vars/vault```) with the variable named ```ucp_password```.|
+
+
+
 
 ### Monitoring configuration
 

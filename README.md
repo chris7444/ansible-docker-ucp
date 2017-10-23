@@ -462,7 +462,7 @@ All Simplivity-related variables should be here. All of them are mandatory and d
 | simplivity\_username    | Username to log in to the Simplivity Omnistack appliances. It might include a domain, for example, ' [administrator@vsphere.local](mailto:administrator@vsphere.local)'. Note: The corresponding password is stored in a separate file (```group_vars/vault```) with the variable named ```simplivity_password```. |
 | omnistack\_ovc          | List of Omnistack hosts to be used, in list format, i.e. ['```omni1.local```','```onmi2.local```',...] |
 | rest_api_pause          | TODO: Default value is 10 |
-| backup\_policies        | List of dictionaries containing the different backup policies to be used along with the scheduling information. Any number of backup policies can be created and they need to match the ```node_policy``` variables defined in the inventory. Times are indicated in minutes.  All months calculations use a 30-day month. All year calculations use a 365-day year. The format is as follows: The format is as follows:  
+| backup\_policies        | List of dictionaries containing the different backup policies to be used along with the scheduling information. Any number of backup policies can be created and they need to match the ```node_policy``` variables defined in the inventory. Times are indicated in minutes.  All months calculations use a 30-day month. All year calculations use a 365-day year. The format is as follows.  
 ```
 backup\_policies:
  - name: daily'   

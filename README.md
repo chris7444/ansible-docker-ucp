@@ -314,7 +314,7 @@ Please note that in both the Ansible node and the VM Template you might need to 
 
 ## Finalize the template
 
-Now that the VM Template has the public key of the Ansible node, we're ready to convert this VM to a VM Template. Perform the following steps in the VM Template to finalize its creation:
+Now that the VM Template has the public key of the Ansible node, we’re ready to convert this VM to a VM Template. Perform the following steps in the VM Template to finalize its creation:
 
 1. Clean up the template by running the following commands:
 
@@ -327,9 +327,17 @@ Now that the VM Template has the public key of the Ansible node, we're ready to 
 
 ```# shutdown –h now```
 
-3. Once the Virtual Machine is ready and turned off, we are ready to convert it to a template.
+3. Once the Virtual Machine is ready and turned off, convert it to a template as shown in Figure 4.
+![Convert to template][converttotemplate]  
+**Figure 4** Convert to template  
 
 This completes the creation of the VM Template.
+
+
+
+
+
+
 
 ## Prepare your Ansible configuration
 
@@ -841,4 +849,4 @@ A much briefer video with a quick demo can be found here: https://vimeo.com/2293
 [provisioning]: </images/provisioning.png> "Provisioning Steps"
 [createnewvm]: </images/createnewvirtualmachine.png> "Figure 2. Create New Virtual Machine"
 [vmnamelocation]: </images/vmnamelocation.png> "Figure 3. Specify name and location for the virtual machine" 
-
+[converttotemplate]: </images/converttotemplate.png> "Figure 4. Convert to template"

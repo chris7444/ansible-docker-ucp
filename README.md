@@ -457,6 +457,37 @@ All Simplivity-related variables should be here. All of them are mandatory and d
 
 **Table 6.** SimpliVity variables
 
+<table>
+  <tr>
+    <th>Variable</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>simplivity_username</td>
+	<td>
+	List of dictionaries containing the different backup policies to be used along with the scheduling information. Any number of backup policies can be created and they need to match the ```node_policy``` variables defined in the inventory. Times are indicated in minutes.  All months calculations use a 30-day month. All year calculations use a 365-day year. The format is as follows.
+<pre>
+backup\_policies:
+ - name: daily'   
+   days: 'All'   
+   start\_time: '11:30'   
+   frequency: '1440'   
+   retention: '10080' 
+ - name: 'hourly'   
+   days: 'All'   
+   start\_time: '00:00'   
+   frequency: '60'   
+   retention: '2880'
+</pre>	
+	
+	</td>
+  </tr>
+  <tr>
+  <td>dummy_vm_prefix</td>
+  <td>In order to be able to backup the Docker volumes, a number of "dummy" VMs need to spin up. This variable will set a recognizable prefix for them. </td>
+  </tr>
+</table>
+
 | Variable                | Description                              |
 | ----------------------- | ---------------------------------------- |
 | simplivity\_username    | Username to log in to the Simplivity Omnistack appliances. It might include a domain, for example, ' [administrator@vsphere.local](mailto:administrator@vsphere.local)'. Note: The corresponding password is stored in a separate file (```group_vars/vault```) with the variable named ```simplivity_password```. |

@@ -601,10 +601,6 @@ To encrypt the vault you need to run the following command:
 ```# ansible-vault encrypt group_vars/vault```
 
 You will be prompted for a password that will decrypt the vault when required. You can update the values in your vault by running:
-
-```# ansible-vault edit group_vars/vault```
-
-You will be prompted for a password that will decrypt the vault when required. You can update the values in your vault by running:
 ```
 # ansible-vault edit group_vars/vault
 ```
@@ -612,7 +608,7 @@ You will be prompted for a password that will decrypt the vault when required. Y
 For Ansible to be able to read the vault, you need to specify a file where the password is stored, for instance in a file called ```.vault_pass```. Once the file is created, take the following precautions to avoid illegitimate access to this file:
 
 1. Change the permissions so only ```root``` can read it using  ```# chmod 600 .vault_pass```
-
+	
 2. Add the file to your ```.gitignore``` file if you're pushing the set of playbooks to a git repository.
 
 

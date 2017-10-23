@@ -46,18 +46,18 @@ The playbook [install_nfs_clients.yml][install_nfs_clients] installs the require
 
 
 
-[create_vms]: <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/playbooks/create_vms.yml>
-[config_networking]: <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/playbooks/config_networking.yml>
-[distribute_keys]: <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/playbooks/distribute_keys.yml>
-[config_subscription]: <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/playbooks/config_subscription.yml>
-[install_haproxy]: <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/playbooks/install_haproxy.yml>
-[install_ntp]: <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/playbooks/install_ntp.yml>
-[install_docker]: <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/playbooks/install_docker.yml>
-[install_rsyslog]: <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/playbooks/install_rsyslog.yml>
-[config_docker_lvs]: <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/playbooks/config_docker_lvs.yml>
-[docker_post_config]: <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/playbooks/docker_post_config.yml>
-[install_nfs_server]: <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/playbooks/install_nfs_server.yml>
-[install_nfs_clients]: <https://github.com/gabrielmcg/ansible-docker-ucp/blob/master/playbooks/install_nfs_clients.yml>
+[create_vms]: </create_vms.yml>
+[config_networking]: </config_networking.yml>
+[distribute_keys]: </distribute_keys.yml>
+[config_subscription]: </config_subscription.yml>
+[install_haproxy]: </install_haproxy.yml>
+[install_ntp]: </install_ntp.yml>
+[install_docker]: </install_docker.yml>
+[install_rsyslog]: </install_rsyslog.yml>
+[config_docker_lvs]: </config_docker_lvs.yml>
+[docker_post_config]: </docker_post_config.yml>
+[install_nfs_server]: </install_nfs_server.yml>
+[install_nfs_clients]: </install_nfs_clients.yml>
 
 
 

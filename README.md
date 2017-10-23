@@ -417,28 +417,37 @@ The different variables you can use are as described in the table below. They ar
 | cpus         | Node/Group | Number of CPUs to assign to a VM or a group of VMs |
 | ram          | Node/Group | Amount of RAM in MB to assign to a VM or a group of VMs |
 | disk2\_usage | Node/Group | Size of the second disk in GB to attach to a VM or a group of VMs. This variable is only mandatory on Docker nodes (UCP, DTR, worker) and NFS node. It is not required for the logger node or the load balancers. |
-| node\_policy | Node/Group | Simplivity backup policy to assign to a VM or a group of VMs. The name has to match one of the backup policies defined in the ```group\_vars/vars``` file described in the next section |
+| node\_policy | Node/Group | Simplivity backup policy to assign to a VM or a group of VMs. The name has to match one of the backup policies defined in the ```group\_vars/vars``` file described in the next section. |
+
+
+
+
 
 ## Editing the group variables
 
-Once our inventory is ready, the next step is to modify the group variables to match our environment. To do so, we need to edit the file group\_vars/vars under the cloned directory containing the playbooks. The variables here can be defined in any order but for the sake of clarity they have been divided into sections.
+Once the inventory is ready, the next step is to modify the group variables to match your environment. To do so, you need to edit the file ```group\_vars/vars``` under the cloned directory containing the playbooks. The variables here can be defined in any order but for the sake of clarity they have been divided into sections.
 
 ### VMware configuration
 
-All VMware-related variables should be here. All of them are mandatory and described in the Table 2 below.
+All VMware-related variables are mandatory and are described in Table 5.
+
+**Table 5. VMware variables**
 
 | Variable                 | Description                              |
 | ------------------------ | ---------------------------------------- |
 | vcenter\_hostname        | IP or hostname of the vCenter appliance  |
-| vcenter\_username        | Username to log in to the vCenter appliance. It might include a domain i.e. '[administrator@vsphere.local](mailto:administrator@vsphere.local)' |
+| vcenter\_username        | Username to log in to the vCenter appliance. It might include a domain, for example, '[administrator@vsphere.local](mailto:administrator@vsphere.local)'. Note: The corresponding password is stored in a separate file (```group_vars/vault```) with the variable named ```vcenter_password```. |
+|vcenter_validate_certs    | ‘no’ |
 | datacenter               | Name of the datacenter where the environment will be provisioned |
-| vm\_username             | Username to log into the VMs. It needs to match the one from the VM Template, so unless you have created an user, you must use 'root' |
+| vm\_username             | Username to log into the VMs. It needs to match the one from the VM Template, so unless you have created an user, you must use 'root'. Note: The corresponding password is stored in a separate file (```group_vars/vault```) with the variable named ```vm_password```.  |
 | vm\_template             | Name of the VM Template to be used. Note that this is the name from a vCenter perspective, not the hostname |
-| folder\_name             | vCenter folder to deploy the VMs. If you do not wish to deploy in a particular folder, the value should be '/'. If you want to deploy in a folder, you need to create this folder n vcenter BEFORE you run the playbooks. |
-| datastores               | List of datastores to be used, in list format, i.e. ['Datastore1','Datastore2'...]. Please note that from a Simplivity perspective it's best practice to use just one Datastore. Using more than one will not provide any advantages in terms of reliability and will add additional complexity. |
-| disk2                    | UNIX name of the second disk for the Docker VMs. Typically '/dev/sdb' |
-| disk2\_part              | UNIX name of the partition of the second disk for the Docker VMs. Typically '/dev/sdb1' |
-| vsphere\_plugin\_version | Version of the vSphere plugin for Docker. The default is 'latest' but you could pick a specific version, i.e. '0.12' |
+| folder\_name             | vCenter folder to deploy the VMs. If you do not wish to deploy in a particular folder, the value should be ```/```. **Note**: If you want to deploy in a specific folder, you need to create this folder in the inventory of the selected datacenter before starting the deployment. |
+| datastores               | List of datastores to be used, in list format, i.e. ['```Datastore1```','```Datastore2```'...]. Please note that from a Simplivity perspective, it is best practice to use just one Datastore. Using more than one will not provide any advantages in terms of reliability and will add additional complexity. This datastore must exist before you run the playbooks. |
+| disk2                    | UNIX name of the second disk for the Docker VMs. Typically ```/dev/sdb``` |
+| disk2\_part              | UNIX name of the partition of the second disk for the Docker VMs. Typically ```/dev/sdb1``` |
+| vsphere\_plugin\_version | Version of the vSphere plugin for Docker. The default is ```0.13``` which is the latest version at the time of writing this document. |
+
+
 
 ### Simplivity configuration
 

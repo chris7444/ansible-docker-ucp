@@ -544,14 +544,29 @@ All Docker-related variables are mandatory and are described in Table 8.
 
 ### Monitoring configuration
 
-All Monitoring-related variables should be here. This section only include versions and it is recommended to leave it as is. All of them are specified in the Table 6 below.
+All Monitoring-related variables are described in Table 9. The variables determine the versions of various monitoring software tools that are used and it is recommended that the values given below are used. 
+
+**Table 9.** Monitoring variables
 
 | Variable                | Description                              |
 | ----------------------- | ---------------------------------------- |
-| cadvisor\_version       | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use 'v0.25.0' |
-| node\_exporter\_version | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use 'v1.14.0' |
-| prometheus\_version     | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use 'v1.7.1' |
-| grafana\_version        | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use '4.4.3' |
+| cadvisor\_version       | ```v0.25.0``` |
+| node\_exporter\_version | ```v1.14.0``` |
+| prometheus\_version     | ```v1.7.1``` |
+| grafana\_version        | ```4.4.3``` |
+| prom_persistent_vol_name | The name of the volume which will be used to store the monitoring data. The volume is created using the vsphere docker volume plugin. |
+| prom_persistent_vol_size | The size of the volume which will hold the monitoring data. The exact syntax is dictated by the vSphere Docker Volume plugin. The default value is 10GB. |
+
+###Logspout configuration
+
+All Logspout-related variables are described in Table 10.
+
+**Table 10.** Logspout variables
+
+| Variable                | Description                              |
+| ----------------------- | ---------------------------------------- |
+| logspout_version       | ```‘latest’``` |
+
 
 ### Environment configuration
 

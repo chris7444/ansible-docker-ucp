@@ -361,15 +361,15 @@ You now need to prepare the configuration to match your own environment, prior t
 
 ## Editing the inventory
 
-Change to the directory that you previously cloned using git and edit the vm\_hosts file.
+Change to the directory that you previously cloned using git and edit the ```vm\_hosts``` file.
 
-The nodes inside the inventory are organized in groups. The groups are defined by brackets and its names are static so they must not be changed. Anything else (hostnames, specifications, IP addresses…) are meant to be amended to match the user needs. The groups are as follows:
+The nodes inside the inventory are organized in groups. The groups are defined by brackets and the group names are static so they must not be changed. Anything else (hostnames, specifications, IP addresses…) are meant to be amended to match the user needs. The groups are as follows:
 
 - [ucp\_main]: A group containing one single node which will be the main UCP node and swarm leader. Do not add more than one node under this group.
 - [ucp]: A group containing all the UCP nodes, including the main UCP node. Typically you should have either 3 or 5 nodes under this group.
 - [dtr\_main]: A group containing one single node which will be the first DTR node to be installed. Do not add more than one node under this group.
 - [dtr]: A group containing all the DTR nodes, including the main DTR node. Typically you should have either 3 or 5 nodes under this group.
-- [worker]: A group containing all the UCP nodes, including the main UCP node. Typically you should have either 3 or 5 nodes under this group.
+- [worker]: A group containing all the worker nodes. Typically you should have either 3 or 5 nodes under this group.
 - [ucp\_lb]: A group containing one single node which will be the load balancer for the UCP nodes. Do not add more than one node under this group.
 - [dtr\_lb]: A group containing one single node which will be the load balancer for the DTR nodes. Do not add more than one node under this group.
 - [worker\_lb]: A group containing one single node which will be the load balancer for the worker nodes. Do not add more than one node under this group.
@@ -385,12 +385,12 @@ There are also a few special groups:
 
 Finally, you will find some variables defined for each group:
 
-- [ucp:vars]: A set of variables defined for all nodes in the [ucp] group.
-- [dtr:vars]: A set of variables defined for all nodes in the [dtr] group.
-- [worker:vars]: A set of variables defined for all nodes in the [worker] group.
-- [lbs:vars]: A set of variables defined for all nodes in the [lbs] group.
-- [nfs:vars]: A set of variables defined for all nodes in the [nfs] group.
-- [logger:vars]: A set of variables defined for all nodes in the [logger] group.
+- [ucp:vars]: A set of variables defined for all nodes in the [```ucp```] group.
+- [dtr:vars]: A set of variables defined for all nodes in the [```dtr```] group.
+- [worker:vars]: A set of variables defined for all nodes in the [```worker```] group.
+- [lbs:vars]: A set of variables defined for all nodes in the [```lbs```] group.
+- [nfs:vars]: A set of variables defined for all nodes in the [```nfs```] group.
+- [logger:vars]: A set of variables defined for all nodes in the [```logger```] group.
 
 If you wish to configure your nodes with different specifications rather than the ones defined by the group, it is possible to declare the same variables at the node level, overriding the group value. For instance, you could have one of your workers with higher specifications by doing:
 
@@ -406,18 +406,18 @@ disk2_size='200'
 node_policy='bronze'
 ```
 
-In  the example above, the worker03 node would have 4 times more CPU and double RAM than the rest of worker nodes.
+In  the example above, the ```worker03``` node would have 4 times more CPU and double the RAM compared to the rest of worker nodes.
 
 The different variables you can use are as described in the table below. They are all mandatory unless if specified otherwise:
 
 | Variable     | Scope      | Description                              |
 | ------------ | ---------- | ---------------------------------------- |
 | ip\_addr     | Node       | IP address in CIDR format to be given to a node |
-| esxi\_host   | Node       | ESXi host where the node will be deployed. Please note that if the cluster is configured with DRS, this option will be overriden |
+| esxi\_host   | Node       | ESXi host where the node will be deployed. If the cluster is configured with DRS, this option will be overriden |
 | cpus         | Node/Group | Number of CPUs to assign to a VM or a group of VMs |
-| RAM          | Node/Group | Amount of RAM in MB to assign to a VM or a group of VMs |
+| ram          | Node/Group | Amount of RAM in MB to assign to a VM or a group of VMs |
 | disk2\_usage | Node/Group | Size of the second disk in GB to attach to a VM or a group of VMs. This variable is only mandatory on Docker nodes (UCP, DTR, worker) and NFS node. It is not required for the logger node or the load balancers. |
-| node\_policy | Node/Group | Simplivity backup policy to assign to a VM or a group of VMs. The name has to match one of the backup policies defined in the group\_vars/vars file described in the next section |
+| node\_policy | Node/Group | Simplivity backup policy to assign to a VM or a group of VMs. The name has to match one of the backup policies defined in the ```group\_vars/vars``` file described in the next section |
 
 ## Editing the group variables
 

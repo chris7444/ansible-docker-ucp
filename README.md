@@ -896,6 +896,21 @@ This paper places a special emphasis on securing Docker in DevOps environments a
 
 
 
+# HA considerations
+
+## Service Level Protection 
+
+The matrix in Table 12 outlines the HA and service level protection for all the critical containers and services within this solution.   
+
+**Table 12.** Service level protection matrix
+
+| |	Host HW or network failure protection|  Application or service failure protection | 
+|---------|-----------|---------|
+|Docker Worker Node | Requests will be serviced by 2 of 3 remaining Docker worker on other 2 nodes.  Restart of failed Docker worker on other physical node not required.| Requests will be serviced by 2 of 3 remaining Docker worker on other 2 nodes.  Restart of failed Docker worker on other physical node not required. |
+|Docker UCP service | Requests will be serviced by 2 of 3 remaining UCP services on other 2 nodes.  Restart of failed UCP on other physical node not required. | Requests will be serviced by 2 of 3 remaining UCP services on other 2 nodes.  Restart of failed UCP on other physical node not required.|
+|Docker DTR service |	Requests will be serviced by 2 of 3 remaining DTR services on other 2 nodes.  Restart of failed DTR on other physical node not required.	| Requests will be serviced by 2 of 3 remaining DTR services on other 2 nodes.  Restart of failed DTR on other physical node not required.|
+|Application container	| UCP restarts this app container on one of two remaining worker nodes|
+
 
 
 

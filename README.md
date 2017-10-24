@@ -910,7 +910,7 @@ The matrix in Table 12 outlines the HA and service level protection for all the 
 |Docker UCP service | Requests will be serviced by 2 of 3 remaining UCP services on other 2 nodes.  Restart of failed UCP on other physical node not required. | Requests will be serviced by 2 of 3 remaining UCP services on other 2 nodes.  Restart of failed UCP on other physical node not required.|
 |Docker DTR service |	Requests will be serviced by 2 of 3 remaining DTR services on other 2 nodes.  Restart of failed DTR on other physical node not required.	| Requests will be serviced by 2 of 3 remaining DTR services on other 2 nodes.  Restart of failed DTR on other physical node not required.|
 |Application container	| UCP restarts this app container on one of two remaining worker nodes|
-| Prometheus load exporter service||
+|Prometheus load exporter service||
 |Prometheus cAdvisor service||
 |Prometheus container||
 |Grafana container ||
@@ -939,8 +939,7 @@ For details of the impact of a host failure, see Table 13.
 |Monitoring	|Protected by Docker service (replicas)	|Seconds	|Grafana/Prometheus relocated	|Transparent due to routing mesh|
 |Resource plane	|Protected by Docker scale out design|		|Less capacity	
 |Docker volumes	|SimpliVity		|    |At least 1 replica will remain	|Possible performance degradation if container is scheduled on node with no local replica|
-|User applications	|Depends on application 
-(service or standalone container)	|||
+|User applications	|Depends on application (service or standalone container)	|||
 
 
 
@@ -952,24 +951,17 @@ For details on the impact of a VM failure, see Table 14.
 
 |Component	|Technology	|Duration	|Consequence	|Impact   |
 |:-----------|:-----------|:-----------|:---------------|:---------|
-|UCP Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required
-(restore from backup)|
-|Workers Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required
-(restore from backup)|
-|DTR Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required
-(restore from backup)|
-|Central Logging	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required
-(restore from backup)|
-|NFS	|Manual recovery	|Minutes	|DTR push/pull unavailable	|Recovery procedure required
-(restore from backup)|
+|UCP Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required (restore from backup)|
+|Workers Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required (restore from backup)|
+|DTR Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required (restore from backup)|
+|Central Logging	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required (restore from backup)|
+|NFS	|Manual recovery	|Minutes	|DTR push/pull unavailable	|Recovery procedure required (restore from backup)|
 |UCP service	|Protected by UCP scale out design	|Seconds	|	|Recovery procedure required|
 |DTR service	|Protected by DTR scale out design	|Seconds	|	|Recovery procedure required|
 |Monitoring	|Protected by Docker service (replicas)	|	|New replica	
 |Resource plane	|Manual recovery	|Minutes	|Reduced capacity|	
-|Docker volumes	|Applicable
-(someone deletes file in the datastore)	|||		
-|User applications	|Depends on application 
-(service or standalone container)|||			
+|Docker volumes	|Applicable (someone deletes file in the datastore)	|||		
+|User applications	|Depends on application (service or standalone container)|||			
 
 
 

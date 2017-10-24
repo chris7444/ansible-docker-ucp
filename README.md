@@ -722,6 +722,61 @@ The deployed Grafana dashboard includes cluster-wide metrics, node-specific metr
 The provided dashboard is editable and extensible for those users who wish to add/remove panels or modify the underlying JSON code to change the look and behavior.  Grafana offers many other sample dashboards on their website (https://grafana.com/dashboards) that may be used in place of the provided dashboard.
 
 
+## Configure dummy VMs to backup Docker volumes
+The playbook [config_dummy_vms_for_docker_volumes_backup.yml][config_dummy_vms_for_docker_volumes_backup] ensures that you can backup Docker volumes that have been created using the vSphere plugin in SimpliVity. There is not a straight forward way to do this, so we need to use a workaround. Since all Docker volumes are going to be stored in the dockvols folder in the datastore(s), we need to create a ‘dummy’ VM per datastore. The ```vmx```, ```vmsd``` and ```vmkd``` files from this VMs will have to be inside the ```dockvols``` folder, so when these VMs are backed up, the volumes are backed up as well. Obviously these VMs don’t need to take any resources and we can keep them powered off.
+
+
+## Configure SimpliVity backups
+The playbook [config_simplivity_backups.yml][config_simplivity_backups] configures the defined backup policies in the group variables file in SimpliVity and will include all Docker nodes plus the ‘dummy’ VMs created before, so the existing Docker volumes are also taken in account. The playbook will mainly use the SimpliVity REST API to perform these tasks. A reference to the REST API can be found here: https://api.simplivity.com/rest-api_getting-started_overview/rest-api_getting-started_overview_rest-api-overview.html
+
+
+## VM placement and number of HPE SimpliVity servers in the cluster
+
+The placement of the various VMs deployed by the playbooks depends on whether DRS is enabled or not:
+
+1. If DRS is not enabled, the placement of the VMs is specified in the the ansible inventory file vm_hosts
+2. If DRS is enabled, the placement of the VMs is outside the control of the playbooks
+
+The playbooks have only been tested with three nodes in the ESX cluster, but the following sections provide guidance on how to use more than three nodes.
+
+
+
+### Using more than three nodes when DRS is not enabled
+The default vm_hosts file in the solution github repository corresponds to a deployment on a 3-node HPE SimpliVity cluster.  For each Ansible host in the inventory, you use the `esxi_hosts` variable to specify on which ESX hosts the VM should be placed. The following code extract shows 3 UCP VMs distributed across the three members of the cluster. This is the recommended placement as you don’t want to one node to host two UCP VMs as a failure of that node would result in the cluster losing quorum. 
+```
+[ucp]
+clh-ucp01 ip_addr='10.10.174.112/22' esxi_host='simply01.am2.cloudra.local'
+clh-ucp02 ip_addr='10.10.174.113/22' esxi_host='simply02.am2.cloudra.local'
+clh-ucp03 ip_addr='10.10.174.114/22' esxi_host='simply03.am2.cloudra.local'
+```
+
+In the above example, the first UCP VM will be placed on the ESX host named `simply01.am2.cloudra.local`.  Note that the value for `esxi_host` is the name of the ESX host in the vCenter inventory.
+
+The default `vm_hosts` inventory configures three docker worker nodes and distributes them across the three ESX hosts:
+```
+[worker]
+clh-worker01 ip_addr='10.10.174.122/22' esxi_host='simply01.am2.cloudra.local'
+clh-worker02 ip_addr='10.10.174.123/22' esxi_host='simply02.am2.cloudra.local'
+clh-worker03 ip_addr='10.10.174.124/22' esxi_host='simply03.am2.cloudra.local'
+```
+
+If you have more than three ESX hosts in your cluster,  you can add an additional worker node as follows:
+```
+[worker]
+clh-worker01 ip_addr='10.10.174.122/22' esxi_host='simply01.am2.cloudra.local'
+clh-worker02 ip_addr='10.10.174.123/22' esxi_host='simply02.am2.cloudra.local'
+clh-worker03 ip_addr='10.10.174.124/22' esxi_host='simply03.am2.cloudra.local'
+clh-worker04 ip_addr='10.10.174.1xx/22' esxi_host='simply04.am2.cloudra.local'
+```
+
+You can also distribute the infrastructure VMs across fours nodes rather than across the default the nodes. For example, the default placement for the NFS server VM is as follows:
+```
+[nfs]
+clh-nfs ip_addr='10.10.174.121/22'    esxi_host='simply03.am2.cloudra.local'
+```
+
+Instead, you can change the placement NFS server VM, leveraging a fourth ESX node:
+
 
 
 
@@ -800,4 +855,6 @@ A much briefer video with a quick demo can be found here: https://vimeo.com/2293
 [install_dtr_nodes]: </playbooks/install_dtr_nodes.yml>
 [install_worker_nodes]: </playbooks/install_worker_nodes.yml>
 [config_monitoring]: </playbooks/config_monitoring.yml>
+[config_dummy_vms_for_docker_volumes_backup]: </playbooks/config_dummy_vms_for_docker_volumes_backup.yml>
+[config_simplivity_backups]: </playbooks/config_simplivity_backups.yml>
 

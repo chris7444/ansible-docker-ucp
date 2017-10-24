@@ -921,6 +921,30 @@ The matrix in Table 12 outlines the HA and service level protection for all the 
 |Worker Load Balancer VM (HA Proxy)||
 
 
+## Host failure
+
+For details of the impact of a host failure, see Table 13.
+
+**Table 13.** Host failure
+
+|Component	|Technology	|Duration	|Consequence	|Impact   |
+|-----------|-----------|-----------|---------------|---------|
+|UCP Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover|
+|Workers Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover
+|DTR Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover
+|Central Logging	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|TODO: lose logs?|
+|NFS	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No push/pull of images.|
+|UCP service	|Protected by UCP scale out design	|Seconds	|Potentially new leader elected	|
+|DTR service	|Protected by DTR scale out design	|Seconds	|DTR continues to be operational	|
+|Monitoring	|Protected by Docker service (replicas)	|Seconds	|Grafana/Prometheus relocated	|Transparent due to routing mesh|
+|Resource plane	|Protected by Docker scale out design|		|Less capacity	
+|Docker volumes	|SimpliVity		|    |At least 1 replica will remain	|Possible performance degradation if container is scheduled on node with no local replica|
+|User applications	|Depends on application 
+(service or standalone container)	|||
+
+		
+
+
 
 [architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
 [provisioning]: </images/provisioning.png> "Provisioning Steps"

@@ -711,7 +711,15 @@ The playbook [config_monitoring.yml][config_monitoring] configures a monitoring 
 #- include: playbooks/config_monitoring.yml
 ```
 
+After running the playbook, you can browse (HTTP) to the UCP load balancer IP address or FQDN on port 3000 (using a URL like ```http://<ucp_lb>:3000```) and you will see the Grafana UI. The username and password are defaulted to ```admin```/```admin```. When you log in, you can pick up the Dashboard that was imported by the playbooks (Click the Dashboard icon and select Docker Swarm Monitor) and observe the ongoing monitoring, as shown in Figure 5.
 
+![Grafana UI][grafana]
+**Figure 5.** Grafana UI
+
+
+The deployed Grafana dashboard includes cluster-wide metrics, node-specific metrics, and container-specific metrics.  Monitored resources include disk I/O, memory, CPU utilization, network traffic, etc.  The dashboard also highlights any containers configured with memory limits and the current memory utilization rate based on those limits.  All of these metrics are provided via the node-exporter (responsible for OS and host metrics) and cAdvisor (responsible for container-specific metrics) instances running in the swarm.  For more information about these tools and the metrics they expose, see the documentation links in their respective GitHub repositories: https://github.com/prometheus/node_exporter and https://github.com/google/cadvisor. 
+
+The provided dashboard is editable and extensible for those users who wish to add/remove panels or modify the underlying JSON code to change the look and behavior.  Grafana offers many other sample dashboards on their website (https://grafana.com/dashboards) that may be used in place of the provided dashboard.
 
 
 
@@ -774,7 +782,7 @@ A much briefer video with a quick demo can be found here: https://vimeo.com/2293
 [createnewvm]: </images/createnewvirtualmachine.png> "Figure 2. Create New Virtual Machine"
 [vmnamelocation]: </images/vmnamelocation.png> "Figure 3. Specify name and location for the virtual machine" 
 [converttotemplate]: </images/converttotemplate.png> "Figure 4. Convert to template"
-
+[grafana]: </images/grafana.png> "Figure 5. Grafana UI"
 
 [create_vms]: </playbooks/create_vms.yml>
 [config_networking]: </playbooks/config_networking.yml>

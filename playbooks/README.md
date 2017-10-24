@@ -65,6 +65,10 @@ The playbook [config_monitoring.yml][config_monitoring] configures a monitoring 
 #- include: playbooks/config_monitoring.yml
 ```
 
+
+
+
+
 [create_vms]: </playbooks/create_vms.yml>
 [config_networking]: </playbooks/config_networking.yml>
 [distribute_keys]: </playbooks/distribute_keys.yml>

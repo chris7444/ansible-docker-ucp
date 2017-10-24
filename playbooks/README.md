@@ -45,6 +45,25 @@ The playbook [install_nfs_server.yml][install_nfs_server] installs and configure
 The playbook [install_nfs_clients.yml][install_nfs_clients] installs the required packages on the DTR nodes to be able to mount an NFS share.
 
 
+## Install and configure Docker UCP nodes
+The playbook [install_ucp_nodes.yml][install_ucp_nodes] installs and configures the Docker UCP nodes defined in the inventory.
+
+
+
+## Install and configure DTR nodes
+The playbook [install_dtr_nodes.yml][install_dtr_nodes] installs and configures the Docker DTR nodes defined in the inventory. Note that serialization is set to 1 in this playbook as two concurrent installations of DTR may in some cases be assigned the same replica ID.
+
+## Install worker nodes
+The playbook [install_worker_nodes.yml][install_worker_nodes] installs and configures the Docker Worker nodes defined in the inventory.
+
+
+## Configuring monitoring
+The playbook [config_monitoring.yml][config_monitoring] configures a monitoring system for the Docker environment by making use of Grafana, Prometheus, cAdvisor and node-exporter Docker containers.
+
+**Note:** If you have your own monitoring solution, you can comment out the corresponding line in the main playbook ```site.yml```
+```
+#- include: playbooks/config_monitoring.yml
+```
 
 [create_vms]: </create_vms.yml>
 [config_networking]: </config_networking.yml>
@@ -58,6 +77,7 @@ The playbook [install_nfs_clients.yml][install_nfs_clients] installs the require
 [docker_post_config]: </docker_post_config.yml>
 [install_nfs_server]: </install_nfs_server.yml>
 [install_nfs_clients]: </install_nfs_clients.yml>
-
-
-
+[install_ucp_nodes]: </install_ucp_nodes.yml>
+[install_dtr_nodes]: </install_dtr_nodes.yml>
+[install_worker_nodes]: </install_worker_nodes.yml>
+[config_monitoring]: </config_monitoring.yml>

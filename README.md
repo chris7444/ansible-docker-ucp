@@ -910,8 +910,15 @@ The matrix in Table 12 outlines the HA and service level protection for all the 
 |Docker UCP service | Requests will be serviced by 2 of 3 remaining UCP services on other 2 nodes.  Restart of failed UCP on other physical node not required. | Requests will be serviced by 2 of 3 remaining UCP services on other 2 nodes.  Restart of failed UCP on other physical node not required.|
 |Docker DTR service |	Requests will be serviced by 2 of 3 remaining DTR services on other 2 nodes.  Restart of failed DTR on other physical node not required.	| Requests will be serviced by 2 of 3 remaining DTR services on other 2 nodes.  Restart of failed DTR on other physical node not required.|
 |Application container	| UCP restarts this app container on one of two remaining worker nodes|
-
-
+| Prometheus load exporter service||
+|Prometheus cAdvisor service||
+|Prometheus container||
+|Grafana container ||
+|Logging service VM||
+|NFS server VM|VMware restarts NFS VM on one of two remaining nodes||
+|UCP Load Balancer VM (HA Proxy)	|VMware restarts UCP Load Balancer on one of two remaining nodes|
+|DTR Load Balancer VM (HA Proxy)||
+|Worker Load Balancer VM (HA Proxy)||
 
 
 

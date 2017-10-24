@@ -801,7 +801,26 @@ When DRS is enabled, it controls the placement of the VMs and as a result, the p
 
 
 # Accessing the UCP UI
-Once the playbooks have run and completed successfully, the Docker UCP UI should be available by browsing to the UCP load balancer or any of the nodes via HTTPS. The authentication screen will appear. Enter your credentials and the dashboard will be displayed. You should see all the nodes information in your Docker environment by clicking on Nodes. By looking into the services you should see the monitoring services that were installed during the playbooks execution:
+Once the playbooks have run and completed successfully, the Docker UCP UI should be available by browsing to the UCP load balancer or any of the nodes via HTTPS. The authentication screen will appear as shown in Figure 20:
+
+![UCP authentication screen][ucpauth]
+**Figure 20.** UCP authentication screen
+
+Enter your credentials and the dashboard will be displayed as shown in Figure 21:
+
+![UCP dashboard][ucpdash]
+**Figure 21.** UCP dashboard
+
+You should see all the nodes information in your Docker environment by clicking on `Nodes`, as shown in Figure 22:
+
+![Nodes information][nodesinfo]
+**Figure 22.** Nodes information
+
+
+Click on `Services` to see the monitoring services that were installed during the playbooks execution, as shown in Figure 23:
+
+![Services information][servicesinfo]
+**Figure 23.** Services information
 
 # Accessing the DTR UI
 The Docker DTR UI should be available by browsing to the DTR load balancer or any of the nodes via HTTPS. The authentication screen will appear. Enter your UCP credentials and you should see the empty list of repositories. If you navigate to `Settings > Security`, you should see the Image Scanning feature already enabled (note that you need an Advanced license to have access to this feature).
@@ -857,6 +876,10 @@ A much briefer video with a quick demo can be found here: https://vimeo.com/2293
 [vmnamelocation]: </images/vmnamelocation.png> "Figure 3. Specify name and location for the virtual machine" 
 [converttotemplate]: </images/converttotemplate.png> "Figure 4. Convert to template"
 [grafana]: </images/grafana.png> "Figure 5. Grafana UI"
+[ucpauth]: </images/ucpauth.png> "Figure 20. UCP authentication screen"
+[ucpdash]: </images/ucpdash.png> "Figure 21. UCP dashboard"
+[nodesinfo]: </images/nodesinfo.png> "Figure 22. Nodes information"
+[servicesinfo]: </images/servicesinfo.png> "Figure 23. Services information"
 
 [create_vms]: </playbooks/create_vms.yml>
 [config_networking]: </playbooks/config_networking.yml>

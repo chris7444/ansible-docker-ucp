@@ -1,10 +1,38 @@
 # Introduction
 
-The present document describes how to automate the provisioning of a Docker Enterprise Edition environment by using a set of Ansible playbooks. It also outlines a set of manual steps to harden, secure and audit the overall status of the system.
+Express Containers with Docker is a complete solution from Hewlett Packard Enterprise that includes all the hardware, software, professional services, and support you need to deploy an operational containers-as-a-service (CaaS) platform, allowing you to get up and running quickly and efficiently. The solution takes the HPE hyperconverged infrastructure and combines it with Docker’s enterprise-grade container platform, popular open source tools, along with deployment and advisory services from HPE Pointnext.
+
+Express Containers with Docker is ideal for customers either migrating legacy applications to containers, transitioning to a container DevOps development model or needing a hybrid environment to support container and non-containerized applications on a common VM platform.  Express Containers with Docker provides a solution for both IT development and IT operations, and comes in two versions.  The version for IT developers (Express Containers with Docker: Dev Edition) addresses the need to provide a cloud-like container development environment with built-in container tooling.  The version for IT operations (Express Containers with Docker: Ops Edition) addresses the need to have a production ready environment that is very easy to deploy and manage.  
+
+This document describes the best practices for deploying and operating the Express Containers with Docker: Ops Edition.   It describes how to automate the provisioning of the environment using a set of Ansible playbooks. It also outlines a set of manual steps to harden, secure and audit the overall status of the system. A corresponding document focused on setting up Express Containers with Docker: Dev Edition is also available. TODO.
+
+
+**Note**
+- The Ansible playbooks described in this document are only intended for Day 0 deployment automation of Docker EE on SimpliVity
+- The Ansible playbooks described in this document are not directly supported by HPE and are intended as an example of deploying Docker EE on HPE SimpliVity.  We welcome input from the user community via Github to help us prioritize all future bug fixes and feature enhancements
+
+## About Ansible
+
+Ansible is an open-source automation engine that automates software provisioning, configuration management and application deployment.
+
+As with most configuration management software, Ansible has two types of server: the controlling machine and the nodes. A single controlling machine orchestrates the nodes by deploying modules to the nodes over SSH. The modules are temporarily stored on the nodes and communicate with the controlling machine through a JSON protocol over the standard output. When Ansible is not managing nodes, it does not consume resources because no daemons or programs are executing for Ansible in the background. Ansible uses one or more inventory files to manage the configuration of the multiple nodes in the system.
+
+In contrast with other popular configuration management software such as Chef, Puppet, and CFEngine, Ansible uses an agentless architecture. With an agent-based architecture, nodes must have a locally installed daemon that communicates with a controlling machine. With an agentless architecture, nodes are not required to install and run background daemons to connect with a controlling machine. This type of architecture reduces the overhead on the network by preventing the nodes from polling the controlling machine.
+More information about Ansible can be found here: [http://docs.ansible.com](http://docs.ansible.com)
+
 
 ## About Docker Enterprise Edition
 
-Docker Enterprise Edition (EE) is designed for enterprise development and IT teams who build, ship and run business critical applications in production at scale. Docker EE is integrated, certified and supported to provide enterprises with the most secure container platform in the industry to modernize all applications. An application-centric platform, Docker EE is designed accelerate and secure across the entire software supply chain, from development to production running on any infrastructure.
+Docker Enterprise Edition (EE) is a containers-as-a-service (CaaS) platform for IT that manages and secures diverse applications across disparate infrastructure, both on-premises and in the cloud. Docker EE provides integrated container management and security from development to production. Enterprise-ready capabilities like multi-architecture orchestration and secure software supply chain give IT teams the ability to manage and secure containers without breaking the developer experience.
+
+Docker EE provides
+
+- Integrated management of all application resources from a single web admin UI.
+- Frictionless deployment of applications and Compose files to production in a few clicks.
+- Multi-tenant system with granular role-based access control (RBAC) and LDAP/AD integration.
+- Self-healing application deployment with the ability to apply rolling application updates.
+- End-to-end security model with secrets management, image signing and image security scanning.
+
 
 More information about Docker Enterprise Edition can be found here: [https://www.docker.com/enterprise-edition](https://www.docker.com/enterprise-edition)
 
@@ -12,105 +40,281 @@ More information about Docker Enterprise Edition can be found here: [https://www
 
 Simplivity is an enterprise-grade hyper-converged platform uniting best-in-class data services with the world's bestselling server.
 
-Rapid proliferation of applications and the increasing cost of maintaining legacy infrastructure causes significant IT challenges for many organisations. With HPE SimpliVity, you can streamline and enable IT operations at a fraction of the cost of traditional and public cloud solutions by combining your IT infrastructure and advanced data services into a single, integrated solution. HPE SimpliVity is a powerful, simple, and efficient hyperconverged platform that joins best-in-class data services with the world's best-selling server and offers the industry's most complete guarantee.
+Rapid proliferation of applications and the increasing cost of maintaining legacy infrastructure causes significant IT challenges for many organizations. With HPE SimpliVity, you can streamline and enable IT operations at a fraction of the cost of traditional and public cloud solutions by combining your IT infrastructure and advanced data services into a single, integrated solution. HPE SimpliVity is a powerful, simple, and efficient hyperconverged platform that joins best-in-class data services with the world’s best-selling server and offers the industry’s most complete guarantee.
 
 More information about Simplivity can be found here: [https://www.hpe.com/us/en/integrated-systems/simplivity.html](https://www.hpe.com/us/en/integrated-systems/simplivity.html)
 
-## Assumptions
+**Target Audience:** This document is primarily aimed at technical individuals working in the Operations side of the pipeline, such as system administrators and infrastructure engineers, but anybody with an interest in automating the provisioning of virtual servers and containers may find this document useful.
+	
+**Assumptions:** The present document assumes a minimum understanding in concepts such as virtualization and containerization and also some knowledge around Linux and VMWare technologies.
 
-The present document assumes a minimum understanding in concepts like virtualization, containerization and some knowledge around Linux and VMWare technologies.
 
 ## Required Versions
 
 The following versions or higher are required to use the playbooks described in later sections.
 
-- Ansible 2.2
-- Docker EE 17.06
+- Ansible 2.2 or higher
+- Docker EE 17.06 or higher
+- Red Hat Enterprise Linux v TODO
+- VMware vSphere TODO
+- HPE SimpliVity Omni stack v TODO
 
-# Steps to provision the environment
 
-This section will describe in detail how to provision the environment described in the previous section.
+# Architecture
 
-## Creation of a VM template
+The Operations environment is comprised of three HPE SimpliVity 380 Gen10 servers. Since the SimpliVity technology relies on VMware virtualization, the servers are managed using vCenter. The load among the three hosts will be shared as per Figure 1.
+
+
+![Architecture Diagram][architecture]
+**Figure 1.** Solution Architecture
+
+The Ansible playbooks can be modified to fit your environment and your high availability (HA) needs. By default, the Ansible Playbooks will set up a 3 node environment.  HPE and Docker recommend a minimal starter configuration of 3 physical nodes for running Docker in production.  The distribution of the Docker and non-Docker modules over the 3 physical nodes via virtual machines (VMs) is as follows:
+
+- 3 Docker Universal Control Plane (UCP) VM nodes for HA and cluster management
+- 3 Docker Trusted Registry (DTR) VM nodes for HA of the container registry
+- 3 worker VM nodes for container workloads
+- Docker UCP load balancer VM to ensure access to UCP in the event of a node failure
+- Docker DTR load balancer VM to ensure access to DTR in the event of a node failure
+- Docker Swarm Worker node VM load balancer
+- Logging server VM for central logging 
+- NFS server VM for storage Docker DTR images
+
+These nodes are installed on VMs, spread across three SimpliVity servers. Each server will consist of:
+
+- At least one UCP node, but ideally 3 or 5, spread across the 3 SimpliVity servers
+- At least one DTR node, but ideally 3 or 5, spread across the 3 SimpliVity servers
+- At least one worker node, but ideally 3 or 5, spread across the 3 SimpliVity servers
+
+In addition to the above, the playbooks set up:
+
+- 3 load balancers, one for each set of nodes (one Worker load balancer, one DTR load balancer and one UCP load balancer)
+- 1 central logging server 
+- 1 NFS server
+- Docker persistent storage driver from VMware
+- Prometheus and Grafana monitoring tools
+- SimpliVity backup policy for data volumes and Docker images inside DTR
+
+These nodes can live in any of the hosts and they are not redundant.
+
+
+Sizing considerations
+
+This section describes sizing considerations. The vCPU allocations are described in Table 1 while the memory allocation is described in Table 2.
+
+**Table 1** vCPU
+
+| vCPUs | simply01 | simply02 | simply03 |
+|:------|:--------:|:--------:|:--------:|
+| ucp1  |	4      |          |	         |
+| ucp2  |          |4         |          |
+| ucp3	|          |          | 4        |
+| dtr1  | 2		   |          |          |
+| dtr2  |          | 2	      |          |
+| dtr3  |          |          |  2       |
+| worker1 |4	   |          |          |	
+| worker2| 	       | 	4	  | 
+| worker3| 		   |          | 	4
+| ucb_lb| 	2      | 		  | 
+| dtr_lb| 	       | 	2	  | 
+| worker_lb	| 	   |          |  2
+| nfs	| 	       |          |  2      | 
+| logger	| 	   |  2	      | 
+| **Total vCPU per node**|	**12** |**14**|	       **14**|
+| **Total vCPU**| 	   | **40**	
+| Available CPUs| 24 | 24	  | 24
+| Log Proc	| 48   | 	48	  | 48
+| **Total Log Proc** (on two nodes) | | **96**	
+
+
+
+
+
+
+**Table 2** Memory allocation
+
+| RAM | simply01 | simply02 | simply03 |
+|:------|:--------:|:--------:|:--------:|
+| ucp1  |	8      |          |	         |
+| ucp2  |          |8         |          |
+| ucp3	|          |          | 8        |
+| dtr1  | 16	   |          |          |
+| dtr2  |          | 16       |          |
+| dtr3  |          |          |  16      |
+| worker1 |64	   |          |          |	
+| worker2| 	       | 	64	  | 
+| worker3| 		   |          | 	64
+| ucb_lb| 	4      | 		  | 
+| dtr_lb| 	       | 	4	  | 
+| worker_lb	| 	   |          |  4
+| nfs	| 	       |          |  4      | 
+| logger	| 	   |  4	      | 
+| **Total RAM required** (per node)| 	**92**	| **96**| 	**96**
+| **Total RAM required**| 	| 	**284**	
+| Available RAM	| 384	| 384| 	384
+| **Total Available RAM** (on two nodes)| | 		**768**	
+
+
+
+
+
+
+
+
+# Provisioning the operations environment
+
+This section describes in detail how to provision the environment described previously in the architecture section. The figure below shows the high level steps this guide will take.
+
+![Provisioning steps][provisioning]
+
+
+## Verify Prerequisites
+
+You will need assemble the information required to assign values to each and every variable used by the playbooks before you start deployment. The variables are fully documented in the following sections “Editing the group variables” and “Editing the vault”. A summary of the information required is presented in Table 3.
+
+**Table 3** Summary of information required
+
+|Component|	Details|
+|---------|-----------|
+|Virtual Infrastructure|	The FQDN of your vCenter server and the name of the Datacenter which contains the SimpliVity cluster. You will also need administrator credentials in order to create templates, and spin up virtual machines.
+|SimpliVity Cluster	|The name of the SimpliVity cluster and the names of the member of this cluster as they appear in vCenter. You will also need to know the name of the SimpliVity datastore where you want to land the various virtual machines. You may have to create this datastore if you just installed your SimpliVity cluster. In addition, you will need the IP addresses of the OmniStack virtual machines. Finally you will need credentials with admin capabilities for using the OmniStack API. These credentials are typically the same as you vCenter admin credentials
+|L3 Network requirements|	You will need one IP address for each and every VM configured in the Ansible inventory (see the section “Editing the inventory”). At the time of writing, the example inventory configures 14 virtual machines so you would need to allocate 14 IP addresses to use this example inventory. Note that the Ansible playbooks do not support DHCP so you need static IP addresses.   All the IPs should be in the same subnet. You will also have to specify the size of the subnet (for example /22 or /24) and the L3 gateway for this subnet.
+|DNS|	You will need to know the IP addresses of your DNS server. In addition, all the VMs you configure in the inventory should have their names registered in DNS. In addition, you will need the domain name to use for configuring the virtual machines (such as example.com)
+|NTP Services|	You need time services configured in your environment. The solution being deployed (including Docker) uses certificates and certificates are time sensitive. You will need the IP addresses of your time servers (NTP).
+|Docker Prerequisites|	You will need a URL for the official Docker EE software download and a license file.  Refer to the Docker documentation to learn more about this URL and the licensing requirements here: https://docs.docker.com/engine/installation/linux/docker-ee/rhel/ Learn how to download the Docker EE license key here: https://success.docker.com/KBase/How_do_I_download_my_Docker_license_key 
+|Proxy	|The playbooks pull the Docker packages from the Internet. If you environment accesses the Internet through a proxy, you will need the details of the proxy including the fully qualified domain name and the port number.
+
+
+
+## Install vSphere Docker Volume Service driver on all ESXi hosts
+
+This is a one-off manual step. In order to be able to use Docker volumes using the vSphere driver, you must first install the latest release of the vSphere Docker Volume Service (vDVS) driver, which is available as a vSphere Installation Bundle (VIB). To perform this operation, login to each of the ESXi hosts in turn and then download and install the latest release of vDVS driver.
+
+```
+# esxcli software vib install -v /tmp/vmware-esx-vmdkops-<version>.vib --no-sig-check
+```
+
+More information on how to download and install the driver can be found here: https://vmware.github.io/docker-volume-vsphere/documentation/install.html#vib-installation-through-esxclilocalcli 
+
+
+
+
+
+
+
+
+## Create a VM template
 
 The very first step to our automated solution will be the creation of a VM Template that will be the base of all your nodes. In order to create a VM Template we will first create a Virtual Machine where the OS will be installed and then the Virtual Machine will be converted to a VM Template. Since the goal of the automation is get rid of as many repetitive tasks as possible, the VM Template will be created as lean as possible, so any additional software installs and/or system configuration will be done later by Ansible.
 
-Of course, the creation of the template could have been automated too, but since this is a one-off task, it's been decided to do it manually since it takes less time than building another playbook and thinking about the possible options and dependencies.
+It would be possible to automate the creation the template. However, as this is a one-off task, it is appropriate to do it manually. The steps to create a VM template manually are described below.
 
-The steps to create a VM template are described below.
-
-1. Log in to vCenter and create a new Virtual Machine. 
-2. Provide a name for your template.
-3. Choose the location (host/cluster) where you wish to store your template.
-4. Choose a datastore where the template files will be stored.
+1. Log in to vCenter and create a new Virtual Machine. In the dialog box, shown in Figure 2, select ```Typical``` and press ```Next```.  
+![Create New Virtual Machine][createnewvm]  
+**Figure 2** Create New Virtual Machine  
+  
+2. Specify the name and location for your template, as shown in Figure 3.  
+![Specify name and location for the virtual machine][vmnamelocation]  
+**Figure 3** Specify name and location for the virtual machine  
+  
+3. Choose the host/cluster on which you want to run this virtual machine, as shown in Figure 4.
+4. Choose a datastore where the template files will be stored, as shown in Figure 5.
 5. Choose the OS, in this case Linux, RHEL7 64bit.
 6. Pick the network to attach to your template. In this example we're only using one NIC but depending on how you plan to architect your environment you might want to add more than one.
 7. Create a primary disk. The chosen size in this case is 50GB but 20GB should be typically enough.
 8. Confirm that the settings are right and press Finish.
-9. The next step is to virtually insert the RHEL7 DVD, we do this by looking into the Settings of the newly created VM. Select your ISO file in the Datastore ISO File Device Type and make sure that the "Connect at power on" checkbox is checked.
+9. The next step is to virtually insert the RHEL7 DVD, using the Settings of the newly created VM as shown in Figure 10. Select your ISO file in the Datastore ISO File Device Type and make sure that the “Connect at power on” checkbox is checked.
 10. Finally, you can optionally remove the Floppy Disk as this is not required for the VM.
-11. Power on the server and open the console to install the OS. You should see something similar to this. Pick your language and hit Continue.
-12. Scroll down and click on Installation Destination.
-13. Select your installation drive and hit Done.
-14. Leave all the rest by default. Click Begin Installation.
-15. Select a root password.
-16. Press Done and wait for the install to finish. Reboot and login into the system using the VM console.
-17. Once we are logged into the system we need to configure a yum repository so we can install any packages required at a later stage. We can do this in three different ways:
-
-**Option 1:** Use Red Hat subscription manager to register your system. This is the easiest way and will give you automatically access to the official Red Hat repositories. It requires having a Red Hat Network account though, so if you don't have one, you can use either Option 2 or 3. For option run you would do:
-
-```# subscription-manager register --auto-attach```
-
-If you are behind a proxy you will need to run this beforehand:
-
-```# subscription-manager config --server.proxy_hostname=<proxy IP> --server.proxy_port=<proxy port>```
-
-**Option 2:** Use a local repository by copying the DVD contents into Virtual Machine primary disk. The procedure on how to do this is explained here: [https://access.redhat.com/solutions/1355683](https://access.redhat.com/solutions/1355683)
-
-**Option 3:** Use an internal repository. Instead of pulling the packages locally after copying the DVD contents into the local drive, you could have a dedicated node with the Red Hat packages available and configure the repository to pull the packages from there. Your `/etc/yum.repos.d/redhat.repo` could look something like this:
-
+11. Power on the server and open the console to install the OS. On the welcome screen, as shown in Figure 12, pick your language and press ```Continue```.
+12. The installation summary screen will appear, as shown in Figure 13.
+13. Scroll down and click on Installation Destination, as shown in Figure 14.
+14. Select your installation drive, as shown in Figure 15, and click Done.
+15. Click Begin Installation, using all the other default settings, and wait for the configuration of user settings dialog, shown in Figure 16.
+16. Select a root password, as shown in Figure 17.
+17. Click Done and wait for the install to finish. Reboot and log in into the system using the VM console.
+18.	The Red Hat packages required during the deployment of the solution come from two repositories: ```rhel-7-server-rpms``` and ```rhel 7-server-extras-rpms```. The first repository can be found on the Red Hat DVD but the second cannot. There are two options, with both requiring a Red Hat Network account.
+  - Use Red Hat subscription manager to register your system. This is the easiest way and will automatically give you access to the official Red Hat repositories. It does require having a Red Hat Network account though, so if you don’t have one, you can use a different option. Use the ```subscription-manager register``` command as follows.
 ```
-[internal-rhel7-repo]
-name = Internal RHEL7 repository
-baseurl = http://redhat-node.your.domain/your/packages/directory
-enabled = 1
-gpgcheck = 0
+# subscription-manager register --auto-attach
 ```
+If you are behind a proxy, you must configure this before running the above command to register.
+```
+# subscription-manager config --server.proxy_hostname=<proxy IP> --server.proxy_port=<proxy port>
+```
+If you follow this “route”, the playbooks will automatically enable the “extras” repository on the VMs that need it.
+  - Use an internal repository. Instead of pulling the packages from Red Hat, you can create copies of the required repositories on a dedicated node. You can then configure the package manager to pull the packages from the dedicated node. Your ```/etc/yum.repos.d/redhat.repo``` could look as follows.
+```
+[RHEL7-Server]
+name=Red Hat Enterprise Linux $releasever - $basearch
+baseurl=http://yourserver.example.com/rhel-7-server-rpms/
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 
-For additional information on how to configure a repository please check the Red Hat documentation: [https://access.redhat.com/documentation/en-US/Red\_Hat\_Enterprise\_Linux/7/html/System\_Administrators\_Guide/sec-Configuring\_Yum\_and\_Yum\_Repositories.html](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/System_Administrators_Guide/sec-Configuring_Yum_and_Yum_Repositories.html)
+[RHEL7-Server-extras]
+name=Red Hat Enterprise Linux Extra pkg $releasever - $basearch
+baseurl=http://yourserver.example.com/rhel-7-server-extras-rpms/
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+```
+The following articles explain how you can create a local mirror of the Red Hat repositories and how to share them.
+https://access.redhat.com/solutions/23016  
+https://access.redhat.com/solutions/7227
 
-Please keep in mind that if you use option 2 or 3 you will need to have the RHEL extra packages available. This is required for Docker 17.06, which needs the `container-selinux` package.
+Before converting the VM to a template, you will need to setup up access for the Ansible host to configure the individual VMs. This is explained in the next section. 
 
-At this stage the only thing left to do is to power off the Virtual Machine and convert it to a VM Template, but before we do that we need to set up our Ansible host, as explained in the next section.
 
-## Creating the Ansible node
 
-In addition to the VM Template, we need another Virtual Machine where Ansible will be installed. This node will act as the driver to automate the provision of the environment and is essential that it is properly installed. The steps are as follows:
 
-1. Create a Virtual Machine and install your preferred OS (in this example, and for the sake of simplicity, RHEL7 will be used). The rest of the instructions assume that, if the user were to use a different OS, he understands the possible differences in syntax for the provided commands.
-2. Configure a repository as explained in the previous section and install Ansible. Please note that version 2.2 is the minimum required. The instructions on how to install Ansible are described in its official website: [http://docs.ansible.com/ansible/intro\_installation.html](http://docs.ansible.com/ansible/intro_installation.html)
-3. Make a list of all the hostnames and IPs that will be in your system and update your /etc/hosts accordingly. This includes your UCP nodes, DTR nodes, worker nodes, NFS server, logger server and load balancers.
-4. Install the following packages. They are a mandatory requirement for the playbooks to function as expected. Update pip if requested:
 
+
+
+
+
+
+## Create the Ansible node
+
+In addition to the VM Template, we need another Virtual Machine where Ansible will be installed. This node will act as the driver to automate the provisioning of the environment and it is essential that it is properly installed. The steps are as follows.
+
+1. Create a Virtual Machine and install your preferred OS (in this example, and for the sake of simplicity, RHEL7 will be used). The rest of the instructions assume that, if you use a different OS, you understand the possible differences in syntax for the provided commands. If you use RHEL 7, select **Infrastructure Server** as the base environment and the **Guests Agents** add-on during the installation.
+2. Log in the root account and create an SSH key pair. Do not protect the key with a passphrase (unless you want to use ssh-agent).  
+```
+# ssh-keygen
+```
+3. Configure the following yum repositories, rhel-7-server-rpms and rhel-7-server-extras-rpms as explained in the previous section.
+4. Configure the EPEL repository. See here for more information: http://fedoraproject.org/wiki/EPEL. Note that ```yum-config-manager``` comes with the Infrastructure Server base environment, if you did not select this environment you will have to install the ```yum-utils``` package.
+```
+# rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+# yum-config-manager --enable rhel-7-server-extras-rpms	
+```
+5. Install Ansible. Please note that version 2.2 is the minimum required. The instructions on how to install Ansible are described in its official website: http://docs.ansible.com/ansible/intro_installation.html
+```
+# yum install ansible
+```
+6. Make a list of all the hostnames and IPs that will be in your system and update your ```/etc/hosts``` file accordingly. This includes your UCP nodes, DTR nodes, worker nodes, NFS server, logger server and load balancers.
+7. Install the following packages which are a mandatory requirement for the playbooks to function as expected. (Update pip if requested).
 ```
 # yum install python-pyvmomi python-netaddr python2-jmespath python-pip gcc python-devel openssl-devel git
+# pip install --upgrade pip
 # pip install cryptography
 # pip install pysphere
 ```
+8. Copy your SSH public key to the VM Template so that, in the future, your Ansible node can SSH without the need of a password to all the Virtual Machines created from the VM Template.
+```
+# ssh-copy-id root@<VM_Template>
+```
 
-5. Copy your SSH id to the VM Template so, in the future, your Ansible node can SSH without the need of a password to all the Virtual Machines created from the VM Template.
+Please note that in both the Ansible node and the VM Template you might need to configure the network so one node can reach the other. Instructions for this step have been omitted since it is a basic step and could vary depending on the user’s environment.
 
-`# ssh-copy-id root@<VM_Template>`
 
-Please note that in both the Ansible node and the VM Template you might need to configure the network so one node can reach the other. Since this is a basic step and could vary on the user's environment I have purposefully omitted it.
 
-6. Retrieve the latest version of the playbooks using git.
 
-```# git clone https://github.com/ophintor/ansible-docker-ucp.git```
+
+
 
 ## Finalize the template
 
-Now that the VM Template has the public key of the Ansible node, we're ready to convert this VM to a VM Template. Perform the following steps in the VM Template to finalize its creation:
+Now that the VM Template has the public key of the Ansible node, we’re ready to convert this VM to a VM Template. Perform the following steps in the VM Template to finalize its creation:
 
 1. Clean up the template by running the following commands:
 
@@ -123,29 +327,49 @@ Now that the VM Template has the public key of the Ansible node, we're ready to 
 
 ```# shutdown –h now```
 
-3. Once the Virtual Machine is ready and turned off, we are ready to convert it to a template.
+3. Once the Virtual Machine is ready and turned off, convert it to a template as shown in Figure 4.
+![Convert to template][converttotemplate]  
+**Figure 4** Convert to template  
 
 This completes the creation of the VM Template.
 
+
+
+
+
+
+
 ## Prepare your Ansible configuration
 
-In the Ansible node, we need now to prepare the configuration to match your own environment, prior to deploying Docker Datacenter and the rest of the nodes. To do so, we will need to edit and modify three different files:
+On the Ansible node, retrieve the latest version of the playbooks using git.
+```
+# git clone https://github.com/HewlettPackard/Docker-SimpliVity
 
-- The inventory: `vm_hosts`
-- The group variables: `group_vars/vars`
-- The encrypted group variable: `group_vars/vault`
+```
+
+You now need to prepare the configuration to match your own environment, prior to deploying Docker EE and the rest of the nodes. To do so, you will need to edit and modify three different files:
+
+
+
+- ```vm_hosts``` (the inventory file)
+- ```group_vars/vars``` (the group variables file)
+- ```group_vars/vault``` (the encrypted group variable file)
+
+
+
+
 
 ## Editing the inventory
 
-Change to the directory that you previously cloned using git and edit the vm\_hosts file.
+Change to the directory that you previously cloned using git and edit the ```vm\_hosts``` file.
 
-The nodes inside the inventory are organized in groups. The groups are defined by brackets and its names are static so they must not be changed. Anything else (hostnames, specifications, IP addresses…) are meant to be amended to match the user needs. The groups are as follows:
+The nodes inside the inventory are organized in groups. The groups are defined by brackets and the group names are static so they must not be changed. Anything else (hostnames, specifications, IP addresses…) are meant to be amended to match the user needs. The groups are as follows:
 
 - [ucp\_main]: A group containing one single node which will be the main UCP node and swarm leader. Do not add more than one node under this group.
 - [ucp]: A group containing all the UCP nodes, including the main UCP node. Typically you should have either 3 or 5 nodes under this group.
 - [dtr\_main]: A group containing one single node which will be the first DTR node to be installed. Do not add more than one node under this group.
 - [dtr]: A group containing all the DTR nodes, including the main DTR node. Typically you should have either 3 or 5 nodes under this group.
-- [worker]: A group containing all the UCP nodes, including the main UCP node. Typically you should have either 3 or 5 nodes under this group.
+- [worker]: A group containing all the worker nodes. Typically you should have either 3 or 5 nodes under this group.
 - [ucp\_lb]: A group containing one single node which will be the load balancer for the UCP nodes. Do not add more than one node under this group.
 - [dtr\_lb]: A group containing one single node which will be the load balancer for the DTR nodes. Do not add more than one node under this group.
 - [worker\_lb]: A group containing one single node which will be the load balancer for the worker nodes. Do not add more than one node under this group.
@@ -161,12 +385,12 @@ There are also a few special groups:
 
 Finally, you will find some variables defined for each group:
 
-- [ucp:vars]: A set of variables defined for all nodes in the [ucp] group.
-- [dtr:vars]: A set of variables defined for all nodes in the [dtr] group.
-- [worker:vars]: A set of variables defined for all nodes in the [worker] group.
-- [lbs:vars]: A set of variables defined for all nodes in the [lbs] group.
-- [nfs:vars]: A set of variables defined for all nodes in the [nfs] group.
-- [logger:vars]: A set of variables defined for all nodes in the [logger] group.
+- [ucp:vars]: A set of variables defined for all nodes in the [```ucp```] group.
+- [dtr:vars]: A set of variables defined for all nodes in the [```dtr```] group.
+- [worker:vars]: A set of variables defined for all nodes in the [```worker```] group.
+- [lbs:vars]: A set of variables defined for all nodes in the [```lbs```] group.
+- [nfs:vars]: A set of variables defined for all nodes in the [```nfs```] group.
+- [logger:vars]: A set of variables defined for all nodes in the [```logger```] group.
 
 If you wish to configure your nodes with different specifications rather than the ones defined by the group, it is possible to declare the same variables at the node level, overriding the group value. For instance, you could have one of your workers with higher specifications by doing:
 
@@ -182,88 +406,167 @@ disk2_size='200'
 node_policy='bronze'
 ```
 
-In  the example above, the worker03 node would have 4 times more CPU and double RAM than the rest of worker nodes.
+In  the example above, the ```worker03``` node would have 4 times more CPU and double the RAM compared to the rest of worker nodes.
 
-The different variables you can use are as described in the table below. They are all mandatory unless if specified otherwise:
+The different variables you can use are as described in Table 4 below. They are all mandatory unless if specified otherwise.
+
+**Table 4.** Variables
 
 | Variable     | Scope      | Description                              |
 | ------------ | ---------- | ---------------------------------------- |
 | ip\_addr     | Node       | IP address in CIDR format to be given to a node |
-| esxi\_host   | Node       | ESXi host where the node will be deployed. Please note that if the cluster is configured with DRS, this option will be overriden |
+| esxi\_host   | Node       | ESXi host where the node will be deployed. If the cluster is configured with DRS, this option will be overriden |
 | cpus         | Node/Group | Number of CPUs to assign to a VM or a group of VMs |
-| RAM          | Node/Group | Amount of RAM in MB to assign to a VM or a group of VMs |
+| ram          | Node/Group | Amount of RAM in MB to assign to a VM or a group of VMs |
 | disk2\_usage | Node/Group | Size of the second disk in GB to attach to a VM or a group of VMs. This variable is only mandatory on Docker nodes (UCP, DTR, worker) and NFS node. It is not required for the logger node or the load balancers. |
-| node\_policy | Node/Group | Simplivity backup policy to assign to a VM or a group of VMs. The name has to match one of the backup policies defined in the group\_vars/vars file described in the next section |
+| node\_policy | Node/Group | Simplivity backup policy to assign to a VM or a group of VMs. The name has to match one of the backup policies defined in the ```group_vars/vars``` file described in the next section. |
+
+
+
+
 
 ## Editing the group variables
 
-Once our inventory is ready, the next step is to modify the group variables to match our environment. To do so, we need to edit the file group\_vars/vars under the cloned directory containing the playbooks. The variables here can be defined in any order but for the sake of clarity they have been divided into sections.
+Once the inventory is ready, the next step is to modify the group variables to match your environment. To do so, you need to edit the file ```group_vars/vars``` under the cloned directory containing the playbooks. The variables here can be defined in any order but for the sake of clarity they have been divided into sections.
 
 ### VMware configuration
 
-All VMware-related variables should be here. All of them are mandatory and described in the Table 2 below.
+All VMware-related variables are mandatory and are described in Table 5.
+
+**Table 5. VMware variables**
 
 | Variable                 | Description                              |
 | ------------------------ | ---------------------------------------- |
 | vcenter\_hostname        | IP or hostname of the vCenter appliance  |
-| vcenter\_username        | Username to log in to the vCenter appliance. It might include a domain i.e. '[administrator@vsphere.local](mailto:administrator@vsphere.local)' |
+| vcenter\_username        | Username to log in to the vCenter appliance. It might include a domain, for example, '[administrator@vsphere.local](mailto:administrator@vsphere.local)'. Note: The corresponding password is stored in a separate file (```group_vars/vault```) with the variable named ```vcenter_password```. |
+|vcenter_validate_certs    | ‘no’ |
 | datacenter               | Name of the datacenter where the environment will be provisioned |
-| vm\_username             | Username to log into the VMs. It needs to match the one from the VM Template, so unless you have created an user, you must use 'root' |
+| vm\_username             | Username to log into the VMs. It needs to match the one from the VM Template, so unless you have created an user, you must use 'root'. Note: The corresponding password is stored in a separate file (```group_vars/vault```) with the variable named ```vm_password```.  |
 | vm\_template             | Name of the VM Template to be used. Note that this is the name from a vCenter perspective, not the hostname |
-| folder\_name             | vCenter folder to deploy the VMs. If you do not wish to deploy in a particular folder, the value should be '/'. If you want to deploy in a folder, you need to create this folder n vcenter BEFORE you run the playbooks. |
-| datastores               | List of datastores to be used, in list format, i.e. ['Datastore1','Datastore2'...]. Please note that from a Simplivity perspective it's best practice to use just one Datastore. Using more than one will not provide any advantages in terms of reliability and will add additional complexity. |
-| disk2                    | UNIX name of the second disk for the Docker VMs. Typically '/dev/sdb' |
-| disk2\_part              | UNIX name of the partition of the second disk for the Docker VMs. Typically '/dev/sdb1' |
-| vsphere\_plugin\_version | Version of the vSphere plugin for Docker. The default is 'latest' but you could pick a specific version, i.e. '0.12' |
+| folder\_name             | vCenter folder to deploy the VMs. If you do not wish to deploy in a particular folder, the value should be ```/```. **Note**: If you want to deploy in a specific folder, you need to create this folder in the inventory of the selected datacenter before starting the deployment. |
+| datastores               | List of datastores to be used, in list format, i.e. ['```Datastore1```','```Datastore2```'...]. Please note that from a Simplivity perspective, it is best practice to use just one Datastore. Using more than one will not provide any advantages in terms of reliability and will add additional complexity. This datastore must exist before you run the playbooks. |
+| disk2                    | UNIX name of the second disk for the Docker VMs. Typically ```/dev/sdb``` |
+| disk2\_part              | UNIX name of the partition of the second disk for the Docker VMs. Typically ```/dev/sdb1``` |
+| vsphere\_plugin\_version | Version of the vSphere plugin for Docker. The default is ```0.13``` which is the latest version at the time of writing this document. |
+
+
 
 ### Simplivity configuration
 
-All Simplivity-related variables should be here. All of them are mandatory and described in the Table 3 below.
+All SimpliVity variables are mandatory and are described in Table 6.
 
-| Variable                | Description                              |
-| ----------------------- | ---------------------------------------- |
-| simplivity\_username    | Username to log in to the Simplivity Omnistack appliances. It might include a domain i.e. ' [administrator@vsphere.local](mailto:administrator@vsphere.local)' |
-| omnistack\_ovc          | List of Omnistack hosts to be used, in list format, i.e. ['omni1.local','onmi2.local'...] |
-| backup\_policies        | List of dictionaries containing the different backup policies to be used along with the scheduling information. Any number of backup policies can be created and they need to match the node\_policy variables defined in the inventory. The format is as follows:backup\_policies: - name: daily'   days: 'All'   start\_time: '11:30'   frequency: '1440'   retention: '10080' - name: 'hourly'   days: 'All'   start\_time: '00:00'   frequency: '60'   retention: '2880' |
-| dummy\_vm\_prefix       | In order to be able to backup the Docker volumes, a number of "dummy" VMs need to be spin up. This variable will set a recognizable prefix for them |
-| docker\_volumes\_policy | Backup policy to use for the Docker Volumes |
+**Table 6.** SimpliVity variables
+
+<table>
+  <tr>
+    <th>Variable</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>simplivity_username</td>
+	<td>Username to log in to the Simplivity Omnistack appliances. It might include a domain, for example, <a href="mailto:administrator@vsphere.local">administrator@vsphere.local</a>. Note: The corresponding password is stored in a separate file (<code>group_vars/vault</code>) with the variable named <code>simplivity_password</code>.</td>
+  </tr>
+  <tr>
+    <td>omnistack_ovc</td>
+	<td>List of Omnistack hosts to be used, in list format, i.e. <code>[‘omni1.local’,’onmi2.local’...]</code>. If your OmniStack virtual machines do not have their names registered in DNS, you can use their IP addresses.  
+	</td>
+  </tr>
+    <td>rest_api_pause</td>
+	<td>TODO: Default value is 10.
+	</td>
+  </tr>	
+   <tr>
+	<td>backup_policies </td>
+	<td>
+	List of dictionaries containing the different backup policies to be used along with the scheduling information. Any number of backup policies can be created and they need to match the <code>node_policy</code> variables defined in the inventory. Times are indicated in minutes.  All month calculations use a 30-day month. All year calculations use a 365-day year. The format is as follows:
+<pre>
+backup_policies:
+ - name: daily'   
+   days: 'All'   
+   start_time: '11:30'   
+   frequency: '1440'   
+   retention: '10080' 
+ - name: 'hourly'   
+   days: 'All'   
+   start_time: '00:00'   
+   frequency: '60'   
+   retention: '2880'
+</pre>	
+	
+  </tr>
+  <tr>
+  <td>dummy_vm_prefix</td>
+  <td>In order to be able to backup the Docker volumes, a number of "dummy" VMs need to spin up. This variable will set a recognizable prefix for them. </td>
+  </tr>
+  <tr>
+	<td>docker_volumes_policy</td>
+	<td>Backup policy to use for the Docker Volumes.</td>
+  </tr>
+</table>
+
+
+
+
 
 ### Networking configuration
 
-All network-related variables should be here. All of them are mandatory and described in the Table 4 below.
+All network-related variables are mandatory and are described in Table 7.
+
+**Table 7.** Network variables
 
 | Variable     | Description                              |
 | ------------ | ---------------------------------------- |
-| nic\_name    | Name of the device, for RHEL this is typically ens192 and it is recommended to leave it as is |
+| nic\_name    | Name of the device, for RHEL this is typically ```ens192``` and it is recommended to leave it as is. |
 | gateway      | IP address of the gateway to be used     |
-| dns          | List of DNS servers to be used, in list format, i.e. ['8.8.8.8','4.4.4.4'...] |
+| dns          | List of DNS servers to be used, in list format, i.e. ['```10.10.173.1```','```10.10.173.2```'...] |
 | domain\_name | Domain name for your Virtual Machines    |
-| ntp\_server  | List of NTP servers to be used, in list format, i.e. ['1.2.3.4','0.us.pool.net.org'...] |
+| ntp\_server  | List of NTP servers to be used, in list format, i.e. ['```1.2.3.4```','```0.us.pool.net.org```'...] |
+
+
+
 
 ### Docker configuration
 
-Docker-related variables should be here except those who should be encrypted. All of them are mandatory and described in the Table below.
+All Docker-related variables are mandatory and are described in Table 8.
 
 | Variable      | Description                              |
 | ------------- | ---------------------------------------- |
-| docker_ee_url | Your docker_ee_url should be kept secret and you should define it in group_vars/vault. The docker_ee_url is the URL documented here: https://docs.docker.com/engine/installation/linux/docker-ee/rhel/ |
-| rhel_version  | Version of your RHEL OS, i.e: 7.3        |
-| dtr_version   | Version of the Docker DTR you wish to install. You can use a numeric version or latest for the most recent one |
-| ucp_version   | Version of the Docker UCP you wish to install. You can use a numeric version or latest for the most recent one |
-| images_folder | Directory in the NFS server that will be mounted in the DTR nodes and that will host your Docker images |
-| license_file  | Full path to your Docker license file (it should be stored in your Ansible host) |
-| ucp_username  | Username of the administrator user for UCP and DTR, typically admin. |
+| docker_ee_url | Your ```docker_ee_url``` should be kept secret and you should define it in ```group_vars/vault```. The value for ```docker_ee_url``` is the URL documented at the following address: https://docs.docker.com/engine/installation/linux/docker-ee/rhel/. |
+| rhel_version  | Version of your RHEL OS, such as  ```7.3```. The playbooks were tested with RHEL 7.3. and RHEL 7.4.        |
+| dtr_version   | Version of the Docker DTR you wish to install. You can use a numeric version or ```latest``` for the most recent one. The playbooks where tested with 2.3.3. |
+| ucp_version   | Version of the Docker UCP you wish to install. You can use a numeric version or ```latest``` for the most recent one. The playbooks were tested with UCP 2.2.3. |
+| images_folder | Directory in the NFS server that will be mounted in the DTR nodes and that will host your Docker images. |
+| license_file  | Full path to your Docker license file (it should be stored in your Ansible host). |
+| ucp_username  | Username of the administrator user for UCP and DTR, typically ```admin```. Note: The corresponding password is stored in a separate file (```group_vars/vault```) with the variable named ```ucp_password```.|
+
+
+
 
 ### Monitoring configuration
 
-All Monitoring-related variables should be here. This section only include versions and it is recommended to leave it as is. All of them are specified in the Table 6 below.
+All Monitoring-related variables are described in Table 9. The variables determine the versions of various monitoring software tools that are used and it is recommended that the values given below are used. 
+
+**Table 9.** Monitoring variables
 
 | Variable                | Description                              |
 | ----------------------- | ---------------------------------------- |
-| cadvisor\_version       | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use 'v0.25.0' |
-| node\_exporter\_version | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use 'v1.14.0' |
-| prometheus\_version     | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use 'v1.7.1' |
-| grafana\_version        | You could try a different version but it's not guaranteed that it will work. To make sure that no issues arise please use '4.4.3' |
+| cadvisor\_version       | ```v0.25.0``` |
+| node\_exporter\_version | ```v1.14.0``` |
+| prometheus\_version     | ```v1.7.1``` |
+| grafana\_version        | ```4.4.3``` |
+| prom_persistent_vol_name | The name of the volume which will be used to store the monitoring data. The volume is created using the vsphere docker volume plugin. |
+| prom_persistent_vol_size | The size of the volume which will hold the monitoring data. The exact syntax is dictated by the vSphere Docker Volume plugin. The default value is 10GB. |
+
+### Logspout configuration
+
+All Logspout-related variables are described in Table 10.
+
+**Table 10.** Logspout variables
+
+| Variable                | Description                              |
+| ----------------------- | ---------------------------------------- |
+| logspout_version       | ```‘latest’``` |
+
 
 ### Environment configuration
 
@@ -275,359 +578,461 @@ All Environment-related variables should be here. All of them are described in t
 
 ## Editing the vault
 
-Once our group variables file is ready, the next step is to create a vault file to match our environment. The vault file is essentially the same thing than the group variables but it will contain all sensitive variables and will be encrypted.
+Once your group variables file is ready, the next step is to create a vault file to match your environment. The vault file is essentially the same thing than the group variables but it will contain all sensitive variables and will be encrypted.
 
 To create a vault we'll create a new file group\_vars/vault and we'll add the following entries:
 
 ```
 ---
-docker_ee_url: 'yoururl'
 vcenter_password: 'xxx'
+docker_ee_url: 'yoururl'
 vm_password: 'xxx'
 simplivity_password: 'xxx'
 ucp_password: 'xxx'
+rhn_orgid: 'Red Hat Organization ID'
+rhn_key: 'Red Hat Activation Key'
 ```
+
+
+```rhn_orgid``` and ```rhn_key``` are the credentials needed to subscribe the virtual machines with Red Hat Customer Portal. For more info regarding activation keys see the following URL: https://access.redhat.com/articles/1378093
 
 To encrypt the vault you need to run the following command:
 
 ```# ansible-vault encrypt group_vars/vault```
 
-You will be prompted for a password that will decrypt the vault when required.
+You will be prompted for a password that will decrypt the vault when required. You can update the values in your vault by running:
+```
+# ansible-vault edit group_vars/vault
+```
 
-Edit your vault anytime by running:
+For Ansible to be able to read the vault, you need to specify a file where the password is stored, for instance in a file called ```.vault_pass```. Once the file is created, take the following precautions to avoid illegitimate access to this file:
 
-```# ansible-vault edit group_vars/vault```
+1. Change the permissions so only ```root``` can read it using  ```# chmod 600 .vault_pass```
+	
+2. Add the file to your ```.gitignore``` file if you're pushing the set of playbooks to a git repository.
 
-The password you set on creation will be requested.
 
-In order for ansible to be able to read the vault we'll need to specify a file where the password is stored, for instance in a file called .vault\_pass. Once the file is created, take the following precautions to avoid illegitimate access to this file:
 
-1. Change the permissions so only root can read it
-
-```# chmod 600 .vault_pass```
-
-1. Add the file to your .gitignore file if you're pushing the set of playbooks to a git repository
 
 # Running the playbooks
 
-So at this point the system is ready to be deployed. Go to the root folder and run the following command:
+At this point, the system is ready to be deployed. Go to the root folder and run the following command:
 
 ```# ansible-playbook -i vm_hosts site.yml --vault-password-file .vault_pass```
 
-The playbooks should run for 25-35 minutes depending on your server specifications and in the size of your environment.
+The playbooks should run for 25-35 minutes depending on your server specifications and the size of your environment.
 
-## Scaling out your environment
 
-The playbooks are idempotent, which means that they can be run over and over but only the changes that are found from the previous run will be applied. In a second or subsequent run you might see some errors in the output but these are normal and can be safely ignored.
+## Post Deployment
 
-The reasoning behind providing idempotency is that you would be able to scale out your system if you wished to do so. If you had deployed an environment with 3 workers, 3 DTRs and 3 UCPs and you wanted to have 5 of each, you would just need to amend your inventory (vm\_hosts file) and run the above command again.
+The playbooks are meant to deploy a new environment. You should only use them for deployment purposes. 
 
-# Deep dive into the playbooks
 
-This section will go more in detail about how the playbooks work and what functionalities are being provided.
 
-## site.yml
 
-The site.yml playbook is the main playbook and will contain a list of playbooks to be run sequentially. The list of playbooks is described in the following sections in running order:
 
-## playbooks/create\_vms.yml
 
-This playbook will create all the necessary Virtual Machines for the environment from the VM Template defined in the vm\_template variable.
 
-It is composed of the following sequential tasks:
 
-- Create all VMs: Creates all the required VMs from the specified templates in the specified folder. Each VM will be hosted by the specified esxi\_host defined in the inventory, unless if VMWare DRS technology is used, in which case the setting will be ignored and DRS will decide how to spread the load. The Virtual Machines will be powered on upon creation.
-- Add secondary disks: Adds a second disk on the VMs having the disk2\_size variable defined (usually the Docker nodes and the NFS server, but not the load balancers or the logger node). The datastore will be chosen at random from the list provided in the group variables.
-- Wait for VMs to boot up: Waits for 3 minutes for the VMs to be completely booted up.
 
-The first two tasks make use of the vmware\_guest Ansible module. More information about the module can be found here: [http://docs.ansible.com/ansible/latest/vmware\_guest\_module.html](http://docs.ansible.com/ansible/latest/vmware_guest_module.html)
 
-## playbooks/config\_networking.yml
 
-This playbook will configure the network settings in all Virtual Machines.
 
-It is composed of the following sequential tasks:
 
-- Change hostname: Updates the /etc/hostname file with the hostname and domain name provided in the group variables.
-- Update hostname: Makes the new hostname current by using the hostnamectl tool
-- Add new connection: Adds a new network connection using the nmcli tool along with the network information provided in the group variables and inventory (IP address, gateway, interface name, etc.)
-- Bring connection up: Brings up the newly created connection.
-- Enable connection autoconnect: Makes sure the connection is brought up after a reboot.
-- Update /etc/hosts: Updates the /etc/hosts file using a template. The template file is called j2 and is located in the templates folder. The template will loop over all the nodes defined in the inventory to have a complete and up-to-date hosts file. More information about Ansible templates can be found here: [http://docs.ansible.com/ansible/latest/playbooks\_templating.html](http://docs.ansible.com/ansible/latest/playbooks_templating.html)
-- Update DNS settings: Updates the /etc/resolv.conf file using a template. The template file is called conf.j2 and is located in the templates folder. The template will loop over all the DNS hosts defined in the group variables to have a complete conf file. More information about Ansible templates can be found here: [http://docs.ansible.com/ansible/latest/playbooks\_templating.html](http://docs.ansible.com/ansible/latest/playbooks_templating.html)
 
-Since at the beginning of the playbook the Virtual Machines don't have yet network connectivity, in most tasks we will make use of the vmware\_vm\_shell Ansible module, that allows us to run shell commands directly on the Virtual Machines. More information about this module can be found here: [http://docs.ansible.com/ansible/latest/vmware\_vm\_shell\_module.html](http://docs.ansible.com/ansible/latest/vmware_vm_shell_module.html)
 
-## playbooks/distribute\_keys.yml
 
-This playbook is optional and will distribute all nodes' public keys around so all nodes can password-less login to one another. Since this could be seen as a security risk (there is technically no need for a worker node user to log into an UCP node, for instance), it is disabled by default but can be uncommented for the site.yml file if required.
+# Overview of the playbooks
 
-It is composed of the following sequential tasks:
 
-- Register key: Stores the default SSH private key (/root/.ssh/id\_rsa)
-- Create keypairs: Creates SSH key pairs in the nodes where these didn't yet exist, using the ssh-keygen tool.
-- Fetch all public ssh keys: Registers all public keys from all nodes.
-- Deploy keys on all servers: Pushes all keys to all nodes using a nested loop.
 
-## playbooks/install\_haproxy.yml
+## Create virtual machines
 
-This playbook will install and configure the haproxy package in the load balancer nodes. haproxy is the chosen tool to implement load balancing between UCP nodes, DTR nodes and worker nodes.
+The playbook [playbooks/create\_vms.yml][create_vms] will create all the necessary Virtual Machines for the environment from the VM Template defined in the vm_template variable.
 
-It is composed of the following sequential tasks:
+## Configure network settings
+The playbook [config\_networking.yml][config_networking] will configure the network settings in all the Virtual Machines. 
 
-- Open http and https ports: Makes use of the firewalld command to open the required ports tcp/80 and tcp/443
-- Reload firewalld configuration: Reloads the firewall to apply the new rules
-- Install haproxy: Installs the latest version of haproxy using the Ansible yum module.
-- Update haproxy.cfg on Worker Load Balancer: Updates the /etc/haproxy/haproxy.cfg file using a template on the Worker load balancer. The template file is called worker.j2 and is located in the templates folder. The template will loop over all the Worker nodes defined in the inventory to have a complete list of hosts in the backend. More information about Ansible templates can be found here: [http://docs.ansible.com/ansible/latest/playbooks\_templating.html](http://docs.ansible.com/ansible/latest/playbooks_templating.html). This task will notify the handler defined below in order to restart the haproxy service if a change in the file has occurred.
-- Update haproxy.cfg on UCP Load Balancer: Updates the /etc/haproxy/haproxy.cfg file using a template on the Worker load balancer. The template file is called ucp.j2 and is located in the templates folder. The template will loop over all the UCP nodes defined in the inventory to have a complete list of hosts in the backend. More information about Ansible templates can be found here: [http://docs.ansible.com/ansible/latest/playbooks\_templating.html](http://docs.ansible.com/ansible/latest/playbooks_templating.html). This task will notify the handler defined below in order to restart the haproxy service if a change in the file has occurred.
-- Update haproxy.cfg on DTR Load Balancer: Updates the /etc/haproxy/haproxy.cfg file using a template on the Worker load balancer. The template file is called dtr.j2 and is located in the templates folder. The template will loop over all the DTR nodes defined in the inventory to have a complete list of hosts in the backend. More information about Ansible templates can be found here: [http://docs.ansible.com/ansible/latest/playbooks\_templating.html](http://docs.ansible.com/ansible/latest/playbooks_templating.html). This task will notify the handler defined below in order to restart the haproxy service if a change in the file has occurred.
+## Distribute public keys
+The playbook [distribute\_keys.yml][distribute_keys] distributes public keys between all nodes, to allow each node to password-less login to every other node. As this is not essential and can be regarded as a security risk (a worker node probably should not be able to log in to a UCP node, for instance), this playbook is commented out in site.yml by default and must be explicitly uncommented to enable this functionality.
 
-This playbook also contains a handler, which is a task that will be run when notified by one or more of the specified tasks above. The goal of having a handler is typically to restart a service only when a configuration file has been changed.
+## Register the VMs with Red Hat
+The playbook [config\_subscription.yml][config_subscription] registers and subscribes all virtual machines to the Red Hat Customer Portal. This is only needed if you pull packages from Red Hat.
 
-- Enable and restart haproxy service: Makes sure that the service is enabled and restarted.
+## Install HAProxy
+The playbook [install\_haproxy.yml][install_haproxy] installs and configures the HAProxy package in the load balancer nodes. HAProxy is the chosen tool to implement load balancing between UCP nodes, DTR nodes and worker nodes.
 
-## playbooks/install\_ntp.yml
+## Install NTP
+The playbook [install\_ntp.yml][install_ntp] installs and configures the NTP package in all Virtual Machines in order to have a synchronized clock across the environment. It will use the server or servers specified in the ntp_servers variable in the group variables file.
 
-This playbook will install and configure the ntp package in all Virtual Machines in order to have a synchronized clock all across the environment. It will use the server or servers specified in the ntp\_servers variable in the group variables file.
+## Install Docker Enterprise Edition
+The playbook [install\_docker.yml][install_docker] installs Docker along with all its dependencies.
 
-It is composed of the following sequential tasks:
 
-- Install ntp: Updates the /etc/haproxy/haproxy.cfg file using a template on the Worker load
-- Update ntp.conf: Updates the /etc/ntp.conf file using a template. The template file is called conf.j2 and is located in the templates folder. The template will loop over all the provided NTP servers defined in the ntp\_servers variable. More information about Ansible templates can be found here: [http://docs.ansible.com/ansible/latest/playbooks\_templating.html](http://docs.ansible.com/ansible/latest/playbooks_templating.html). This task will notify the handler defined below in order to restart the ntp service if a change in the file has occurred.
+## Install rsyslog
+The playbook [install_rsyslog.yml][install_rsyslog] installs and configures rsyslog in the logger node and in all Docker nodes. The logger node will be configured to receive all syslogs on port 514 and the Docker nodes will be configured to send all logs (including container logs) to the logger node.
 
-This playbook also contains a handler, which is a task that will be run when notified by one or more of the specified tasks above. The goal of having a handler is typically to restart a service only when a configuration file has been changed.
 
-- Enable and restart ntp service: Makes sure that the service is enabled and restarted.
+## Configure Docker LVs
+The playbook [config_docker_lvs.yml][config_docker_lvs] performs a set of operations on the Docker nodes in order to create a partition on the second disk and carry out the LVM configuration, required for a sound Docker installation.
 
-## playbooks/install\_docker.yml
 
-This playbook will install Docker along with all its dependencies.
+## Docker post-install configuration
+The playbook [docker_post_config.yml][docker_post_config] performs a variety of tasks to complete the installation of the Docker environment.
 
-It is composed of the following sequential tasks:
 
-- Install dependencies: Uses yum to install all the packages that are required by Docker.
-- Set Docker url: Updates the /etc/yum/vars/dockerurl file with the contents of the docker\_ee\_url variable.
-- Set Docker version: Updates the /etc/yum/vars/dockerosversion file with the contents of the rhel\_version variable.
-- Add Docker repository: Runs yum-config-manager in order to add the yum repository specified in the docker\_ee\_url variable.
-- Install Docker: Uses yum to install the latest version of Docker Enterprise Edition.
 
-## playbooks/install\_rsyslog.yml
+## Install NFS server 
+The playbook [install_nfs_server.yml][install_nfs_server] installs and configures an NFS server on the NFS node.
 
-This playbook will install and configure rsyslog in the logger node and in all Docker nodes. The logger node will be configured to receive all syslogs on port 514 and the Docker nodes will be configured to send all logs (including container logs) to the logger node.
 
-It is composed of the following sequential tasks:
 
-- Open required ports for rsyslog: Makes use of the firewalld command to open the required ports tcp/514 and ucp/514 on the logger node
-- Reload firewalld configuration: Reloads the firewall on the logger node to apply the new rules
-- Install rsyslog: Install the latest version of rsyslog on all docker and logger nodes
-- Configure logger server: Updates the /etc/rsyslog.conf configuration file on the logger node with an updated file that allows to receive logs on port 514 using both UCP and TCP protocols. To achieve this, an amended conf file, stored under the files folder, is copied over to the logger server. This task will notify the handler defined below in order to restart the rsyslog service if a change in the file has occurred.
-- Allow docker nodes to send logs: Updates the /etc/rsyslog.conf file using a template to allow sending logs to the logger node. The template file is called conf.j2 and is located in the templates folder. More information about Ansible templates can be found here: [http://docs.ansible.com/ansible/latest/playbooks\_templating.html](http://docs.ansible.com/ansible/latest/playbooks_templating.html). This task will notify the handler defined below in order to restart the rsyslog service if a change in the file has occurred.
+## Install NFS clients
+The playbook [install_nfs_clients.yml][install_nfs_clients] installs the required packages on the DTR nodes to be able to mount an NFS share.
 
-This playbook also contains a handler, which is a task that will be run when notified by one or more of the specified tasks above. The goal of having a handler is typically to restart a service only when a configuration file has been changed.
 
-- Restart Rsyslog: Makes sure that the rsyslog service is enabled and restarted.
+## Install and configure Docker UCP nodes
+The playbook [install_ucp_nodes.yml][install_ucp_nodes] installs and configures the Docker UCP nodes defined in the inventory.
 
-## playbooks/config\_docker\_lvs.yml
 
-This playbook will perform a set of operations on the Docker nodes in order to create a partition on the second disk and carry out the LVM configuration, required for a sound Docker installation.
 
-It is composed of the following sequential tasks:
+## Install and configure DTR nodes
+The playbook [install_dtr_nodes.yml][install_dtr_nodes] installs and configures the Docker DTR nodes defined in the inventory. Note that serialization is set to 1 in this playbook as two concurrent installations of DTR may in some cases be assigned the same replica ID.
 
-- Create partition on second disk: Uses the Ansible parted module to create a LVM partition on the second disk. The partition will have a GPT label and will use the 100% of the drive. The directive ignore\_errors present in this task (and in some of the following ones) exists in order to allow for the playbook to be run more than once, for instance if we're running yml again to scale out our environment. Since the partition will be already created in this case scenario, the task will fail but will be safely ignored. Unfortunately, Ansible does not provide, as of today, with a more elegant method to allow for this module to be idempotent when using GPT labels.
-- Create Docker VG: Creates a Volume Group called docker in the newly created partition.
-- Create thinpool LV: Creates a Logical Volume called thinpool in the docker Volume Group.
-- Create thinpoolmeta LV: Creates a Logical Volume called thinpoolmeta in the docker Volume Group.
-- Convert LVs to thinpool and storage for metadata: Uses the lvconvert command to convert the Logical Volumes to a thin pool and storage location for metadata for the thin pool
-- Config thinpool profile: Creates the /etc/lvm/profile/docker-thinpool.profile configuration file. To achieve this, an preconfigured docker-thinpool.profile file, stored under the files folder, is copied over to the Docker nodes
-- Apply the LVM profile: Uses the command lvchange to apply the changes of the profile file that was just copied
-- Enable monitoring for LVs: Uses the command lvs to enable monitoring on the Logical Volumes
-- Create /etc/docker directory: Creates an /etc/docker folder, that will be used to push the json file in the next task
-- Config Docker daemon: Creates the /etc/docker/daemon.json file, containing the configuration required to use the devicemapper driver. The file also contains some configuration options for the rsyslog logging, allowing the container logs to be centralized. The template file is called json.j2 and is located in the templates folder. More information about Ansible templates can be found here: [http://docs.ansible.com/ansible/latest/playbooks\_templating.html](http://docs.ansible.com/ansible/latest/playbooks_templating.html)
-- Enable and restart docker service: Makes sure that the docker service is enabled and restarted
+## Install worker nodes
+The playbook [install_worker_nodes.yml][install_worker_nodes] installs and configures the Docker Worker nodes defined in the inventory.
 
-## playbooks/docker\_post\_config.yml
 
-This playbook will run a variety of tasks to complete the installation of the Docker environment.
+## Configuring monitoring
+The playbook [config_monitoring.yml][config_monitoring] configures a monitoring system for the Docker environment by making use of Grafana, Prometheus, cAdvisor and node-exporter Docker containers.
 
-It is composed of the following sequential tasks:
+**Note:** If you have your own monitoring solution, you can comment out the corresponding line in the main playbook ```site.yml```
+```
+#- include: playbooks/config_monitoring.yml
+```
 
-- Create Docker service directory: Creates a folder /etc/systemd/system/docker.service.d on all Docker nodes
-- Add proxy details: Updates the /etc/systemd/system/docker.service.d/http-proxy.conf file using a template to configure the proxy settings when these have been defined in the env variable. The template file is called http-proxy.conf.j2 and is located in the templates folder. More information about Ansible templates can be found here: [http://docs.ansible.com/ansible/latest/playbooks\_templating.html](http://docs.ansible.com/ansible/latest/playbooks_templating.html). This task will notify the handler defined below in order to restart the docker service if a change in the file has occurred.
-- Add insecure registry: Modifies the file /usr/lib/systemd/system/docker.service on all Docker nodes, modifying the line containing the directive ExecStart to allow using an insecure DTR.
+After running the playbook, you can browse (HTTP) to the UCP load balancer IP address or FQDN on port 3000 (using a URL like ```http://<ucp_lb>:3000```) and you will see the Grafana UI. The username and password are defaulted to ```admin```/```admin```. When you log in, you can pick up the Dashboard that was imported by the playbooks (Click the Dashboard icon and select Docker Swarm Monitor) and observe the ongoing monitoring, as shown in Figure 5.
 
-At this point we have a meta task which goal is to run the handlers if required so the changes above are taken in account. More information about meta tasks can be found here: [http://docs.ansible.com/ansible/latest/meta\_module.html](http://docs.ansible.com/ansible/latest/meta_module.html)
+![Grafana UI][grafana]
+**Figure 5.** Grafana UI
 
-- Check if vsphere plugin is installed: Queries the list of Docker plugins to find out if the vSphere plugin has already been installed. The task will record the output, which will be used as a conditional for the next step
-- Install vsphere plugin: Installs the vSphere plugin if it's not already installed
 
-This playbook also contains a handler, which is a task that will be run when notified by one or more of the specified tasks above. The goal of having a handler is typically to restart a service only when a configuration file has been changed.
+The deployed Grafana dashboard includes cluster-wide metrics, node-specific metrics, and container-specific metrics.  Monitored resources include disk I/O, memory, CPU utilization, network traffic, etc.  The dashboard also highlights any containers configured with memory limits and the current memory utilization rate based on those limits.  All of these metrics are provided via the node-exporter (responsible for OS and host metrics) and cAdvisor (responsible for container-specific metrics) instances running in the swarm.  For more information about these tools and the metrics they expose, see the documentation links in their respective GitHub repositories: https://github.com/prometheus/node_exporter and https://github.com/google/cadvisor. 
 
-- Restart Docker: Makes sure that the docker service is restarted.
+The provided dashboard is editable and extensible for those users who wish to add/remove panels or modify the underlying JSON code to change the look and behavior.  Grafana offers many other sample dashboards on their website (https://grafana.com/dashboards) that may be used in place of the provided dashboard.
 
-## playbooks/install\_nfs\_server.yml
 
-This playbook will install and configure an NFS server on the NFS node.
+## Configure dummy VMs to backup Docker volumes
+The playbook [config_dummy_vms_for_docker_volumes_backup.yml][config_dummy_vms_for_docker_volumes_backup] ensures that you can backup Docker volumes that have been created using the vSphere plugin in SimpliVity. There is not a straight forward way to do this, so we need to use a workaround. Since all Docker volumes are going to be stored in the dockvols folder in the datastore(s), we need to create a ‘dummy’ VM per datastore. The ```vmx```, ```vmsd``` and ```vmkd``` files from this VMs will have to be inside the ```dockvols``` folder, so when these VMs are backed up, the volumes are backed up as well. Obviously these VMs don’t need to take any resources and we can keep them powered off.
 
-It is composed of the following sequential tasks:
 
-- Open required ports: Makes use of the firewalld command to open the required ports for the NFS server
-- Reload firewalld configuration: Reloads the firewall on the logger node to apply the new rules
-- Create partition on second disk: Uses the Ansible parted module to create a partition on the second disk. Please note that since the GPT label is not used here, the module is by default idempotent and the tasks can be run multiple times, regardless of whether the partition exists or not, without failing. Hence we don't need the directive ignore\_errors in this occasion.
-- Create filesystem: Creates an xfs filesystem in the partition created above.
-- Create images folder: Creates a directory in the filesystem above. The directory will be named after the variable images\_folder and will host the images stored in the DTR nodes
-- Mount filesystem: Uses the Ansible mount module to mount the directory created above
-- Install NFS server: Uses the Ansible yum module to install the latest versions of the packages nfs-utils and rpcbind.
-- Enable and start NFS services on server: Makes sure that the following services are enabled and started: rpcbind, nfs-server, nfs-lock, nfs-idmap.
-- Modify exports file on NFS server: Updates the /etc/exports file using a template with all the mount points to be exported by the NFS service. The template file is called j2 and is located in the templates folder. More information about Ansible templates can be found here: [http://docs.ansible.com/ansible/latest/playbooks\_templating.html](http://docs.ansible.com/ansible/latest/playbooks_templating.html).
-- Refresh exportfs: Runs the exportfs command to make the shared folder available
+## Configure SimpliVity backups
+The playbook [config_simplivity_backups.yml][config_simplivity_backups] configures the defined backup policies in the group variables file in SimpliVity and will include all Docker nodes plus the ‘dummy’ VMs created before, so the existing Docker volumes are also taken in account. The playbook will mainly use the SimpliVity REST API to perform these tasks. A reference to the REST API can be found here: https://api.simplivity.com/rest-api_getting-started_overview/rest-api_getting-started_overview_rest-api-overview.html
 
-## playbooks/install\_nfs\_clients.yml
 
-This playbook will install the required packages on the DTR nodes to be able to mount an NFS share.
+## VM placement and number of HPE SimpliVity servers in the cluster
 
-It is composed of one single task:
+The placement of the various VMs deployed by the playbooks depends on whether DRS is enabled or not:
 
-- Install NFS client: Uses the Ansible yum module to install the latest version of the package nfs-utils.
+1. If DRS is not enabled, the placement of the VMs is specified in the the ansible inventory file vm_hosts
+2. If DRS is enabled, the placement of the VMs is outside the control of the playbooks
 
-## playbooks/install\_ucp\_nodes.yml
+The playbooks have only been tested with three nodes in the ESX cluster, but the following sections provide guidance on how to use more than three nodes.
 
-This playbook will install and configure the Docker UCP nodes defined in the inventory.
 
-It is composed of the following sequential tasks:
 
-- Open required ports for UCP: Makes use of the firewalld command to open the required ports for UCP
-- Reload firewalld configuration: Reloads the firewall on the logger node to apply the new rules
-- Check if node already belongs to the swarm: Uses the docker info command to verify if the node is already part of the swarm and records the output to be used in later tasks. This is to prevent trying to install UCP on nodes that are already part of the swarm
-- Copy the license: Uses the Ansible copy module to push the license file into the first UCP node, prior to starting the installation
-- Install swarm leader and first UCP node: Installs UCP in the first node. The command will specify the UCP version to install, the host IP address, the user and password for the administrator, the license and all the san information. More details on installing UCP can be found here: [https://docs.docker.com/datacenter/ucp/2.1/guides/admin/install/](https://docs.docker.com/datacenter/ucp/2.1/guides/admin/install/)
-- Get swarm manager token: Generates and registers the command to add a manager node to the swarm
-- Get swarm worker token: Generates and registers the command to add a worker node to the swarm
-- Save worker token: Creates (or rewrites) a file /tmp/worker\_token and copies the worker token generated earlier into the file. This file will be used later to add the worker and DTR nodes to the swarm
-- Add additional UCP nodes to the swarm: Makes use of registered manager token two tasks above to join the rest of the UCP nodes to the swarm
+### Using more than three nodes when DRS is not enabled
+The default vm_hosts file in the solution github repository corresponds to a deployment on a 3-node HPE SimpliVity cluster.  For each Ansible host in the inventory, you use the `esxi_hosts` variable to specify on which ESX hosts the VM should be placed. The following code extract shows 3 UCP VMs distributed across the three members of the cluster. This is the recommended placement as you don’t want to one node to host two UCP VMs as a failure of that node would result in the cluster losing quorum. 
+```
+[ucp]
+clh-ucp01 ip_addr='10.10.174.112/22' esxi_host='simply01.am2.cloudra.local'
+clh-ucp02 ip_addr='10.10.174.113/22' esxi_host='simply02.am2.cloudra.local'
+clh-ucp03 ip_addr='10.10.174.114/22' esxi_host='simply03.am2.cloudra.local'
+```
 
-## playbooks/install\_dtr\_nodes.yml
+In the above example, the first UCP VM will be placed on the ESX host named `simply01.am2.cloudra.local`.  Note that the value for `esxi_host` is the name of the ESX host in the vCenter inventory.
 
-This playbook will install and configure the Docker DTR nodes defined in the inventory.
+The default `vm_hosts` inventory configures three docker worker nodes and distributes them across the three ESX hosts:
+```
+[worker]
+clh-worker01 ip_addr='10.10.174.122/22' esxi_host='simply01.am2.cloudra.local'
+clh-worker02 ip_addr='10.10.174.123/22' esxi_host='simply02.am2.cloudra.local'
+clh-worker03 ip_addr='10.10.174.124/22' esxi_host='simply03.am2.cloudra.local'
+```
 
-It is composed of the following sequential tasks:
+If you have more than three ESX hosts in your cluster,  you can add an additional worker node as follows:
+```
+[worker]
+clh-worker01 ip_addr='10.10.174.122/22' esxi_host='simply01.am2.cloudra.local'
+clh-worker02 ip_addr='10.10.174.123/22' esxi_host='simply02.am2.cloudra.local'
+clh-worker03 ip_addr='10.10.174.124/22' esxi_host='simply03.am2.cloudra.local'
+clh-worker04 ip_addr='10.10.174.1xx/22' esxi_host='simply04.am2.cloudra.local'
+```
 
-- Open required ports for DTR: Makes use of the firewalld command to open the required ports for the DTR
-- Reload firewalld configuration: Reloads the firewall on the logger node to apply the new rules
-- Get worker token: Retrieves the file created in the previous playbook (/tmp/worker\_token) and registers the contents in a variable
-- Check if node already belongs to the swarm: Uses the docker info command to verify if the node is already part of the swarm and records the output to be used in later tasks. This is to prevent trying to install DTR on nodes that are already part of the swarm
-- Add DTR nodes to the swarm: Uses the previously registered command to join the swarm
-- Install first DTR node: Installs DTR in the first node. The command will specify the DTR version to install, the NFS images folder location, the fully qualified hostname of the DTR node, the address of the DTR load balancer, the URL of the main UCP node and the username and password to access UCP. More details on installing the DTR can be found here: [https://docs.docker.com/datacenter/dtr/2.2/guides/admin/install/](https://docs.docker.com/datacenter/dtr/2.2/guides/admin/install/)
-- Get replica ID: Uses the docker ps command to extract and register the replica ID. This is used to add additional DTR nodes to the first one
-- Add DTR nodes: Adds additional nodes to the DTR cluster. The command will specify the DTR version to install, the fully qualified hostname of the DTR node, the URL of the main UCP node, the username and password to access UCP and the replica ID captured in the previous step.
-- Enable image scanning: *Note: this step is now disabled since from DTR 2.2.0 the API has changed and the image scanning is enabled by default*. Makes use of the DTR REST API to enable the Image Scanning feature. This feature is only available when using a Docker EE Advanced license. More information about the Image Scanning feature can be found here: [https://docs.docker.com/datacenter/dtr/2.2/guides/user/manage-images/scan-images-for-vulnerabilities/#change-the-scanning-mode](https://docs.docker.com/datacenter/dtr/2.2/guides/user/manage-images/scan-images-for-vulnerabilities/#change-the-scanning-mode). A reference for the REST API can be found here: [https://docs.docker.com/datacenter/dtr/2.2/reference/api/](https://docs.docker.com/datacenter/dtr/2.2/reference/api/). Please note that the REST API is still under development and some of the described methods might not reflect the reality of the current available API.
+You can also distribute the infrastructure VMs across fours nodes rather than across the default the nodes. For example, the default placement for the NFS server VM is as follows:
+```
+[nfs]
+clh-nfs ip_addr='10.10.174.121/22'    esxi_host='simply03.am2.cloudra.local'
+```
 
-## playbooks/install\_worker\_nodes.yml
+Instead, you can change the placement NFS server VM, leveraging a fourth ESX node:
+```
+[nfs]
+clh-nfs ip_addr='10.10.174.1xx/22'    esxi_host='simply04.am2.cloudra.local'
+```
 
-This playbook will install and configure the Docker Worker nodes defined in the inventory.
 
-It is composed of the following sequential tasks:
 
-- Open required ports for Workers: Makes use of the firewalld command to open the required ports for the Worker nodes
-- Reload firewalld configuration: Reloads the firewall on the logger node to apply the new rules
-- Get worker token: Retrieves the file created in the previous playbook (/tmp/worker\_token) and registers the contents in a variable
-- Check if node already belongs to the swarm: Uses the docker info command to verify if the node is already part of the swarm and records the output to be used in later tasks. This is to prevent trying to install Workers on nodes that are already part of the swarm
-- Add Worker nodes to the swarm: Uses the previously registered command to join the swarm
+When you specify the placement of the VM, you should ensure that you follow these placement guidelines:
 
-## playbooks/config\_monitoring.yml
+- Do not place two UCP VMs on the same node. If the node fails, the UCP cluster will lose quorum and the service will go down.
+- Do not place two DTR replicas (VMs) on the same node. Once again, the cluster will lose quorum if that node fails.
 
-This playbook will configure a monitoring system for the Docker environment by making use of Grafana, Prometheus, cAdvisor and node-exporter Docker containers.
+**Note:** The OmniStack software maintains two replicas on two different hosts for each VM. As a result, when a VM is scheduled on an ESX server that does not have local access to one of the replicas, the VM will report the warning “SimpliVity VM Data Access Not Optimized”. You can safely ignore this warning.
 
-It is composed of the following sequential tasks:
+### Using more than three nodes when DRS is enabled
 
-- Open required ports for Grafana and Prometheus: Makes use of the firewalld command to open the required ports for the Grafana and Prometheus
-- Reload firewalld configuration: Reloads the firewall on the logger node to apply the new rules
-- Copy monitoring files to UCP: Uses the Ansible copy module to push the monitoring folder into the first UCP node. This folder contains all the required files to install the monitoring system.
-- Copy docker compose file: Creates the docker-compose.yml file using a template. This file will be used at a later stage by the docker stack deploy command to build the monitoring stack. The template file is called docker-compose.yml.j2 and is located in the templates folder. More information about Ansible templates can be found here: [http://docs.ansible.com/ansible/latest/playbooks\_templating.html](http://docs.ansible.com/ansible/latest/playbooks_templating.html).
-- Deploy monitoring stack: Runs the docker stack deploy command to build the monitoring stack.
-- Wait for Prometheus to be available: Waits for Prometheus port 9090 to be listening so the playbook can proceed with the configuration steps
-- Wait for Grafana to be available: Waits for Grafana port 3000 to be listening so the playbook can proceed with the configuration steps
-- Check if datasource already available: Makes use of the Grafana REST API to find out if a Prometheus data source is already there from a previous run. The task will register the output to decide whether to run the next step
-- Create Grafana Data Source: Makes use of the Grafana REST API to create the Prometheus data source, using the provided json file. This task is conditional to the previous step output
-- Import Dashboard: Makes use of the Grafana REST API to create a monitoring Dashboard, based on the provided JSON file Docker-Swarm-Dashboard.json
+When DRS is enabled, it controls the placement of the VMs and as a result, the placement you have specified in the vm_hosts inventory is ignored. Instead, you use DRS rules to make sure that the UCP and DTR VMs are distributed across three nodes for the reasons explained earlier. 
 
-At this stage we can connect to the UCP nodes on port 3000 and we will see the Grafana dashboard. The username and password are defaulted to admin/admin. When we log in we can pick up the Dashboard that was imported by the playbooks and observe the ongoing monitoring.
 
-## playbooks/config\_dummy\_vms\_for\_docker\_volumes\_backup.yml
+**Note:** If you do not specify DRS rules to determine the placement, DRS will automatically move the VMs that report the “SimpliVity VM Data Access Not Optimized” warning to a node with a replica of the VM which may break the earlier placement guideline.
 
-This playbook will make sure that we are able to backup Docker volumes that have been created using the vSphere plugin in Simplivity. There is not a straight forward way to do this, so we need to use a workaround. Since all Docker volumes are going to be stored in the dockvols folder in the datastore(s), we need to create a 'dummy' VM per datastore. The vmx, vmsd and vmkd files from this VMs will have to be inside the dockvols folder, so when these VMs are backed up, the volumes are backed up as well. Obviously these VMs don't need to take any resources and we can keep them powered off.
 
-It is composed of the following sequential tasks:
 
-- Create Dummy VMs: Creates a 'dummy' VM per datastore using extremely low specifications. The name of the VMs will be prefixed with the variable dummy\_vm\_prefix and suffixed with the datastore name where it lives.
-- Generate powercli script: Generates a powerCLI script using a template that will take in account all defined datastores and that will be copied to the main UCP node in the location defined by the powercli\_script variable. The template file is called powercli\_script.j2 and is located in the templates folder. The script will perform the following tasks:
-  - For each 'dummy' VM, the files \*.vmx, \*.vmsd and \*.vmdk will be copied over to the dockvols folder in its current datastore
-  - Using the \*.vmx files, we'll registed new 'dummy' VMs that now live inside the dockvols folder. The name of these VMs will be composed of the dummy\_vm\_prefix, the string "-in-dockvols-" and the datastore name as the suffix.
-  - The old dummy VMs will be removed
-- Run powercli script on temporary docker container: Runs the generated script on a powerCLI container to perform the tasks described above. The container provides a powerCLI core environment and is provided by VMWare. More information about powerCLI core can be found here: [https://labs.vmware.com/flings/powercli-core](https://labs.vmware.com/flings/powercli-core). A good article on how to use the container can be found here: [http://www.virtuallyghetto.com/2016/10/5-different-ways-to-run-powercli-script-using-powercli-core-docker-container.html](http://www.virtuallyghetto.com/2016/10/5-different-ways-to-run-powercli-script-using-powercli-core-docker-container.html)
-- Delete powercli script from docker host: Deletes the generated script from the UCP host since it contains sensitive information, like the vCenter credentials, in plain text.
-
-## playbooks/config\_simplivity\_backups.yml
-
-This playbook will configure the defined backup policies in the group variables file in Simplivity and will include all Docker nodes plus the 'dummy' VMs created before, so the existing Docker volumes are also taken in account. The playbook will mainly use the Simplivite REST API to perform these tasks. A reference to the REST API can be found here: [https://api.simplivity.com/rest-api\_getting-started\_overview/rest-api\_getting-started\_overview\_rest-api-overview.html](https://api.simplivity.com/rest-api_getting-started_overview/rest-api_getting-started_overview_rest-api-overview.html)
-
-It is composed of the following sequential tasks:
-
-- Get Simplivity token: Makes a REST call against the Simplivity API to authenticate and retrieve a token that will be used in the following tasks. More information about authenticating against the Simplivity API can be found here: [https://api.simplivity.com/rest-api\_getting-started\_getting-started/rest-api\_getting-started\_getting-started\_request-oauth-2-token.html](https://api.simplivity.com/rest-api_getting-started_getting-started/rest-api_getting-started_getting-started_request-oauth-2-token.html)
-- Retrieve current backup policies: Makes a REST call against the Simplivity API to retrieve all the current backup policies. The result will be stored in a variable current\_policies.
-- Extract existing policies names: Uses the Ansible directive set\_fact to create a variable current\_policies\_names that will store a list of the names of all the currently available backup policies, based on the result of a JSON query against the variable current\_policies, registered above. This task provides a subset of the output from the previous task, which will return not just the policies names, but all the related information to each policy.
-- Extract policies names to be added: Uses the Ansible directive set\_fact to create a variable backup\_policies\_names that will store a list of the names of the backup policies defined by the user, based on the result of a JSON query against the variable backup\_policies, defined in the group variables.
-- Set list of nonexistent policies to be added: Uses the Ansible directive set\_fact to create a variable new\_policies\_names that will store a list of the names of the backup policies to be created, based on the result of the difference between the existing policies and the newly defined ones.
-- Create backup policies: Makes a REST call against the Simplivity API to create the backup policies listed in the new\_policies\_names variable.
-- Get policy IDs: Makes a REST call against the Simplivity API to retrieve all the current backup policies. The result will be stored in a variable policy\_ids.
-- Create backup rules: Makes a REST call against the Simplivity API to create the defined backup rules in the global variable backup\_policies. In order to avoid duplicated rules, the task will only run when the new\_policies\_names is not empty, meaning that the backup policies defined by the user had not been created yet before running this playbook.
-- Get VMs information: Makes a REST call against the Simplivity API to retrieve all the VMs information.
-- Assign backup policies to VMs: Makes a REST call against the Simplivity API to assign the previously created VMs to a backup policy in Simplivity. Each node or node group in the inventory has a node\_policy variable that will define which policy they should be on.
-- Set dummy VM names in one string: Uses the Ansible directive set\_fact to create a variable dummy\_vms\_string that will store a string with the the names of the dummy VMs, separated by commas
-- Convert to list: Uses the Ansible directive set\_fact to create a list dummy\_vms that will be a list based on the string dummy\_vms\_string from the previous task
-- Assign backup policies to Docker volumes: Makes a REST call against the Simplivity API to assign the previously created dummy VMs to a backup policy in Simplivity. This will make sure that all the Docker volumes will be also backed up on a regular basis
 
 # Accessing the UCP UI
-Once the playbooks have run and completed successfully, the Docker UCP UI should be available by browsing to the UCP load balancer or any of the nodes via HTTPS. The authentication screen will appear. Enter your credentials and the dashboard will be displayed. You should see all the nodes information in your Docker environment by clicking on Nodes. By looking into the services you should see the monitoring services that were installed during the playbooks execution:
+Once the playbooks have run and completed successfully, the Docker UCP UI should be available by browsing to the UCP load balancer or any of the nodes via HTTPS. The authentication screen will appear as shown in Figure 20:
+
+![UCP authentication screen][ucpauth]
+**Figure 20.** UCP authentication screen
+
+Enter your credentials and the dashboard will be displayed as shown in Figure 21:
+
+![UCP dashboard][ucpdash]
+**Figure 21.** UCP dashboard
+
+You should see all the nodes information in your Docker environment by clicking on `Nodes`, as shown in Figure 22:
+
+![Nodes information][nodesinfo]
+**Figure 22.** Nodes information
+
+
+Click on `Services` to see the monitoring services that were installed during the playbooks execution, as shown in Figure 23:
+
+![Services information][servicesinfo]
+**Figure 23.** Services information
 
 # Accessing the DTR UI
-The Docker DTR UI should be available by browsing to the DTR load balancer or any of the nodes via HTTPS. The authentication screen will appear. Enter your UCP credentials and you should see the empty list of repositories. If you navigate to `Settings > Security`, you should see the Image Scanning feature already enabled (note that you need an Advanced license to have access to this feature).
+The Docker DTR UI should be available by browsing to the DTR load balancer or any of the nodes via HTTPS. The authentication screen will appear as shown in Figure 24:
+
+![DTR authentication screen][dtrauth]
+**Figure 24.** DTR authentication screen
+
+
+Enter your UCP credentials and you should see the empty list of repositories as shown in Figure 25:
+
+![DTR repositories][dtrrepos]
+**Figure 25.** DTR repositories
+
+If you navigate to `Settings > Security`, you should see the Image Scanning feature already enabled as shown in Figure 26. (Note that you need an Advanced license to have access to this feature).
+
+![Image scanning in DTR][imagescanning]
+**Figure 26.** Image scanning in DTR
+
 
 # Security considerations
-In addition to having all logs centralized in an unique place and the image scanning feature enabled, there are another few guidelines that should be followed in order to keep your Docker environment as secure as possible.
+In addition to having all logs centralized in a single place and the image scanning feature enabled for the DTR nodes, there are another few guidelines that should be followed in order to keep your Docker environment as secure as possible.
 
 ## Securing the daemon socket
-The default is to create a non-networked socket to communicate with the daemon, but you could alternatively communicate using TLS. This will require you to create a CA and server and client keys with OpenSSL. The whole procedure is explained in detail here: [https://docs.docker.com/engine/security/https/](https://docs.docker.com/engine/security/https/)
+By default, Docker communicates with the daemon using a non-networked socket. If it needs to be reachable over a network, TLS should be enabled. This will require you to create a Certificate Authority (CA) and server and client keys with OpenSSL. The whole procedure is explained in detail here: https://docs.docker.com/engine/security/https/.
 
 ## Start with known images
-Developers can pick base images from the Docker Hub to start with. Although this allows them a great deal of freedom, some caution is needed. Images from Docker Hub are uncurated and may contain vulnerabilities. Use store images where possible. These are curated images. Use small base images to reduce the surface area.
+Developers can pick base images from the Docker Hub as a starting point. Although this allows them a great deal of freedom, some caution is needed as images from Docker Hub are not curated and may contain vulnerabilities. Instead use curated images from the Docker Store where possible. Use small base images to reduce the surface area of attack.
 
 ## Enable Docker Content Trust
-Notary/Docker Content Trust is a tool for publishing and managing trusted collections of content. Publishers can digitally sign collections and consumers can verify integrity and origin of content. This ability is built on a straightforward key management and signing interface to create signed collections and configure trusted publishers. More information about Notary can be found here: [https://success.docker.com/Architecture/Docker\_Reference\_Architecture%3A\_Securing\_Docker\_EE\_and\_Security\_Best\_Practices#dtr-notary](https://success.docker.com/Architecture/Docker_Reference_Architecture%3A_Securing_Docker_EE_and_Security_Best_Practices#dtr-notary)
+Notary/Docker Content Trust is a tool for publishing and managing trusted collections of content. Publishers can digitally sign collections and consumers can verify integrity and origin of content. This ability is built on a straightforward key management and signing interface to create signed collections and configure trusted publishers. More information about Notary can be found here: https://success.docker.com/Architecture/Docker_Reference_Architecture%3A_Securing_Docker_EE_and_Security_Best_Practices#dtr-notary.
 
 ## Prevent tags from being overwritten
-By default, users with access to push to a repository, can push the same tag multiple times to the same repository. As an example, a user pushes an image to library/wordpress:latest, and later another user can push the image with exactly the same name but different functionality. This might make it difficult to trace back the image to the build that generated it.
+By default, users with access to push to a repository, can push the images to a repository with the same tag multiple times. As an example, a user pushes an image to `library/wordpress:latest`, and later another user can push a different image with the same name and tag but different functionality. This might make it difficult to trace back the image to the build that generated it.
 
-To prevent this from happening you can configure a repository to be immutable. Once you push a tag, DTR won't anyone else to push another tag with the same name.
+To prevent this from happening you can configure a repository to be immutable. Once you push a tag, DTR won’t allow anyone else to push another tag with the same name.
 
-More information about immutable tags can be found here: [https://beta.docs.docker.com/datacenter/dtr/2.3/guides/user/manage-images/prevent-tags-from-being-overwritten/](https://beta.docs.docker.com/datacenter/dtr/2.3/guides/user/manage-images/prevent-tags-from-being-overwritten/)
+More information about immutable tags can be found here: 
+https://docs.docker.com/datacenter/dtr/2.3/guides/user/manage-images/prevent-tags-from-being-overwritten/ 
+
+## Image Versioning
+When deploying a service, use a proper version tag instead of just the `latest` tag.  This in combination with the immutable tags feature will ensure that a specific version is being run.
+
+## Launch services rather than individual containers
+
+TODO
+
+Docker Swarm maintains the service state. By launching a service, Swarm monitors the health of the individual containers and will start additional containers should one fail. 
+
 
 ## Use secrets
-Use secrets to pass credentials to a container. Never pass as an environment variable which is clear
+Use secrets in preference to environment variables for passing credentials to a container. Docker secrets only reveals the secret to the container that requires it through a RAM based FS. The container can easily access the secret using the `/var/secrets` directory. 
+Secrets are encrypted and can be easily revoked. 
+
 
 ## Isolate swarm nodes to a specific team
 With Docker EE Advanced, you can enable physical isolation of resources by organizing nodes into collections and granting Scheduler access for different users. To control access to nodes, move them to dedicated collections where you can grant access to specific users, teams, and organizations.
 
-More information about this subject can be found here: [https://beta.docs.docker.com/datacenter/ucp/2.2/guides/admin/manage-users/isolate-nodes-between-teams/](https://beta.docs.docker.com/datacenter/ucp/2.2/guides/admin/manage-users/isolate-nodes-between-teams/)
+More information about this subject can be found here: https://beta.docs.docker.com/datacenter/ucp/2.2/guides/admin/manage-users/isolate-nodes-between-teams/.
+
 
 ## Docker Bench for Security
-The Docker Bench for Security is a script that checks for dozens of common best-practices around deploying Docker containers in production. The tests are all automated, and are inspired by the CIS Docker Community Edition Benchmark v1.1.0.
+Docker Bench for Security is a script that checks for dozens of common best-practices around deploying Docker containers in production. The tests are all automated, and are inspired by the CIS Docker Community Edition Benchmark v1.1.0.
 
-The Docker Bench for Security should be run on a regular basis to make sure that our system is as secure as we'd expect it to be.
+The Docker Bench for Security should be run on a regular basis to make sure that your system is as secure as you would expect it to be.
 
-More information about this tool plus the files to run it can be found in its Github repository: [https://github.com/docker/docker-bench-security](https://github.com/docker/docker-bench-security)
+More information about this tool plus the files to run it can be found in its Github repository: https://github.com/docker/docker-bench-security.
 
-# Contact
-Please get in touch via Github if you have any questions.
 
-# Demo
-A much briefer video with a quick demo can be found here: https://vimeo.com/229389079
+
+## Read the HPE Reference Configuration paper for securing Docker on HPE Hardware
+
+This paper places a special emphasis on securing Docker in DevOps environments and covers all the best practices in terms of Docker security. The document can be found here: http://h20195.www2.hpe.com/V2/GetDocument.aspx?docname=a00020437enw
+
+
+
+# HA considerations
+
+## Service Level Protection 
+
+The matrix in Table 12 outlines the HA and service level protection for all the critical containers and services within this solution.   
+
+**Table 12.** Service level protection matrix
+
+| |	Host HW or network failure protection|  Application or service failure protection | 
+|---------|-----------|---------|
+|Docker Worker Node | Requests will be serviced by 2 of 3 remaining Docker worker on other 2 nodes.  Restart of failed Docker worker on other physical node not required.| Requests will be serviced by 2 of 3 remaining Docker worker on other 2 nodes.  Restart of failed Docker worker on other physical node not required. |
+|Docker UCP service | Requests will be serviced by 2 of 3 remaining UCP services on other 2 nodes.  Restart of failed UCP on other physical node not required. | Requests will be serviced by 2 of 3 remaining UCP services on other 2 nodes.  Restart of failed UCP on other physical node not required.|
+|Docker DTR service |	Requests will be serviced by 2 of 3 remaining DTR services on other 2 nodes.  Restart of failed DTR on other physical node not required.	| Requests will be serviced by 2 of 3 remaining DTR services on other 2 nodes.  Restart of failed DTR on other physical node not required.|
+|Application container	| UCP restarts this app container on one of two remaining worker nodes|
+|Prometheus load exporter service||
+|Prometheus cAdvisor service||
+|Prometheus container||
+|Grafana container ||
+|Logging service VM||
+|NFS server VM|VMware restarts NFS VM on one of two remaining nodes||
+|UCP Load Balancer VM (HA Proxy)	|VMware restarts UCP Load Balancer on one of two remaining nodes|
+|DTR Load Balancer VM (HA Proxy)||
+|Worker Load Balancer VM (HA Proxy)||
+
+
+## Host failure
+
+For details of the impact of a host failure, see Table 13.
+
+**Table 13.** Host failure
+
+|Component	|Technology	|Duration	|Consequence	|Impact   |
+|:-----------|:-----------|:-----------|:---------------|:---------|
+|UCP Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover|
+|Workers Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover
+|DTR Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover
+|Central Logging	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|TODO: lose logs?|
+|NFS	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No push/pull of images.|
+|UCP service	|Protected by UCP scale out design	|Seconds	|Potentially new leader elected	|
+|DTR service	|Protected by DTR scale out design	|Seconds	|DTR continues to be operational	|
+|Monitoring	|Protected by Docker service (replicas)	|Seconds	|Grafana/Prometheus relocated	|Transparent due to routing mesh|
+|Resource plane	|Protected by Docker scale out design|		|Less capacity	
+|Docker volumes	|SimpliVity		|    |At least 1 replica will remain	|Possible performance degradation if container is scheduled on node with no local replica|
+|User applications	|Depends on application (service or standalone container)	|||
+
+
+
+## VM Failure
+
+For details on the impact of a VM failure, see Table 14.
+
+**Table 14.** VM failure
+
+|Component	|Technology	|Duration	|Consequence	|Impact   |
+|:-----------|:-----------|:-----------|:---------------|:---------|
+|UCP Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required (restore from backup)|
+|Workers Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required (restore from backup)|
+|DTR Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required (restore from backup)|
+|Central Logging	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required (restore from backup)|
+|NFS	|Manual recovery	|Minutes	|DTR push/pull unavailable	|Recovery procedure required (restore from backup)|
+|UCP service	|Protected by UCP scale out design	|Seconds	|	|Recovery procedure required|
+|DTR service	|Protected by DTR scale out design	|Seconds	|	|Recovery procedure required|
+|Monitoring	|Protected by Docker service (replicas)	|	|New replica	
+|Resource plane	|Manual recovery	|Minutes	|Reduced capacity|	
+|Docker volumes	|Applicable (someone deletes file in the datastore)	|||		
+|User applications	|Depends on application (service or standalone container)|||			
+
+# Restoring a container backup
+
+Description of techniques here.  (TODO more verbiage needed)
+
+Key considerations:
+
+
+
+# Solution Lifecycle Management
+
+## Introduction
+
+Lifecycle management with respect to this solution refers to the maintenance and management of software and hardware of various components within that build up the solution stack. Lifecycle management is required to keep the solution up-to date and ensure that latest versions of the software are running in to provide optimal performance, security and fix any existing defects within the product.
+
+In this section, we will cover life cycle management of the different components that are used in this solution. The architectural diagram of the solution in Figure 27 shows the software and hardware stacks that make up the solution. Each stack is shown in a different color.
+
+
+![Solution architecture][solnarchitecture]
+
+**Figure 27.** Solution architecture
+
+
+Based on the diagram above, lifecycle of the following stacks need to be maintained and managed.
+
+1. Monitoring (Prometheus and Grafana) Tools
+2. Docker Enterprise Edition Environment
+3. Virtual Machine Operating systems
+4. vSphere Docker Volume Service
+5. SimpliVity environment
+
+The general practice and recommendation is to follow a bottom-up approach for updating all components of the environment and making sure the dependencies are met. In our solution, we would start with the SimpliVity stack and end with the Prometheus and Grafana monitoring environment. If all components are not being updated at the same time, the same approach can be followed – updating only the components that require updates while adhering to the interdependencies of each component that is being updated.
+
+
+
+
+
+
+[architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
+[provisioning]: </images/provisioning.png> "Provisioning Steps"
+[createnewvm]: </images/createnewvirtualmachine.png> "Figure 2. Create New Virtual Machine"
+[vmnamelocation]: </images/vmnamelocation.png> "Figure 3. Specify name and location for the virtual machine" 
+[converttotemplate]: </images/converttotemplate.png> "Figure 4. Convert to template"
+[grafana]: </images/grafana.png> "Figure 5. Grafana UI"
+[ucpauth]: </images/ucpauth.png> "Figure 20. UCP authentication screen"
+[ucpdash]: </images/ucpdash.png> "Figure 21. UCP dashboard"
+[nodesinfo]: </images/nodesinfo.png> "Figure 22. Nodes information"
+[servicesinfo]: </images/servicesinfo.png> "Figure 23. Services information"
+[dtrauth]: </images/dtrauth.png> "Figure 24. DTR authentication screen"
+[dtrrepos]: </images/dtrrepos.png> "Figure 25. DTR repositories"
+[imagescanning]: </images/imagescanning.png> "Figure 26. Image scanning in DTR"
+[solnarchitecture]: </images/solnarchitecture.png> "Figure 27. Solution architecture"
+
+
+
+[create_vms]: </playbooks/create_vms.yml>
+[config_networking]: </playbooks/config_networking.yml>
+[distribute_keys]: </playbooks/distribute_keys.yml>
+[config_subscription]: </playbooks/config_subscription.yml>
+[install_haproxy]: </playbooks/install_haproxy.yml>
+[install_ntp]: </playbooks/install_ntp.yml>
+[install_docker]: </playbooks/install_docker.yml>
+[install_rsyslog]: </playbooks/install_rsyslog.yml>
+[config_docker_lvs]: </playbooks/config_docker_lvs.yml>
+[docker_post_config]: </playbooks/docker_post_config.yml>
+[install_nfs_server]: </playbooks/install_nfs_server.yml>
+[install_nfs_clients]: </playbooks/install_nfs_clients.yml>
+[install_ucp_nodes]: </playbooks/install_ucp_nodes.yml>
+[install_dtr_nodes]: </playbooks/install_dtr_nodes.yml>
+[install_worker_nodes]: </playbooks/install_worker_nodes.yml>
+[config_monitoring]: </playbooks/config_monitoring.yml>
+[config_dummy_vms_for_docker_volumes_backup]: </playbooks/config_dummy_vms_for_docker_volumes_backup.yml>
+[config_simplivity_backups]: </playbooks/config_simplivity_backups.yml>
+

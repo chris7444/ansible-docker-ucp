@@ -928,7 +928,7 @@ For details of the impact of a host failure, see Table 13.
 **Table 13.** Host failure
 
 |Component	|Technology	|Duration	|Consequence	|Impact   |
-|-----------|-----------|-----------|---------------|---------|
+|:-----------|:-----------|:-----------|:---------------|:---------|
 |UCP Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover|
 |Workers Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover
 |DTR Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover
@@ -951,7 +951,7 @@ For details on the impact of a VM failure, see Table 14.
 **Table 14.** VM failure
 
 |Component	|Technology	|Duration	|Consequence	|Impact   |
-|-----------|-----------|-----------|---------------|---------|
+|:-----------|:-----------|:-----------|:---------------|:---------|
 |UCP Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required
 (restore from backup)|
 |Workers Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required

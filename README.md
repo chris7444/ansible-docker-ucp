@@ -963,6 +963,38 @@ For details on the impact of a VM failure, see Table 14.
 |Docker volumes	|Applicable (someone deletes file in the datastore)	|||		
 |User applications	|Depends on application (service or standalone container)|||			
 
+# Restoring a container backup
+
+Description of techniques here.  (TODO more verbiage needed)
+
+Key considerations:
+
+
+
+# Solution Lifecycle Management
+
+## Introduction
+
+Lifecycle management with respect to this solution refers to the maintenance and management of software and hardware of various components within that build up the solution stack. Lifecycle management is required to keep the solution up-to date and ensure that latest versions of the software are running in to provide optimal performance, security and fix any existing defects within the product.
+
+In this section, we will cover life cycle management of the different components that are used in this solution. The architectural diagram of the solution in Figure 27 shows the software and hardware stacks that make up the solution. Each stack is shown in a different color.
+
+
+![Solution architecture][solnarchitecture]
+**Figure 27.** Solution architecture
+
+
+Based on the diagram above, lifecycle of the following stacks need to be maintained and managed.
+
+1. Monitoring (Prometheus and Grafana) Tools
+2. Docker Enterprise Edition Environment
+3. Virtual Machine Operating systems
+4. vSphere Docker Volume Service
+5. SimpliVity environment
+
+The general practice and recommendation is to follow a bottom-up approach for updating all components of the environment and making sure the dependencies are met. In our solution, we would start with the SimpliVity stack and end with the Prometheus and Grafana monitoring environment. If all components are not being updated at the same time, the same approach can be followed – updating only the components that require updates while adhering to the interdependencies of each component that is being updated.
+
+
 
 
 
@@ -980,6 +1012,9 @@ For details on the impact of a VM failure, see Table 14.
 [dtrauth]: </images/dtrauth.png> "Figure 24. DTR authentication screen"
 [dtrrepos]: </images/dtrrepos.png> "Figure 25. DTR repositories"
 [imagescanning]: </images/imagescanning.png> "Figure 26. Image scanning in DTR"
+[solnarchitecture]: </images/solnarchitecture.png> "Figure 27. Solution architecture"
+
+
 
 [create_vms]: </playbooks/create_vms.yml>
 [config_networking]: </playbooks/config_networking.yml>

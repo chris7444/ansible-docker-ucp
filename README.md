@@ -942,7 +942,36 @@ For details of the impact of a host failure, see Table 13.
 |User applications	|Depends on application 
 (service or standalone container)	|||
 
-		
+
+
+## VM Failure
+
+For details on the impact of a VM failure, see Table 14.
+
+**Table 14.** VM failure
+
+|Component	|Technology	|Duration	|Consequence	|Impact   |
+|-----------|-----------|-----------|---------------|---------|
+|UCP Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required
+(restore from backup)|
+|Workers Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required
+(restore from backup)|
+|DTR Load Balancer	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required
+(restore from backup)|
+|Central Logging	|Manual recovery	|Minutes	|Service unavailable	|Recovery procedure required
+(restore from backup)|
+|NFS	|Manual recovery	|Minutes	|DTR push/pull unavailable	|Recovery procedure required
+(restore from backup)|
+|UCP service	|Protected by UCP scale out design	|Seconds	|	|Recovery procedure required|
+|DTR service	|Protected by DTR scale out design	|Seconds	|	|Recovery procedure required|
+|Monitoring	|Protected by Docker service (replicas)	|	|New replica	
+|Resource plane	|Manual recovery	|Minutes	|Reduced capacity|	
+|Docker volumes	|Applicable
+(someone deletes file in the datastore)	|||		
+|User applications	|Depends on application 
+(service or standalone container)|||			
+
+
 
 
 

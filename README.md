@@ -776,7 +776,26 @@ clh-nfs ip_addr='10.10.174.121/22'    esxi_host='simply03.am2.cloudra.local'
 ```
 
 Instead, you can change the placement NFS server VM, leveraging a fourth ESX node:
+```
+[nfs]
+clh-nfs ip_addr='10.10.174.1xx/22'    esxi_host='simply04.am2.cloudra.local'
+```
 
+
+
+When you specify the placement of the VM, you should ensure that you follow these placement guidelines:
+
+- Do not place two UCP VMs on the same node. If the node fails, the UCP cluster will lose quorum and the service will go down.
+- Do not place two DTR replicas (VMs) on the same node. Once again, the cluster will lose quorum if that node fails.
+
+**Note:** The OmniStack software maintains two replicas on two different hosts for each VM. As a result, when a VM is scheduled on an ESX server that does not have local access to one of the replicas, the VM will report the warning “SimpliVity VM Data Access Not Optimized”. You can safely ignore this warning.
+
+### Using more than three nodes when DRS is enabled
+
+When DRS is enabled, it controls the placement of the VMs and as a result, the placement you have specified in the vm_hosts inventory is ignored. Instead, you use DRS rules to make sure that the UCP and DTR VMs are distributed across three nodes for the reasons explained earlier. 
+
+
+**Note:** If you do not specify DRS rules to determine the placement, DRS will automatically move the VMs that report the “SimpliVity VM Data Access Not Optimized” warning to a node with a replica of the VM which may break the earlier placement guideline.
 
 
 

@@ -65,19 +65,19 @@ The playbook [config_monitoring.yml][config_monitoring] configures a monitoring 
 #- include: playbooks/config_monitoring.yml
 ```
 
-[create_vms]: </create_vms.yml>
-[config_networking]: </config_networking.yml>
-[distribute_keys]: </distribute_keys.yml>
-[config_subscription]: </config_subscription.yml>
-[install_haproxy]: </install_haproxy.yml>
-[install_ntp]: </install_ntp.yml>
-[install_docker]: </install_docker.yml>
-[install_rsyslog]: </install_rsyslog.yml>
-[config_docker_lvs]: </config_docker_lvs.yml>
-[docker_post_config]: </docker_post_config.yml>
-[install_nfs_server]: </install_nfs_server.yml>
-[install_nfs_clients]: </install_nfs_clients.yml>
-[install_ucp_nodes]: </install_ucp_nodes.yml>
-[install_dtr_nodes]: </install_dtr_nodes.yml>
-[install_worker_nodes]: </install_worker_nodes.yml>
-[config_monitoring]: </config_monitoring.yml>
+[create_vms]: </playbooks/create_vms.yml>
+[config_networking]: </playbooks/config_networking.yml>
+[distribute_keys]: </playbooks/distribute_keys.yml>
+[config_subscription]: </playbooks/config_subscription.yml>
+[install_haproxy]: </playbooks/install_haproxy.yml>
+[install_ntp]: </playbooks/install_ntp.yml>
+[install_docker]: </playbooks/install_docker.yml>
+[install_rsyslog]: </playbooks/install_rsyslog.yml>
+[config_docker_lvs]: </playbooks/config_docker_lvs.yml>
+[docker_post_config]: </playbooks/docker_post_config.yml>
+[install_nfs_server]: </playbooks/install_nfs_server.yml>
+[install_nfs_clients]: </playbooks/install_nfs_clients.yml>
+[install_ucp_nodes]: </playbooks/install_ucp_nodes.yml>
+[install_dtr_nodes]: </playbooks/install_dtr_nodes.yml>
+[install_worker_nodes]: </playbooks/install_worker_nodes.yml>
+[config_monitoring]: </playbooks/config_monitoring.yml>

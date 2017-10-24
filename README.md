@@ -788,8 +788,8 @@ A much briefer video with a quick demo can be found here: https://vimeo.com/2293
 [docker_post_config]: </playbooks/docker_post_config.yml>
 [install_nfs_server]: </playbooks/install_nfs_server.yml>
 [install_nfs_clients]: </playbooks/install_nfs_clients.yml>
-[install_ucp_nodes]: </install_ucp_nodes.yml>
-[install_dtr_nodes]: </install_dtr_nodes.yml>
-[install_worker_nodes]: </install_worker_nodes.yml>
-[config_monitoring]: </config_monitoring.yml>
+[install_ucp_nodes]: </playbooks/install_ucp_nodes.yml>
+[install_dtr_nodes]: </playbooks/install_dtr_nodes.yml>
+[install_worker_nodes]: </playbooks/install_worker_nodes.yml>
+[config_monitoring]: </playbooks/config_monitoring.yml>
 

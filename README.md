@@ -981,6 +981,7 @@ In this section, we will cover life cycle management of the different components
 
 
 ![Solution architecture][solnarchitecture]
+
 **Figure 27.** Solution architecture
 
 

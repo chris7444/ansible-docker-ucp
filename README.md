@@ -823,10 +823,21 @@ Click on `Services` to see the monitoring services that were installed during th
 **Figure 23.** Services information
 
 # Accessing the DTR UI
-The Docker DTR UI should be available by browsing to the DTR load balancer or any of the nodes via HTTPS. The authentication screen will appear. Enter your UCP credentials and you should see the empty list of repositories. If you navigate to `Settings > Security`, you should see the Image Scanning feature already enabled (note that you need an Advanced license to have access to this feature).
+The Docker DTR UI should be available by browsing to the DTR load balancer or any of the nodes via HTTPS. The authentication screen will appear as shown in Figure 24:
+
+![DTR authentication screen][dtrauth]
+**Figure 24.** DTR authentication screen
 
 
+Enter your UCP credentials and you should see the empty list of repositories as shown in Figure 25:
 
+![DTR repositories][dtrrepos]
+**Figure 25.** DTR repositories
+
+If you navigate to `Settings > Security`, you should see the Image Scanning feature already enabled as shown in Figure 26. (Note that you need an Advanced license to have access to this feature).
+
+![Image scanning in DTR][imagescanning]
+**Figure 26.** Image scanning in DTR
 
 
 # Security considerations
@@ -880,6 +891,9 @@ A much briefer video with a quick demo can be found here: https://vimeo.com/2293
 [ucpdash]: </images/ucpdash.png> "Figure 21. UCP dashboard"
 [nodesinfo]: </images/nodesinfo.png> "Figure 22. Nodes information"
 [servicesinfo]: </images/servicesinfo.png> "Figure 23. Services information"
+[dtrauth]: </images/dtrauth.png> "Figure 24. DTR authentication screen"
+[dtrrepos]: </images/dtrrepos.png> "Figure 25. DTR repositories"
+[imagescanning]: </images/imagescanning.png> "Figure 26. Image scanning in DTR"
 
 [create_vms]: </playbooks/create_vms.yml>
 [config_networking]: </playbooks/config_networking.yml>

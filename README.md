@@ -1051,7 +1051,7 @@ The VMware ESXi and vCenter versions must be compatible with each other and with
     <td>1</td>
 	<td>VMware vCenter</td>
 	<td>1. HPE OmniStack <br>2. VMware ESXi</td>
-    <td rowspan=2>[VMware Upgrade for SimpliVity](https://support.simplivity.com/Site_Specific_Content/Product_Manuals/Upgrade_Guides/ESXi_Guided_Upgrade)</td>
+    <td rowspan=2><a href="https://support.simplivity.com/Site_Specific_Content/Product_Manuals/Upgrade_Guides/ESXi_Guided_Upgrade">VMware Upgrade for SimpliVity</a></td>
   </tr>
   <tr>
     <td>2</td>

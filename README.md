@@ -1016,7 +1016,7 @@ In general, ensure that the software bits for the Arbiter and vSphere extension 
     <td>1</td>
 	<td>HPE SimpliVity Arbiter</td>
 	<td>1. HPE OmniStack</td>
-    <td rowspan=2>SimpliVity OmniStack for vSphere Upgrade Guide<br>Download software bits from HPE’s support website.<br>http://www.hpe.com/support</td>
+    <td rowspan=3>SimpliVity OmniStack for vSphere Upgrade Guide<br>Download software bits from HPE’s support website.<br>http://www.hpe.com/support</td>
   </tr>
   <tr>
     <td>2</td>

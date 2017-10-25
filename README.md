@@ -1063,6 +1063,34 @@ The VMware ESXi and vCenter versions must be compatible with each other and with
 
 
 
+## HPE Server Software
+
+SimpliVity servers are based on HPE server platforms and require compatible firmware version to function with HPE OmniStack Software, as shown in Table 17.
+
+**Table 17.** HPE server components
+
+<table>
+  <tr>
+    <th>Order</th>
+    <th>Component</th>
+    <th>Dependency (compatibility)</th>
+    <th>Download/Documentation</th>	
+  </tr>
+  <tr>
+    <td>1</td>
+	<td>HPE Firmware</td>
+	<td>1. HPE OmniStack Software</td>
+	<td><a href="https://support.simplivity.com/Site_Specific_Content/Product_Manuals/Upgrade_Guides/SimpliVity_Platform_Firmware_Guided_Upgrade">
+	Firmware Upgrade for SimpliVity</a></td>
+	
+  </tr>
+</table>
+
+
+
+
+
+
 
 [architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
 [provisioning]: </images/provisioning.png> "Provisioning Steps"

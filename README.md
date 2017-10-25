@@ -1179,6 +1179,36 @@ A banner will be displayed on the UI when an update is available for UCP or DTR.
 </table>
 
 
+## Monitoring Tools
+
+Prometheus and Grafana monitoring tools (see Table 21) run as containers within the Docker environment. Newer versions of these tools can be deployed by pulling the Docker images from Docker Hub. Verify that the version of Prometheus that is being used is compatible with the version of Docker EE.
+
+**Table 21.** Monitoring tools
+
+<table>
+  <tr>
+    <th>Order</th>
+    <th>Component</th>
+    <th>Dependency (compatibility)</th>
+    <th>Download/Documentation</th>	
+  </tr>
+  <tr>
+    <td>1</td>
+	<td>Prometheus	</td>
+	<td>1. Grafana<br> 2. Docker EE</td>
+	<td rowspan="3">1. Prometheus Images on Docker Hub<br><br>
+	<a href="http://docs.grafana.org/installation/upgrading/">Upgrading Grafana</a>
+	</td>	
+  </tr>
+  <tr>
+    <td>2</td>
+	<td>Grafana</td>  
+    <td>1. Prometheus<br> 2. Docker EE</td>
+  </tr>
+
+
+
+
 [architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
 [provisioning]: </images/provisioning.png> "Provisioning Steps"
 [createnewvm]: </images/createnewvirtualmachine.png> "Figure 2. Create New Virtual Machine"

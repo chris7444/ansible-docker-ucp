@@ -1118,6 +1118,29 @@ When updating the Docker Volume service plug-in, ensure the ESXi version you are
 
 
 
+## Red Hat Enterprise Linux operating system
+
+This solution is built using Red Hat Enterprise Linux (see Table 19) as the base operating system.  When upgrading the operating system on the VMs, first verify that the OS version is compatible to run Docker EE by looking at the Docker OS compatibility metric.
+
+**Table 19.** Operating system
+
+<table>
+  <tr>
+    <th>Order</th>
+    <th>Component</th>
+    <th>Dependency (compatibility)</th>
+    <th>Download/Documentation</th>	
+  </tr>
+  <tr>
+    <td>1</td>
+	<td>Red Hat Enterprise Linux</td>
+	<td>1. Docker EE <br>2. vDVS client software plugin</td>
+	<td><a href="https://access.redhat.com/articles/11258">RHEL</a></td>	
+  </tr>
+</table>
+
+
+
 [architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
 [provisioning]: </images/provisioning.png> "Provisioning Steps"
 [createnewvm]: </images/createnewvirtualmachine.png> "Figure 2. Create New Virtual Machine"

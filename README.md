@@ -997,6 +997,44 @@ The general practice and recommendation is to follow a bottom-up approach for up
 
 
 
+## SimpliVity environment
+
+The SimpliVity environment is made up of proprietary SimpliVity software, VMware software and HPE firmware. There are interdependencies between the various components that need to be accounted and are provided in the table below. The components in Table 15 are part of the SimpliVity environment that require lifecycle management.
+
+In general, ensure that the software bits for the Arbiter and vSphere extension corresponding to an OmniStack release are used.
+
+**Table 15.** SimpliVity components
+
+<table>
+  <tr>
+    <th>Order</th>
+    <th>Component</th>
+    <th>Dependency (compatibility)</th>
+    <th>Download/Documentation</th>	
+  </tr>
+  <tr>
+    <td>1</td>
+	<td>HPE SimpliVity Arbiter</td>
+	<td>1. HPE OmniStack</td>
+    <td colspan=3>SimpliVity OmniStack for vSphere Upgrade Guide<br>Download software bits from HPE’s support website.<br>http://www.hpe.com/support</td>
+  </tr>
+  <tr>
+    <td>2</td>
+	<td>HPE SimpliVity VMware Plug-in</td>
+	<td>1. HPE SimpliVity Arbiter <br>2. HPE OmniStack</td>
+  </tr>
+  <tr>
+    <td>3</td>
+	<td>HPE Omnistack</td>
+	<td>1. HPE SimpliVity VMware Plug-in <br>2. HPE SimpliVity Arbiter</td>
+  </tr>  
+</table>
+
+
+
+
+
+
 
 
 

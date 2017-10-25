@@ -1196,8 +1196,7 @@ Prometheus and Grafana monitoring tools (see Table 21) run as containers within 
     <td>1</td>
 	<td>Prometheus	</td>
 	<td>1. Grafana<br> 2. Docker EE</td>
-	<td rowspan="3">1. Prometheus Images on Docker Hub<br><br>
-	<a href="http://docs.grafana.org/installation/upgrading/">Upgrading Grafana</a>
+	<td rowspan="3">1. Prometheus Images on Docker Hub<br><br>2. <a href="http://docs.grafana.org/installation/upgrading/">Upgrading Grafana</a>
 	</td>	
   </tr>
   <tr>

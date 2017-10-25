@@ -1140,6 +1140,44 @@ This solution is built using Red Hat Enterprise Linux (see Table 19) as the base
 </table>
 
 
+## Docker EE Environment
+
+Each release of Docker Enterprise Edition contains three technology components – UCP, DTR and the Docker Daemon or Engine. It is imperative that the components belonging to the same version are deployed or upgraded together – see Table 20. 
+
+A banner will be displayed on the UI when an update is available for UCP or DTR. The admin can start the upgrade process by clicking the link.
+
+![Docker update notification][dockerupdate]
+**Figure 28.** Docker update notification
+
+
+**Table 20.** Docker EE components
+
+
+<table>
+  <tr>
+    <th>Order</th>
+    <th>Component</th>
+    <th>Dependency (compatibility)</th>
+    <th>Download/Documentation</th>	
+  </tr>
+  <tr>
+    <td>1</td>
+	<td>Docker Daemon/Engine</td>
+	<td rowspan="3">1. VM Operating System <br> 2. vDVS plugin <br>3. Prometheus and Grafana</td>
+	<td rowspan="3"><a href="https://success.docker.com/Policies/Maintenance_Lifecycle">Docker Lifecycle Maintenance</a><br>
+	<a href="https://success.docker.com/Policies/Compatibility_Matrix">Docker Compatibility Matrix</a>
+	</td>	
+  </tr>
+  <tr>
+    <td>2</td>
+	<td>Universal Control Plane</td>  
+  </tr>
+  <tr>
+    <td>3</td>
+	<td>Docker Trusted Registry</td>  
+  </tr>  
+</table>
+
 
 [architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
 [provisioning]: </images/provisioning.png> "Provisioning Steps"
@@ -1155,7 +1193,7 @@ This solution is built using Red Hat Enterprise Linux (see Table 19) as the base
 [dtrrepos]: </images/dtrrepos.png> "Figure 25. DTR repositories"
 [imagescanning]: </images/imagescanning.png> "Figure 26. Image scanning in DTR"
 [solnarchitecture]: </images/solnarchitecture.png> "Figure 27. Solution architecture"
-
+[dockerupdate]: </images/dockerupdate.png> "Figure 28. Docker update notification"
 
 
 [create_vms]: </playbooks/create_vms.yml>

@@ -99,7 +99,18 @@ These nodes can live in any of the hosts and they are not redundant.
 
 Sizing considerations
 
-This section describes sizing considerations. The vCPU allocations are described in Table 1 while the memory allocation is described in Table 2.
+A node is a machine in the cluster (virtual or physical) with Docker Engine running on it. When provisioning each node, assign it a role: UCP Controller, DTR, or worker node so that they are protected from running application workloads.
+
+To decide what size the node should be in terms of CPU, RAM, and storage resources, consider the following:
+
+1. All nodes should at least fulfil the minimal requirements, for UCP 2.0 2GB of RAM and 3GB of storage. More detailed requirements are in the UCP documentation.
+2. UCP Controller nodes should be provided with more than the minimal requirements, but won’t need much more if nothing else runs on them.
+3. Ideally, Worker nodes size will vary based on your workloads so it is impossible to define a universal standard size.
+4. Other considerations like target density (average number of containers per node), whether one standard node type or several are preferred, and other operational considerations might also influence sizing.
+
+If possible, node size should be determined by experimentation and testing actual workloads, and they should be refined iteratively. A good starting point is to select a standard or default machine type in your environment and use this size only. If your standard machine type provides more resources than the UCP Controllers need, it makes sense to have a smaller node size for these. Whatever the starting choice, it’s important to monitoring resource usage and cost to improve the model.
+
+For Express Containers with Docker: Ops Edition, the following section describes sizing configurations.  The vCPU allocations are described in Table 1 while the memory allocation is described in Table 2.
 
 **Table 1** vCPU
 
@@ -327,9 +338,9 @@ Now that the VM Template has the public key of the Ansible node, we’re ready t
 
 ```# shutdown –h now```
 
-3. Once the Virtual Machine is ready and turned off, convert it to a template as shown in Figure 4.
+3. Once the Virtual Machine is ready and turned off, convert it to a template as shown in Figure 18.
 ![Convert to template][converttotemplate]  
-**Figure 4** Convert to template  
+**Figure 18** Convert to template  
 
 This completes the creation of the VM Template.
 
@@ -711,10 +722,10 @@ The playbook [config_monitoring.yml][config_monitoring] configures a monitoring 
 #- include: playbooks/config_monitoring.yml
 ```
 
-After running the playbook, you can browse (HTTP) to the UCP load balancer IP address or FQDN on port 3000 (using a URL like ```http://<ucp_lb>:3000```) and you will see the Grafana UI. The username and password are defaulted to ```admin```/```admin```. When you log in, you can pick up the Dashboard that was imported by the playbooks (Click the Dashboard icon and select Docker Swarm Monitor) and observe the ongoing monitoring, as shown in Figure 5.
+After running the playbook, you can browse (HTTP) to the UCP load balancer IP address or FQDN on port 3000 (using a URL like ```http://<ucp_lb>:3000```) and you will see the Grafana UI. The username and password are defaulted to ```admin```/```admin```. When you log in, you can pick up the Dashboard that was imported by the playbooks (Click the Dashboard icon and select Docker Swarm Monitor) and observe the ongoing monitoring, as shown in Figure 19.
 
 ![Grafana UI][grafana]
-**Figure 5.** Grafana UI
+**Figure 19.** Grafana UI
 
 
 The deployed Grafana dashboard includes cluster-wide metrics, node-specific metrics, and container-specific metrics.  Monitored resources include disk I/O, memory, CPU utilization, network traffic, etc.  The dashboard also highlights any containers configured with memory limits and the current memory utilization rate based on those limits.  All of these metrics are provided via the node-exporter (responsible for OS and host metrics) and cAdvisor (responsible for container-specific metrics) instances running in the swarm.  For more information about these tools and the metrics they expose, see the documentation links in their respective GitHub repositories: https://github.com/prometheus/node_exporter and https://github.com/google/cadvisor. 
@@ -1206,14 +1217,20 @@ Prometheus and Grafana monitoring tools (see Table 21) run as containers within 
   </tr>
 
 
+## High-Level dependency map
+
+See Figure 29 for a diagram representing the high-level dependency map.
+
+![High-level dependency map][dependencymap]
+**Figure 29.** High-level dependency map
 
 
 [architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
 [provisioning]: </images/provisioning.png> "Provisioning Steps"
 [createnewvm]: </images/createnewvirtualmachine.png> "Figure 2. Create New Virtual Machine"
 [vmnamelocation]: </images/vmnamelocation.png> "Figure 3. Specify name and location for the virtual machine" 
-[converttotemplate]: </images/converttotemplate.png> "Figure 4. Convert to template"
-[grafana]: </images/grafana.png> "Figure 5. Grafana UI"
+[converttotemplate]: </images/converttotemplate.png> "Figure 18. Convert to template"
+[grafana]: </images/grafana.png> "Figure 19. Grafana UI"
 [ucpauth]: </images/ucpauth.png> "Figure 20. UCP authentication screen"
 [ucpdash]: </images/ucpdash.png> "Figure 21. UCP dashboard"
 [nodesinfo]: </images/nodesinfo.png> "Figure 22. Nodes information"
@@ -1223,7 +1240,7 @@ Prometheus and Grafana monitoring tools (see Table 21) run as containers within 
 [imagescanning]: </images/imagescanning.png> "Figure 26. Image scanning in DTR"
 [solnarchitecture]: </images/solnarchitecture.png> "Figure 27. Solution architecture"
 [dockerupdate]: </images/dockerupdate.png> "Figure 28. Docker update notification"
-
+[dependencymap]: </images/dependencymap.png> "Figure 29. High-level dependency map"
 
 [create_vms]: </playbooks/create_vms.yml>
 [config_networking]: </playbooks/config_networking.yml>

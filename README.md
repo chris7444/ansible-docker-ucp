@@ -1213,13 +1213,14 @@ Prometheus and Grafana monitoring tools (see Table 21) run as containers within 
 	<td>Grafana</td>  
     <td>1. Prometheus<br> 2. Docker EE</td>
   </tr>
-
+</table>
 
 ## High-Level dependency map
 
 See Figure 29 for a diagram representing the high-level dependency map.
 
 ![High-level dependency map][dependencymap]
+
 **Figure 29.** High-level dependency map
 
 

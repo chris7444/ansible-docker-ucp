@@ -1032,8 +1032,34 @@ In general, ensure that the software bits for the Arbiter and vSphere extension 
 
 
 
+## VMware Components 
 
+The SimpliVity solution used in this deployment guide is built on VMware vSphere. VMware ESXi and vCenter (see Table 16) are the two components from VMware that are leveraged by the SimpliVity software.
 
+The VMware ESXi and vCenter versions must be compatible with each other and with the HPE OmniStack version that is running on the SimpliVity systems.
+
+**Table 16.** VMware components
+
+<table>
+  <tr>
+    <th>Order</th>
+    <th>Component</th>
+    <th>Dependency (compatibility)</th>
+    <th>Download/Documentation</th>	
+  </tr>
+  <tr>
+    <td>1</td>
+	<td>VMware vCenter</td>
+	<td>1. HPE OmniStack <br>2. VMware ESXi</td>
+    <td rowspan=2>[VMware Upgrade for SimpliVity](https://support.simplivity.com/Site_Specific_Content/Product_Manuals/Upgrade_Guides/ESXi_Guided_Upgrade)</td>
+  </tr>
+  <tr>
+    <td>2</td>
+	<td>VMware ESXi</td>
+	<td>1. HPE OmniStack<br>2. VMware vCenter</td>
+  </tr>
+
+</table>
 
 
 

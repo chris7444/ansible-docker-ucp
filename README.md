@@ -1220,7 +1220,6 @@ Prometheus and Grafana monitoring tools (see Table 21) run as containers within 
 See Figure 29 for a diagram representing the high-level dependency map.
 
 ![High-level dependency map][dependencymap]
-
 **Figure 29.** High-level dependency map
 
 

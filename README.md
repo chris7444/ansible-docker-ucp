@@ -876,8 +876,6 @@ When deploying a service, use a proper version tag instead of just the `latest` 
 
 ## Launch services rather than individual containers
 
-TODO
-
 Docker Swarm maintains the service state. By launching a service, Swarm monitors the health of the individual containers and will start additional containers should one fail. 
 
 

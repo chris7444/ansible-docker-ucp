@@ -1163,8 +1163,8 @@ A banner will be displayed on the UI when an update is available for UCP or DTR.
   <tr>
     <td>1</td>
 	<td>Docker Daemon/Engine</td>
-	<td rowspan="3">1. VM Operating System <br> 2. vDVS plugin <br>3. Prometheus and Grafana</td>
-	<td rowspan="3"><a href="https://success.docker.com/Policies/Maintenance_Lifecycle">Docker Lifecycle Maintenance</a><br>
+	<td rowspan="3">1. VM Operating System <br><br> 2. vDVS plugin <br><br>3. Prometheus and Grafana</td>
+	<td rowspan="3"><a href="https://success.docker.com/Policies/Maintenance_Lifecycle">Docker Lifecycle Maintenance</a><br><br>
 	<a href="https://success.docker.com/Policies/Compatibility_Matrix">Docker Compatibility Matrix</a>
 	</td>	
   </tr>

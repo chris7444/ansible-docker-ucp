@@ -982,6 +982,12 @@ datastores: ['**Docker_CLH**']
 
 ***Note:*** The use of a single datastore is recommended. If you have configured multiple datastores, you need to understand and keep track of how your Docker volumes are distributed across the datastores.
 
+The name of the special VM follows the pattern '<prefix>-in-dockervols-<Datastore>' where
+- <prefix> is the value of the variable `dummy_vm_prefix` from the file `group_vars/vars`
+- <Datastore> is the name of the datastore
+
+For example, the VM name would be 'clh-VM-in-dockervols-Docker_CLH' based on the default values in the scripts.
+
 
 ## Create a Docker volume
 
@@ -1008,7 +1014,8 @@ vsphere:latest      prom_clh-db-data@Docker_CLH
 vsphere:latest      test_01@Docker_CLH
 ```
 
-Attach a container to the volume and add data to it by creating a text file with some arbitrary content. 
+You can attach a container to the volume and then add data to it by creating a text file with some arbitrary content:
+
 <pre>
 [root@clh-ucp01 ~]# docker run -it --rm -v test_01:/tmp alpine sh -c "echo <b>some test data here</b> > /tmp/foo.txt"
 [root@clh-ucp01 ~]#
@@ -1024,7 +1031,7 @@ Digest: sha256:f006ecbb824d87947d0b51ab8488634bf69fe4094959d935c0c103f4820a417d
 Status: Downloaded newer image for alpine:latest
 ```
 
-The container will exit once the shell command has run and any unnamed volumes will be removed. However, the named volume `test_01:/tmp` will persist. To check that the data is still available, spin up a new container and try to retrieve the data:
+The container will exit once the shell command has run and any unnamed volumes will be removed. However, the named volume `test_01:/tmp` will persist. To check that the data is still available after the container exited, spin up a new container and try to retrieve the data:
 
 <pre>
 [root@clh-ucp01 ~]# docker run -it --rm -v test_01:/tmp alpine sh -c "cat /tmp/foo.txt"	
@@ -1033,8 +1040,19 @@ The container will exit once the shell command has run and any unnamed volumes w
 </pre>
 
 
+## Automated backup
 
 
+
+
+
+## Manual backup
+
+Rather than waiting for an automated backup to take place, you can create a backup immediately 
+
+
+![Backup virtual machine][backupvirtualmachine]
+**Figure 28.** Backup virtual machine
 
 
 
@@ -1298,6 +1316,7 @@ See Figure 29 for a diagram representing the high-level dependency map.
 [solnarchitecture]: </images/solnarchitecture.png> "Figure 27. Solution architecture"
 [dockerupdate]: </images/dockerupdate.png> "Figure 28. Docker update notification"
 [dependencymap]: </images/dependencymap.png> "Figure 29. High-level dependency map"
+[backupvirtualmachine]: </images/backupvirtualmachine.png> "Figure 28. Backup virtual machine"
 
 [create_vms]: </playbooks/create_vms.yml>
 [config_networking]: </playbooks/config_networking.yml>

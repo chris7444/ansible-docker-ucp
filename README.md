@@ -1009,10 +1009,10 @@ vsphere:latest      test_01@Docker_CLH
 ```
 
 Attach a container to the volume and add data to it by creating a text file with some arbitrary content. 
-```
-[root@clh-ucp01 ~]# docker run -it --rm -v test_01:/tmp alpine sh -c "echo **some test data here** > /tmp/foo.txt"
+<pre>
+[root@clh-ucp01 ~]# docker run -it --rm -v test_01:/tmp alpine sh -c "echo <b>some test data here</b> > /tmp/foo.txt"
 [root@clh-ucp01 ~]#
-```
+</pre>
 
 If this is the first time you have used the alpine image, you may see additional output relating to download of image layers:
 
@@ -1026,11 +1026,11 @@ Status: Downloaded newer image for alpine:latest
 
 The container will exit once the shell command has run and any unnamed volumes will be removed. However, the named volume `test_01:/tmp` will persist. To check that the data is still available, spin up a new container and try to retrieve the data:
 
-```
+<pre>
 [root@clh-ucp01 ~]# docker run -it --rm -v test_01:/tmp alpine sh -c "cat /tmp/foo.txt"	
-**some test data here**
+<b>some test data here</b>
 [root@clh-ucp01 ~]#
-```
+</pre>
 
 
 

@@ -982,11 +982,11 @@ datastores: ['**Docker_CLH**']
 
 ***Note:*** The use of a single datastore is recommended. If you have configured multiple datastores, you need to understand and keep track of how your Docker volumes are distributed across the datastores.
 
-The name of the special VM follows the pattern '<prefix>-in-dockervols-<Datastore>' where
+The name of the special VM follows the pattern `<prefix>-in-dockervols-<Datastore>` where
 - <prefix> is the value of the variable `dummy_vm_prefix` from the file `group_vars/vars`
 - <Datastore> is the name of the datastore
 
-For example, the VM name would be 'clh-VM-in-dockervols-Docker_CLH' based on the default values in the scripts.
+For example, the VM name would be `clh-VM-in-dockervols-Docker_CLH` based on the default values in the scripts.
 
 
 ## Create a Docker volume
@@ -1048,11 +1048,23 @@ The container will exit once the shell command has run and any unnamed volumes w
 
 ## Manual backup
 
-Rather than waiting for an automated backup to take place, you can create a backup immediately 
+Rather than waiting for an automated backup to take place, you can create a backup immediately. Right-click on the special VM, in this case  `clh-VM-in-dockervols-Docker_CLH`, select 'All HPE SimpliVity Actions' and choose 'Backup Virtual Machine' as shown in Figure 27.
 
 
 ![Backup virtual machine][backupvirtualmachine]
-**Figure 28.** Backup virtual machine
+**Figure 27.** Backup virtual machine
+
+You can specify a backup name, in this case 'manual_backup_test_01', as shown in Figure 28.
+
+![Backup virtual machine details][backupvmdetails]
+**Figure 28.** Backup virtual machine details
+
+
+## Restore
+
+![Search backups][searchbackups]
+**Figure 29.** Search backups
+
 
 
 
@@ -1313,10 +1325,22 @@ See Figure 29 for a diagram representing the high-level dependency map.
 [dtrauth]: </images/dtrauth.png> "Figure 24. DTR authentication screen"
 [dtrrepos]: </images/dtrrepos.png> "Figure 25. DTR repositories"
 [imagescanning]: </images/imagescanning.png> "Figure 26. Image scanning in DTR"
+
+[backupvirtualmachine]: </images/backupvirtualmachine.png> "Figure 27. Backup virtual machine"
+[backupvmdetails]: </images/backupvmdetails.png> "Figure 28. Backup virtual machine details"
+[searchbackups]: </images/searchbackups.png> "Figure 29. Search backups"
+
+
+
+
+
 [solnarchitecture]: </images/solnarchitecture.png> "Figure 27. Solution architecture"
 [dockerupdate]: </images/dockerupdate.png> "Figure 28. Docker update notification"
+
+
+
 [dependencymap]: </images/dependencymap.png> "Figure 29. High-level dependency map"
-[backupvirtualmachine]: </images/backupvirtualmachine.png> "Figure 28. Backup virtual machine"
+
 
 [create_vms]: </playbooks/create_vms.yml>
 [config_networking]: </playbooks/config_networking.yml>

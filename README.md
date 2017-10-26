@@ -974,9 +974,15 @@ For details on the impact of a VM failure, see Table 14.
 
 # Restoring a container backup
 
-Description of techniques here.  (TODO more verbiage needed)
+In order to restore a Docker volume, you need to restore a special VM  that has been deployed for the sole purpose of backing up Docker volumes. There is one such VM for each datastore defined in the `datastores` array in the `group_vars/vars` file. By default, a single datastore is specified in the playbooks:
 
-Key considerations:
+```
+datastores: ['***Docker_CLH***']
+```
+
+***Note:*** The use of a single datastore is recommended. If you have configured multiple datastores, you need to understand and keep track of how your Docker volumes are distributed across the datastores.
+
+
 
 
 

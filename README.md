@@ -99,7 +99,18 @@ These nodes can live in any of the hosts and they are not redundant.
 
 Sizing considerations
 
-This section describes sizing considerations. The vCPU allocations are described in Table 1 while the memory allocation is described in Table 2.
+A node is a machine in the cluster (virtual or physical) with Docker Engine running on it. When provisioning each node, assign it a role: UCP Controller, DTR, or worker node so that they are protected from running application workloads.
+
+To decide what size the node should be in terms of CPU, RAM, and storage resources, consider the following:
+
+1. All nodes should at least fulfil the minimal requirements, for UCP 2.0 2GB of RAM and 3GB of storage. More detailed requirements are in the UCP documentation.
+2. UCP Controller nodes should be provided with more than the minimal requirements, but won’t need much more if nothing else runs on them.
+3. Ideally, Worker nodes size will vary based on your workloads so it is impossible to define a universal standard size.
+4. Other considerations like target density (average number of containers per node), whether one standard node type or several are preferred, and other operational considerations might also influence sizing.
+
+If possible, node size should be determined by experimentation and testing actual workloads, and they should be refined iteratively. A good starting point is to select a standard or default machine type in your environment and use this size only. If your standard machine type provides more resources than the UCP Controllers need, it makes sense to have a smaller node size for these. Whatever the starting choice, it’s important to monitoring resource usage and cost to improve the model.
+
+For Express Containers with Docker: Ops Edition, the following section describes sizing configurations.  The vCPU allocations are described in Table 1 while the memory allocation is described in Table 2.
 
 **Table 1** vCPU
 
@@ -327,9 +338,9 @@ Now that the VM Template has the public key of the Ansible node, we’re ready t
 
 ```# shutdown –h now```
 
-3. Once the Virtual Machine is ready and turned off, convert it to a template as shown in Figure 4.
+3. Once the Virtual Machine is ready and turned off, convert it to a template as shown in Figure 18.
 ![Convert to template][converttotemplate]  
-**Figure 4** Convert to template  
+**Figure 18** Convert to template  
 
 This completes the creation of the VM Template.
 
@@ -711,10 +722,10 @@ The playbook [config_monitoring.yml][config_monitoring] configures a monitoring 
 #- include: playbooks/config_monitoring.yml
 ```
 
-After running the playbook, you can browse (HTTP) to the UCP load balancer IP address or FQDN on port 3000 (using a URL like ```http://<ucp_lb>:3000```) and you will see the Grafana UI. The username and password are defaulted to ```admin```/```admin```. When you log in, you can pick up the Dashboard that was imported by the playbooks (Click the Dashboard icon and select Docker Swarm Monitor) and observe the ongoing monitoring, as shown in Figure 5.
+After running the playbook, you can browse (HTTP) to the UCP load balancer IP address or FQDN on port 3000 (using a URL like ```http://<ucp_lb>:3000```) and you will see the Grafana UI. The username and password are defaulted to ```admin```/```admin```. When you log in, you can pick up the Dashboard that was imported by the playbooks (Click the Dashboard icon and select Docker Swarm Monitor) and observe the ongoing monitoring, as shown in Figure 19.
 
 ![Grafana UI][grafana]
-**Figure 5.** Grafana UI
+**Figure 19.** Grafana UI
 
 
 The deployed Grafana dashboard includes cluster-wide metrics, node-specific metrics, and container-specific metrics.  Monitored resources include disk I/O, memory, CPU utilization, network traffic, etc.  The dashboard also highlights any containers configured with memory limits and the current memory utilization rate based on those limits.  All of these metrics are provided via the node-exporter (responsible for OS and host metrics) and cAdvisor (responsible for container-specific metrics) instances running in the swarm.  For more information about these tools and the metrics they expose, see the documentation links in their respective GitHub repositories: https://github.com/prometheus/node_exporter and https://github.com/google/cadvisor. 
@@ -865,8 +876,6 @@ When deploying a service, use a proper version tag instead of just the `latest` 
 
 ## Launch services rather than individual containers
 
-TODO
-
 Docker Swarm maintains the service state. By launching a service, Swarm monitors the health of the individual containers and will start additional containers should one fail. 
 
 
@@ -965,9 +974,15 @@ For details on the impact of a VM failure, see Table 14.
 
 # Restoring a container backup
 
-Description of techniques here.  (TODO more verbiage needed)
+In order to restore a Docker volume, you need to restore a special VM  that has been deployed for the sole purpose of backing up Docker volumes. There is one such VM for each datastore defined in the `datastores` array in the `group_vars/vars` file. By default, a single datastore is specified in the playbooks:
 
-Key considerations:
+```
+datastores: ['***Docker_CLH***']
+```
+
+***Note:*** The use of a single datastore is recommended. If you have configured multiple datastores, you need to understand and keep track of how your Docker volumes are distributed across the datastores.
+
+
 
 
 
@@ -997,15 +1012,230 @@ The general practice and recommendation is to follow a bottom-up approach for up
 
 
 
+## SimpliVity environment
 
+The SimpliVity environment is made up of proprietary SimpliVity software, VMware software and HPE firmware. There are interdependencies between the various components that need to be accounted and are provided in the table below. The components in Table 15 are part of the SimpliVity environment that require lifecycle management.
+
+In general, ensure that the software bits for the Arbiter and vSphere extension corresponding to an OmniStack release are used.
+
+**Table 15.** SimpliVity components
+
+<table>
+  <tr>
+    <th>Order</th>
+    <th>Component</th>
+    <th>Dependency (compatibility)</th>
+    <th>Download/Documentation</th>	
+  </tr>
+  <tr>
+    <td>1</td>
+	<td>HPE SimpliVity Arbiter</td>
+	<td>1. HPE OmniStack</td>
+    <td rowspan=3>SimpliVity OmniStack for vSphere Upgrade Guide<br><br>Download software bits from HPE’s support website.<br><br>http://www.hpe.com/support</td>
+  </tr>
+  <tr>
+    <td>2</td>
+	<td>HPE SimpliVity VMware Plug-in</td>
+	<td>1. HPE SimpliVity Arbiter <br>2. HPE OmniStack</td>
+  </tr>
+  <tr>
+    <td>3</td>
+	<td>HPE Omnistack</td>
+	<td>1. HPE SimpliVity VMware Plug-in <br>2. HPE SimpliVity Arbiter</td>
+  </tr>  
+</table>
+
+
+
+## VMware Components 
+
+The SimpliVity solution used in this deployment guide is built on VMware vSphere. VMware ESXi and vCenter (see Table 16) are the two components from VMware that are leveraged by the SimpliVity software.
+
+The VMware ESXi and vCenter versions must be compatible with each other and with the HPE OmniStack version that is running on the SimpliVity systems.
+
+**Table 16.** VMware components
+
+<table>
+  <tr>
+    <th>Order</th>
+    <th>Component</th>
+    <th>Dependency (compatibility)</th>
+    <th>Download/Documentation</th>	
+  </tr>
+  <tr>
+    <td>1</td>
+	<td>VMware vCenter</td>
+	<td>1. HPE OmniStack <br>2. VMware ESXi</td>
+    <td rowspan=2><a href="https://support.simplivity.com/Site_Specific_Content/Product_Manuals/Upgrade_Guides/ESXi_Guided_Upgrade">VMware Upgrade for SimpliVity</a></td>
+  </tr>
+  <tr>
+    <td>2</td>
+	<td>VMware ESXi</td>
+	<td>1. HPE OmniStack<br>2. VMware vCenter</td>
+  </tr>
+
+</table>
+
+
+
+## HPE Server Software
+
+SimpliVity servers are based on HPE server platforms and require compatible firmware version to function with HPE OmniStack Software, as shown in Table 17.
+
+**Table 17.** HPE server components
+
+<table>
+  <tr>
+    <th>Order</th>
+    <th>Component</th>
+    <th>Dependency (compatibility)</th>
+    <th>Download/Documentation</th>	
+  </tr>
+  <tr>
+    <td>1</td>
+	<td>HPE Firmware</td>
+	<td>1. HPE OmniStack Software</td>
+	<td><a href="https://support.simplivity.com/Site_Specific_Content/Product_Manuals/Upgrade_Guides/SimpliVity_Platform_Firmware_Guided_Upgrade">
+	Firmware Upgrade for SimpliVity</a></td>
+	
+  </tr>
+</table>
+
+
+## vSphere Docker Volume Service Plug-in
+
+vSphere Docker Volume service plug-in is part of an open source project by VMware that enables running stateful containers by providing persistent docker volumes leveraging existing storage technology from VMware. There are two parts to the plug-in, namely, client software and server software (see Table 18). Every version of the plug-in that is released includes both pieces of software and it is imperative that the version number installed on the client side and server side are the same.
+
+When updating the Docker Volume service plug-in, ensure the ESXi version you are running is supported and that the client software is compatible with the operating system.
+
+**Table 18.**	 vSphere Docker Volume service components
+
+<table>
+  <tr>
+    <th>Order</th>
+    <th>Component</th>
+    <th>Dependency (compatibility)</th>
+    <th>Download/Documentation</th>	
+  </tr>
+  <tr>
+    <td>1</td>
+	<td>Server Software</td>
+	<td>1. VMware ESXi<br>2. Docker EE</td>
+    <td rowspan=2><a href="http://vmware.github.io/docker-volume-vsphere/documentation/index.html">vSphere Docker Volume Service on GitHub</a></td>
+  </tr>
+  <tr>
+    <td>2</td>
+	<td>Client Software</td>
+	<td>1. VM Operating System<br>2. Docker EE</td>
+  </tr>
+
+</table>
+
+
+
+## Red Hat Enterprise Linux operating system
+
+This solution is built using Red Hat Enterprise Linux (see Table 19) as the base operating system.  When upgrading the operating system on the VMs, first verify that the OS version is compatible to run Docker EE by looking at the Docker OS compatibility metric.
+
+**Table 19.** Operating system
+
+<table>
+  <tr>
+    <th>Order</th>
+    <th>Component</th>
+    <th>Dependency (compatibility)</th>
+    <th>Download/Documentation</th>	
+  </tr>
+  <tr>
+    <td>1</td>
+	<td>Red Hat Enterprise Linux</td>
+	<td>1. Docker EE <br>2. vDVS client software plugin</td>
+	<td><a href="https://access.redhat.com/articles/11258">RHEL</a></td>	
+  </tr>
+</table>
+
+
+## Docker EE Environment
+
+Each release of Docker Enterprise Edition contains three technology components – UCP, DTR and the Docker Daemon or Engine. It is imperative that the components belonging to the same version are deployed or upgraded together – see Table 20. 
+
+A banner will be displayed on the UI when an update is available for UCP or DTR. The admin can start the upgrade process by clicking the link.
+
+![Docker update notification][dockerupdate]
+**Figure 28.** Docker update notification
+
+
+**Table 20.** Docker EE components
+
+
+<table>
+  <tr>
+    <th>Order</th>
+    <th>Component</th>
+    <th>Dependency (compatibility)</th>
+    <th>Download/Documentation</th>	
+  </tr>
+  <tr>
+    <td>1</td>
+	<td>Docker Daemon/Engine</td>
+	<td rowspan="3">1. VM Operating System <br><br> 2. vDVS plugin <br><br>3. Prometheus and Grafana</td>
+	<td rowspan="3"><a href="https://success.docker.com/Policies/Maintenance_Lifecycle">Docker Lifecycle Maintenance</a><br><br>
+	<a href="https://success.docker.com/Policies/Compatibility_Matrix">Docker Compatibility Matrix</a>
+	</td>	
+  </tr>
+  <tr>
+    <td>2</td>
+	<td>Universal Control Plane</td>  
+  </tr>
+  <tr>
+    <td>3</td>
+	<td>Docker Trusted Registry</td>  
+  </tr>  
+</table>
+
+
+## Monitoring Tools
+
+Prometheus and Grafana monitoring tools (see Table 21) run as containers within the Docker environment. Newer versions of these tools can be deployed by pulling the Docker images from Docker Hub. Verify that the version of Prometheus that is being used is compatible with the version of Docker EE.
+
+**Table 21.** Monitoring tools
+
+<table>
+  <tr>
+    <th>Order</th>
+    <th>Component</th>
+    <th>Dependency (compatibility)</th>
+    <th>Download/Documentation</th>	
+  </tr>
+  <tr>
+    <td>1</td>
+	<td>Prometheus	</td>
+	<td>1. Grafana<br> 2. Docker EE</td>
+	<td rowspan="3">1. Prometheus Images on Docker Hub<br><br>2. <a href="http://docs.grafana.org/installation/upgrading/">Upgrading Grafana</a>
+	</td>	
+  </tr>
+  <tr>
+    <td>2</td>
+	<td>Grafana</td>  
+    <td>1. Prometheus<br> 2. Docker EE</td>
+  </tr>
+</table>
+
+## High-Level dependency map
+
+See Figure 29 for a diagram representing the high-level dependency map.
+
+![High-level dependency map][dependencymap]
+
+**Figure 29.** High-level dependency map
 
 
 [architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
 [provisioning]: </images/provisioning.png> "Provisioning Steps"
 [createnewvm]: </images/createnewvirtualmachine.png> "Figure 2. Create New Virtual Machine"
 [vmnamelocation]: </images/vmnamelocation.png> "Figure 3. Specify name and location for the virtual machine" 
-[converttotemplate]: </images/converttotemplate.png> "Figure 4. Convert to template"
-[grafana]: </images/grafana.png> "Figure 5. Grafana UI"
+[converttotemplate]: </images/converttotemplate.png> "Figure 18. Convert to template"
+[grafana]: </images/grafana.png> "Figure 19. Grafana UI"
 [ucpauth]: </images/ucpauth.png> "Figure 20. UCP authentication screen"
 [ucpdash]: </images/ucpdash.png> "Figure 21. UCP dashboard"
 [nodesinfo]: </images/nodesinfo.png> "Figure 22. Nodes information"
@@ -1014,8 +1244,8 @@ The general practice and recommendation is to follow a bottom-up approach for up
 [dtrrepos]: </images/dtrrepos.png> "Figure 25. DTR repositories"
 [imagescanning]: </images/imagescanning.png> "Figure 26. Image scanning in DTR"
 [solnarchitecture]: </images/solnarchitecture.png> "Figure 27. Solution architecture"
-
-
+[dockerupdate]: </images/dockerupdate.png> "Figure 28. Docker update notification"
+[dependencymap]: </images/dependencymap.png> "Figure 29. High-level dependency map"
 
 [create_vms]: </playbooks/create_vms.yml>
 [config_networking]: </playbooks/config_networking.yml>

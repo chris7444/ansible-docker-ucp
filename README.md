@@ -972,15 +972,67 @@ For details on the impact of a VM failure, see Table 14.
 |Docker volumes	|Applicable (someone deletes file in the datastore)	|||		
 |User applications	|Depends on application (service or standalone container)|||			
 
-# Restoring a container backup
+# Container backup and restore
 
 In order to restore a Docker volume, you need to restore a special VM  that has been deployed for the sole purpose of backing up Docker volumes. There is one such VM for each datastore defined in the `datastores` array in the `group_vars/vars` file. By default, a single datastore is specified in the playbooks:
 
 ```
-datastores: ['***Docker_CLH***']
+datastores: ['**Docker_CLH**']
 ```
 
 ***Note:*** The use of a single datastore is recommended. If you have configured multiple datastores, you need to understand and keep track of how your Docker volumes are distributed across the datastores.
+
+
+## Create a Docker volume
+
+After the initial deployment,  a single Docker volume will have been created for Prometheus using the vSphere driver. 
+
+```
+[root@clh-ucp01 ~]# docker volume ls | grep vsphere
+vsphere:latest      prom_clh-db-data@Docker_CLH
+[root@clh-ucp01 ~]#
+```
+
+To create a Docker volume named `test_01`, you can use the `docker volume create` command specifying the vSphere driver: 
+
+```
+[root@clh-ucp01 ~]# docker volume create -d vsphere test_01
+test_01
+```
+
+You can check that the volume exists using the 'docker volume ls' command:
+
+```
+[root@clh-ucp01 ~]# docker volume ls | grep vsphere
+vsphere:latest      prom_clh-db-data@Docker_CLH
+vsphere:latest      test_01@Docker_CLH
+```
+
+Attach a container to the volume and add data to it by creating a text file with some arbitrary content. 
+```
+[root@clh-ucp01 ~]# docker run -it --rm -v test_01:/tmp alpine sh -c "echo **some test data here** > /tmp/foo.txt"
+[root@clh-ucp01 ~]#
+```
+
+If this is the first time you have used the alpine image, you may see additional output relating to download of image layers:
+
+```
+Unable to find image 'alpine:latest' locally
+latest: Pulling from library/alpine
+88286f41530e: Already exists
+Digest: sha256:f006ecbb824d87947d0b51ab8488634bf69fe4094959d935c0c103f4820a417d
+Status: Downloaded newer image for alpine:latest
+```
+
+The container will exit once the shell command has run and any unnamed volumes will be removed. However, the named volume `test_01:/tmp` will persist. To check that the data is still available, spin up a new container and try to retrieve the data:
+
+```
+[root@clh-ucp01 ~]# docker run -it --rm -v test_01:/tmp alpine sh -c "cat /tmp/foo.txt"	
+**some test data here**
+[root@clh-ucp01 ~]#
+```
+
+
 
 
 

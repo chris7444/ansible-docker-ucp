@@ -32,7 +32,7 @@
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
         password: "{{ vcenter_password }}"
-        validate_certs: no
+        validate_certs: : "{{ vcenter_validate_certs }}"
         esxi_hostname: "{{ esxi_host }}"
         datacenter: "{{ datacenter }}"
         folder: "{{ folder_name }}"
@@ -53,7 +53,7 @@
         hostname: "{{ vcenter_hostname }}"
         username: "{{ vcenter_username }}"
         password: "{{ vcenter_password }}"
-        validate_certs: no
+        validate_certs: : "{{ vcenter_validate_certs }}"
         esxi_hostname: "{{ esxi_host }}"
         datacenter: "{{ datacenter }}"
         folder: "{{ folder_name }}"

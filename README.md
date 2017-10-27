@@ -1423,7 +1423,6 @@ See Figure 29 for a diagram representing the high-level dependency map.
 [dockerupdate]: </images/dockerupdate.png> "Figure 28. Docker update notification"
 
 
-
 [dependencymap]: </images/dependencymap.png> "Figure 29. High-level dependency map"
 
 

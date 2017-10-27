@@ -1068,7 +1068,7 @@ Right-click on the special VM, in this case `clh-VM-in-dockervols-Docker_CLH` an
 ![Search backups][searchbackups]
 **Figure 29.** Search backups
 
-You can narrow the search based on the time of the backup, along with a number of other filters that are provided. If you are restoring from an automatic backup, the name will be the timestamp of the backup. If you are restoring from a manual backup, the name with be the one you specified earier when creating the backup, in this case `manual_backup_test_01`.
+You can narrow the search based on the time of the backup. If you are restoring from an automatic backup, the name will be the timestamp of the backup. If you are restoring from a manual backup, the name will be the one you specified earlier when creating the backup, in this case `manual_backup_test_01`.
 
 Right-click on the backup you wish to restore, as shown in Figure 30, and select 'Restore Virtual Machine'.
 
@@ -1098,10 +1098,17 @@ Navigate to the folder named `1111111-1111-1111-1111-...` as shown in Figure 33.
 **Figure 32.** Locate vmdk and vmdf files
 
 
-Move these two files to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` in the same datastore. Right click on the `.vmdk` file and choose `Move to...' as shown in Figure 33.
+You need to move these two files to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` in the same datastore. Right click on the `.vmdk` file and choose `Move to...' as shown in Figure 33.
 
 ![Move files][moveto]
 **Figure 33.** Move files
+
+
+Set the destination folder to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` as shown in Figure 34.
+
+![Move to destination][destination]
+**Figure 34.** Move to destination
+
 
 # Solution Lifecycle Management
 
@@ -1369,7 +1376,7 @@ See Figure 29 for a diagram representing the high-level dependency map.
 [browserestoredvm]: </images/browserestoredvm.png> "Figure 32. Browse to restored virtual machine"
 [vmdkfiles]: </images/vmdkfiles.png> "Figure 32. Locate vmdk and vmdf files"
 [moveto]: </images/moveto.png> "Figure 33. Move files"
-
+[destination]: </images/destination.png> "Figure 34. Move to destination"
 
 
 [solnarchitecture]: </images/solnarchitecture.png> "Figure 27. Solution architecture"

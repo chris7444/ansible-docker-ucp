@@ -5,7 +5,7 @@ vcenter_username: 'administrator@vsphere.local'
 vcenter_validate_certs: 'no'
 datacenter: 'DEVOPS'
 vm_username: 'root'
-vm_template: 'clh-tpl-simply02'
+vm_template: 'clh-tpl-rhel740'
 folder_name: '/clh'
 datastores: ['Docker_CLH']
 disk2: '/dev/sdb'
@@ -16,7 +16,6 @@ vsphere_plugin_version: '0.13' # was 0.12
 simplivity_username: 'Administrator@vsphere.local'
 #omnistack_ovc: ['10.10.173.109','10.10.173.110','10.10.173.111']
 omnistack_ovc: ['10.10.173.109']
-rest_api_pause: 10
 backup_policies:
  - name: 'clh-bronze'
    days: 'All'
@@ -40,7 +39,7 @@ ntp_servers: [' 10.12.2.1','0.us.pool.net.org','1.us.pool.net.org']
 
 # Docker configuration
 # docker_ee_url: is defined in group_vars/vault, should be kept secret
-rhel_version: '7.3'
+rhel_version: '7.4'
 dtr_version: 'latest'
 ucp_version: 'latest'
 images_folder: '/docker-images'

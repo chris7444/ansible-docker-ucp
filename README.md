@@ -972,16 +972,179 @@ For details on the impact of a VM failure, see Table 14.
 |Docker volumes	|Applicable (someone deletes file in the datastore)	|||		
 |User applications	|Depends on application (service or standalone container)|||			
 
-# Restoring a container backup
+# Container backup and restore
 
 In order to restore a Docker volume, you need to restore a special VM  that has been deployed for the sole purpose of backing up Docker volumes. There is one such VM for each datastore defined in the `datastores` array in the `group_vars/vars` file. By default, a single datastore is specified in the playbooks:
 
-```
-datastores: ['***Docker_CLH***']
-```
+<pre>
+datastores: ['<b>Docker_CLH</b>']
+</pre>
 
 ***Note:*** The use of a single datastore is recommended. If you have configured multiple datastores, you need to understand and keep track of how your Docker volumes are distributed across the datastores.
 
+The name of the special VM follows the pattern `<prefix>-in-dockervols-<Datastore>` where
+- `<prefix>` is the value of the variable `dummy_vm_prefix` from the file `group_vars/vars`
+- `<Datastore>` is the name of the datastore
+
+For example, based on the default values in the scripts, the VM name would be `clh-VM-in-dockervols-Docker_CLH`.
+
+
+## Create a Docker volume
+
+After the initial deployment,  a single Docker volume will have been created for Prometheus using the vSphere driver. 
+
+```
+[root@clh-ucp01 ~]# docker volume ls | grep vsphere
+vsphere:latest      prom_clh-db-data@Docker_CLH
+[root@clh-ucp01 ~]#
+```
+
+To create a Docker volume named `test_01`, you can use the `docker volume create` command specifying the vSphere driver: 
+
+```
+[root@clh-ucp01 ~]# docker volume create -d vsphere test_01
+test_01
+```
+
+You can check that the volume exists using the 'docker volume ls' command:
+
+```
+[root@clh-ucp01 ~]# docker volume ls | grep vsphere
+vsphere:latest      prom_clh-db-data@Docker_CLH
+vsphere:latest      test_01@Docker_CLH
+```
+
+You can attach a container to the volume and then add data to it by creating a text file with some arbitrary content:
+
+<pre>
+[root@clh-ucp01 ~]# docker run -it --rm -v test_01:/tmp alpine sh -c "echo <b>some test data here</b> > /tmp/foo.txt"
+[root@clh-ucp01 ~]#
+</pre>
+
+If this is the first time you have used the alpine image, you may see additional output relating to download of image layers:
+
+```
+Unable to find image 'alpine:latest' locally
+latest: Pulling from library/alpine
+88286f41530e: Already exists
+Digest: sha256:f006ecbb824d87947d0b51ab8488634bf69fe4094959d935c0c103f4820a417d
+Status: Downloaded newer image for alpine:latest
+```
+
+The container will exit once the shell command has run and any unnamed volumes will be removed. However, the named volume `test_01:/tmp` will persist. To check that the data is still available after the container exited, spin up a new container and try to retrieve the data:
+
+<pre>
+[root@clh-ucp01 ~]# docker run -it --rm -v test_01:/tmp alpine sh -c "cat /tmp/foo.txt"	
+<b>some test data here</b>
+[root@clh-ucp01 ~]#
+</pre>
+
+
+## Automated backup
+
+By default, the special VM and any Docker volume in the `dockvols` folder are backed up every hour. This is controlled by the following settings in the `group_vars/vars` file.
+
+```
+backup_policies:
+
+ - name: 'clh-gold'
+   days: 'All'
+   start_time: '00:00'
+   frequency: '60'
+   retention: '43200'
+dummy_vm_prefix: 'clh-VM'
+docker_volumes_policy: 'clh-gold'
+```
+
+The backup policy `clh-gold` is assigned to the special VM that is used to backup the Docker volumes. This policy specifies that a backup is taken every hour (`frequency: '60'` means sixty minutes)  while the backup is retained for one month (`retention: '43200'` means 43200 minutes or thirty days).
+
+## Manual backup
+
+Rather than waiting for an automated backup to take place, you can create a backup immediately. Right-click on the special VM, in this case  `clh-VM-in-dockervols-Docker_CLH`, select `All HPE SimpliVity Actions` and choose `Backup Virtual Machine` as shown in Figure 27.
+
+
+![Backup virtual machine][backupvirtualmachine]
+**Figure 27.** Backup virtual machine
+
+You can specify a backup name, in this case 'manual_backup_test_01', as shown in Figure 28.
+
+![Backup virtual machine details][backupvmdetails]
+
+**Figure 28.** Backup virtual machine details
+
+
+## Restore
+
+Right-click on the special VM, in this case `clh-VM-in-dockervols-Docker_CLH` and on the `Configure` tab, select `HPE SimpliVity Search Backups`.
+
+![Search backups][searchbackups]
+**Figure 29.** Search backups
+
+You can narrow the search based on the time of the backup. If you are restoring from an automatic backup, the name will be the timestamp of the backup. If you are restoring from a manual backup, the name will be the one you specified earlier when creating the backup, in this case `manual_backup_test_01`.
+
+Right-click on the backup you wish to restore, as shown in Figure 30, and select 'Restore Virtual Machine'.
+
+![Restore virtual machine][restorevm]
+**Figure 30.** Restore virtual machine
+
+
+In the details screen, shown in Figure 31, you can choose a name for the new virtual machine and specify the datastore.
+
+![Restore virtual machine details][restorevmdetails]
+
+**Figure 31.** Restore virtual machine details
+
+The name of the new virtual machine will default to a combination of the special VM name and a timestamp, in this instance `clh-VM-in-dockervols-Docker_CLH-2017-10-26-09h47m00s`. The datastore should be the one specified in the `datastores` array from the `group_vars/vars` file. Click `OK` to restore the virtual machine.
+
+
+Once the virtual machine has been restored, navigate to the datastore and locate the new VM in the file browser, as shown in Figure 32.
+
+
+![Browse to restored virtual machine][browserestoredvm]
+**Figure 32.** Browse to restored virtual machine
+
+
+Navigate to the folder named `1111111-1111-1111-1111-...` as shown in Figure 33. You will see files with names based on the Docker volume name that you used at the start, in this instance `test_01.vmdk` and `test_01-478...f1f.vmdf` 
+
+![Locate vmdk and vmdf files][vmdkfiles]
+**Figure 32.** Locate vmdk and vmdf files
+
+
+You need to move these two files to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` in the same datastore. Right click on the `.vmdk` file and choose `Move to...` as shown in Figure 33.
+
+![Move files][moveto]
+**Figure 33.** Move files
+
+
+Set the destination folder to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` as shown in Figure 34.
+
+![Move to destination][destination]
+
+**Figure 34.** Move to destination
+
+It is only necessary to move the `.vmdk` file as the '.vmdf' file will automatically follow. The `dockvols` sub-directory named `1111111-1111-1111-1111-...` should now contain both files as shown in Figure 35.
+
+![Files moved to destination][moved]
+**Figure 35.** Files moved to destination
+
+
+
+## Test the restore
+
+You can check that the volume `test_01` has been restored by using the `docker volume ls` command again.
+
+```
+[root@clh-ucp01 ~]# docker volume ls | grep vsphere
+vsphere:latest      prom_clh-db-data@Docker_CLH
+vsphere:latest      test_01@Docker_CLH
+```
+
+You can verify that the volume contains the correct data by spinning up a container and running a shell command:
+
+<pre>
+[root@clh-ucp01 ~]# docker run -it --rm -v test_01:/tmp alpine sh -c "cat /tmp/foo.txt"
+<b>some test data here</b>
+</pre>
 
 
 
@@ -1243,9 +1406,26 @@ See Figure 29 for a diagram representing the high-level dependency map.
 [dtrauth]: </images/dtrauth.png> "Figure 24. DTR authentication screen"
 [dtrrepos]: </images/dtrrepos.png> "Figure 25. DTR repositories"
 [imagescanning]: </images/imagescanning.png> "Figure 26. Image scanning in DTR"
+
+[backupvirtualmachine]: </images/backupvirtualmachine.png> "Figure 27. Backup virtual machine"
+[backupvmdetails]: </images/backupvmdetails.png> "Figure 28. Backup virtual machine details"
+[searchbackups]: </images/searchbackups.png> "Figure 29. Search backups"
+[restorevm]: </images/restorevm.png> "Figure 30. Restore virtual machine"
+[restorevmdetails]: </images/restorevmdetails.png> "Figure 31. Restore virtual machine details"
+[browserestoredvm]: </images/browserestoredvm.png> "Figure 32. Browse to restored virtual machine"
+[vmdkfiles]: </images/vmdkfiles.png> "Figure 32. Locate vmdk and vmdf files"
+[moveto]: </images/moveto.png> "Figure 33. Move files"
+[destination]: </images/destination.png> "Figure 34. Move to destination"
+[moved]: </images/moved.png> "Figure 35. Files moved to destination"
+
+
 [solnarchitecture]: </images/solnarchitecture.png> "Figure 27. Solution architecture"
 [dockerupdate]: </images/dockerupdate.png> "Figure 28. Docker update notification"
+
+
+
 [dependencymap]: </images/dependencymap.png> "Figure 29. High-level dependency map"
+
 
 [create_vms]: </playbooks/create_vms.yml>
 [config_networking]: </playbooks/config_networking.yml>

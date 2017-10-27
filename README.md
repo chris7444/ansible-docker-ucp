@@ -976,9 +976,9 @@ For details on the impact of a VM failure, see Table 14.
 
 In order to restore a Docker volume, you need to restore a special VM  that has been deployed for the sole purpose of backing up Docker volumes. There is one such VM for each datastore defined in the `datastores` array in the `group_vars/vars` file. By default, a single datastore is specified in the playbooks:
 
-```
-datastores: ['**Docker_CLH**']
-```
+<pre>
+datastores: ['<b>Docker_CLH<b>']
+</pre>
 
 ***Note:*** The use of a single datastore is recommended. If you have configured multiple datastores, you need to understand and keep track of how your Docker volumes are distributed across the datastores.
 
@@ -1108,6 +1108,32 @@ Set the destination folder to the `dockvols` sub-directory named `1111111-1111-1
 
 ![Move to destination][destination]
 **Figure 34.** Move to destination
+
+It is only necessary to move the `.vmdk` file as the '.vmdf' file will automatically follow. The `dockvols` sub-directory named `1111111-1111-1111-1111-...` should now contain bot files as shown in Figure 35.
+
+![Files moved to destination][moved]
+**Figure 35. **Files moved to destination
+
+
+
+## Test the restore
+
+You can check that the volume `test_01` has been restored by using the `docker volume ls' command again.
+
+```
+[root@clh-ucp01 ~]# docker volume ls | grep vsphere
+vsphere:latest      prom_clh-db-data@Docker_CLH
+vsphere:latest      test_01@Docker_CLH
+```
+
+You can verify that the volume contains the correct data by spinning up a container and running a shell command:
+
+```
+[root@clh-ucp01 ~]# docker run -it --rm -v test_01:/tmp alpine sh -c "cat /tmp/foo.txt"
+some test data here
+```	
+
+
 
 
 # Solution Lifecycle Management
@@ -1377,6 +1403,7 @@ See Figure 29 for a diagram representing the high-level dependency map.
 [vmdkfiles]: </images/vmdkfiles.png> "Figure 32. Locate vmdk and vmdf files"
 [moveto]: </images/moveto.png> "Figure 33. Move files"
 [destination]: </images/destination.png> "Figure 34. Move to destination"
+[moved]: </images/moved.png> "Figure 35. Files moved to destination"
 
 
 [solnarchitecture]: </images/solnarchitecture.png> "Figure 27. Solution architecture"

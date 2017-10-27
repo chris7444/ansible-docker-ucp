@@ -1057,15 +1057,27 @@ Rather than waiting for an automated backup to take place, you can create a back
 You can specify a backup name, in this case 'manual_backup_test_01', as shown in Figure 28.
 
 ![Backup virtual machine details][backupvmdetails]
+
 **Figure 28.** Backup virtual machine details
 
 
 ## Restore
 
+Right-click on the special VM, in this case `clh-VM-in-dockervols-Docker_CLH` and on the `Configure` tab, select `HPE SimpliVity Search Backups`.
+
 ![Search backups][searchbackups]
 **Figure 29.** Search backups
 
+You can narrow the search based on the time of the backup, along with a number of other filters that are provided. If you are restoring from an automatic backup, the name will be the timestamp of the backup. If you are restoring from a manual backup, the name with be the one you specified earier when creating the backup, in this case `manual_backup_test_01`.
 
+Right-click on the backup you wish to restore and enter the d
+
+![Restore virtual machine][restorevm]
+**Figure 30.** Restore virtual machine
+
+
+![Restore virtual machine details][restorevmdetails]
+**Figure 31.** Restore virtual machine details
 
 
 # Solution Lifecycle Management
@@ -1329,8 +1341,8 @@ See Figure 29 for a diagram representing the high-level dependency map.
 [backupvirtualmachine]: </images/backupvirtualmachine.png> "Figure 27. Backup virtual machine"
 [backupvmdetails]: </images/backupvmdetails.png> "Figure 28. Backup virtual machine details"
 [searchbackups]: </images/searchbackups.png> "Figure 29. Search backups"
-
-
+[restorevm]: </images/restorevm.png> "Figure 30. Restore virtual machine"
+[restorevmdetails]: </images/restorevmdetails.png> "Figure 31. Restore virtual machine details"
 
 
 

@@ -983,8 +983,8 @@ datastores: ['<b>Docker_CLH</b>']
 ***Note:*** The use of a single datastore is recommended. If you have configured multiple datastores, you need to understand and keep track of how your Docker volumes are distributed across the datastores.
 
 The name of the special VM follows the pattern `<prefix>-in-dockervols-<Datastore>` where
-- <prefix> is the value of the variable `dummy_vm_prefix` from the file `group_vars/vars`
-- <Datastore> is the name of the datastore
+- `<prefix>` is the value of the variable `dummy_vm_prefix` from the file `group_vars/vars`
+- `<Datastore>` is the name of the datastore
 
 For example, the VM name would be `clh-VM-in-dockervols-Docker_CLH` based on the default values in the scripts.
 

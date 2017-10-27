@@ -51,12 +51,12 @@ More information about Simplivity can be found here: [https://www.hpe.com/us/en/
 
 ## Required Versions
 
-The following software versions were used the playbooks described in later sections. Other version may work but have not been tested.
+The following software versions were used to test the playbooks that are described in later sections. Other version may work but have not been tested.
 
 - Ansible 2.2
 - Docker EE 17.06
 - Red Hat Enterprise Linux 7.3 and 7.4
-- VMWare ESXi 6.5.0 + vCenter 6.5.0
+- VMWare ESXi 6.5.0 and vCenter 6.5.0
 - HPE SimpliVity OmniStack 3.7.1.60
 
 

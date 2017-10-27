@@ -1042,9 +1042,21 @@ The container will exit once the shell command has run and any unnamed volumes w
 
 ## Automated backup
 
+By default, the special VM (and all the Docker volumes in the `dockvols` folder) are backed up every hour. This is controlled by the following settings in the `group_vars/vars` file.
 
+```
+backup_policies:
 
+ - name: 'clh-gold'
+   days: 'All'
+   start_time: '00:00'
+   frequency: '60'
+   retention: '43200'
+dummy_vm_prefix: 'clh-VM'
+docker_volumes_policy: 'clh-gold'
+```
 
+The backup policy `clh-gold` is assigned to the special VM that is used to backup the Docker volumes. This policy specifies that a backup is taken every hour (`frequency: '60'` means 60 minutes)  while the backup is retained for one month (`retention: '43200'` means 43200 minutes or thirty days).
 
 ## Manual backup
 

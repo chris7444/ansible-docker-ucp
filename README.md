@@ -1107,12 +1107,13 @@ You need to move these two files to the `dockvols` sub-directory named `1111111-
 Set the destination folder to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` as shown in Figure 34.
 
 ![Move to destination][destination]
+
 **Figure 34.** Move to destination
 
 It is only necessary to move the `.vmdk` file as the '.vmdf' file will automatically follow. The `dockvols` sub-directory named `1111111-1111-1111-1111-...` should now contain bot files as shown in Figure 35.
 
 ![Files moved to destination][moved]
-**Figure 35. **Files moved to destination
+**Figure 35.** Files moved to destination
 
 
 

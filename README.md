@@ -1077,6 +1077,7 @@ Right-click on the backup you wish to restore and enter the d
 
 
 ![Restore virtual machine details][restorevmdetails]
+
 **Figure 31.** Restore virtual machine details
 
 

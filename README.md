@@ -51,13 +51,13 @@ More information about Simplivity can be found here: [https://www.hpe.com/us/en/
 
 ## Required Versions
 
-The following versions or higher are required to use the playbooks described in later sections.
+The following software versions were used the playbooks described in later sections. Other version may work but have not been tested.
 
-- Ansible 2.2 or higher
-- Docker EE 17.06 or higher
-- Red Hat Enterprise Linux v TODO
-- VMware vSphere TODO
-- HPE SimpliVity Omni stack v TODO
+- Ansible 2.2
+- Docker EE 17.06
+- Red Hat Enterprise Linux 7.3 and 7.4
+- VMWare ESXi 6.5.0 + vCenter 6.5.0
+- HPE SimpliVity OmniStack 3.7.1.60
 
 
 # Architecture

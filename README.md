@@ -986,7 +986,7 @@ The name of the special VM follows the pattern `<prefix>-in-dockervols-<Datastor
 - `<prefix>` is the value of the variable `dummy_vm_prefix` from the file `group_vars/vars`
 - `<Datastore>` is the name of the datastore
 
-For example, the VM name would be `clh-VM-in-dockervols-Docker_CLH` based on the default values in the scripts.
+For example, based on the default values in the scripts, the VM name would be `clh-VM-in-dockervols-Docker_CLH`.
 
 
 ## Create a Docker volume
@@ -1042,7 +1042,7 @@ The container will exit once the shell command has run and any unnamed volumes w
 
 ## Automated backup
 
-By default, the special VM (and all the Docker volumes in the `dockvols` folder) are backed up every hour. This is controlled by the following settings in the `group_vars/vars` file.
+By default, the special VM and any Docker volume in the `dockvols` folder are backed up every hour. This is controlled by the following settings in the `group_vars/vars` file.
 
 ```
 backup_policies:
@@ -1056,11 +1056,11 @@ dummy_vm_prefix: 'clh-VM'
 docker_volumes_policy: 'clh-gold'
 ```
 
-The backup policy `clh-gold` is assigned to the special VM that is used to backup the Docker volumes. This policy specifies that a backup is taken every hour (`frequency: '60'` means 60 minutes)  while the backup is retained for one month (`retention: '43200'` means 43200 minutes or thirty days).
+The backup policy `clh-gold` is assigned to the special VM that is used to backup the Docker volumes. This policy specifies that a backup is taken every hour (`frequency: '60'` means sixty minutes)  while the backup is retained for one month (`retention: '43200'` means 43200 minutes or thirty days).
 
 ## Manual backup
 
-Rather than waiting for an automated backup to take place, you can create a backup immediately. Right-click on the special VM, in this case  `clh-VM-in-dockervols-Docker_CLH`, select 'All HPE SimpliVity Actions' and choose 'Backup Virtual Machine' as shown in Figure 27.
+Rather than waiting for an automated backup to take place, you can create a backup immediately. Right-click on the special VM, in this case  `clh-VM-in-dockervols-Docker_CLH`, select `All HPE SimpliVity Actions` and choose `Backup Virtual Machine` as shown in Figure 27.
 
 
 ![Backup virtual machine][backupvirtualmachine]
@@ -1088,7 +1088,7 @@ Right-click on the backup you wish to restore, as shown in Figure 30, and select
 **Figure 30.** Restore virtual machine
 
 
-In the details screen, shown in Figure 31, you can choose a name for the new virtual machine along with specifying the datastore.
+In the details screen, shown in Figure 31, you can choose a name for the new virtual machine and specify the datastore.
 
 ![Restore virtual machine details][restorevmdetails]
 
@@ -1104,13 +1104,13 @@ Once the virtual machine has been restored, navigate to the datastore and locate
 **Figure 32.** Browse to restored virtual machine
 
 
-Navigate to the folder named `1111111-1111-1111-1111-...` as shown in Figure 33. You will see files with names based on the Docker volume name that you used at the start, in this instance 'test_01.vmdk` and 'test_01-478...f1f.vmdf` 
+Navigate to the folder named `1111111-1111-1111-1111-...` as shown in Figure 33. You will see files with names based on the Docker volume name that you used at the start, in this instance `test_01.vmdk` and `test_01-478...f1f.vmdf` 
 
 ![Locate vmdk and vmdf files][vmdkfiles]
 **Figure 32.** Locate vmdk and vmdf files
 
 
-You need to move these two files to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` in the same datastore. Right click on the `.vmdk` file and choose `Move to...' as shown in Figure 33.
+You need to move these two files to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` in the same datastore. Right click on the `.vmdk` file and choose `Move to...` as shown in Figure 33.
 
 ![Move files][moveto]
 **Figure 33.** Move files
@@ -1122,7 +1122,7 @@ Set the destination folder to the `dockvols` sub-directory named `1111111-1111-1
 
 **Figure 34.** Move to destination
 
-It is only necessary to move the `.vmdk` file as the '.vmdf' file will automatically follow. The `dockvols` sub-directory named `1111111-1111-1111-1111-...` should now contain bot files as shown in Figure 35.
+It is only necessary to move the `.vmdk` file as the '.vmdf' file will automatically follow. The `dockvols` sub-directory named `1111111-1111-1111-1111-...` should now contain both files as shown in Figure 35.
 
 ![Files moved to destination][moved]
 **Figure 35.** Files moved to destination
@@ -1131,7 +1131,7 @@ It is only necessary to move the `.vmdk` file as the '.vmdf' file will automatic
 
 ## Test the restore
 
-You can check that the volume `test_01` has been restored by using the `docker volume ls' command again.
+You can check that the volume `test_01` has been restored by using the `docker volume ls` command again.
 
 ```
 [root@clh-ucp01 ~]# docker volume ls | grep vsphere
@@ -1141,10 +1141,10 @@ vsphere:latest      test_01@Docker_CLH
 
 You can verify that the volume contains the correct data by spinning up a container and running a shell command:
 
-```
+<pre>
 [root@clh-ucp01 ~]# docker run -it --rm -v test_01:/tmp alpine sh -c "cat /tmp/foo.txt"
-some test data here
-```	
+<b>some test data here</b>
+</pre>
 
 
 

@@ -1070,16 +1070,38 @@ Right-click on the special VM, in this case `clh-VM-in-dockervols-Docker_CLH` an
 
 You can narrow the search based on the time of the backup, along with a number of other filters that are provided. If you are restoring from an automatic backup, the name will be the timestamp of the backup. If you are restoring from a manual backup, the name with be the one you specified earier when creating the backup, in this case `manual_backup_test_01`.
 
-Right-click on the backup you wish to restore and enter the d
+Right-click on the backup you wish to restore, as shown in Figure 30, and select 'Restore Virtual Machine'.
 
 ![Restore virtual machine][restorevm]
 **Figure 30.** Restore virtual machine
 
 
+In the details screen, shown in Figure 31, you can choose a name for the new virtual machine along with specifying the datastore.
+
 ![Restore virtual machine details][restorevmdetails]
 
 **Figure 31.** Restore virtual machine details
 
+The name of the new virtual machine will default to a combination of the special VM name and a timestamp, in this instance `clh-VM-in-dockervols-Docker_CLH-2017-10-26-09h47m00s`. The datastore should be the one specified in the `datastores` array from the `group_vars/vars` file. Click `OK` to restore the virtual machine.
+
+
+Once the virtual machine has been restored, navigate to the datastore and locate the new VM in the file browser, as shown in Figure 32.
+
+
+![Browse to restored virtual machine][browserestoredvm]
+**Figure 32.** Browse to restored virtual machine
+
+
+Navigate to the folder named `1111111-1111-1111-1111-...` as shown in Figure 33. You will see files with names based on the Docker volume name that you used at the start, in this instance 'test_01.vmdk` and 'test_01-478...f1f.vmdf` 
+
+![Locate vmdk and vmdf files][vmdkfiles]
+**Figure 32.** Locate vmdk and vmdf files
+
+
+Move these two files to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` in the same datastore. Right click on the `.vmdk` file and choose `Move to...' as shown in Figure 33.
+
+![Move files][moveto]
+**Figure 33.** Move files
 
 # Solution Lifecycle Management
 
@@ -1344,6 +1366,9 @@ See Figure 29 for a diagram representing the high-level dependency map.
 [searchbackups]: </images/searchbackups.png> "Figure 29. Search backups"
 [restorevm]: </images/restorevm.png> "Figure 30. Restore virtual machine"
 [restorevmdetails]: </images/restorevmdetails.png> "Figure 31. Restore virtual machine details"
+[browserestoredvm]: </images/browserestoredvm.png> "Figure 32. Browse to restored virtual machine"
+[vmdkfiles]: </images/vmdkfiles.png> "Figure 32. Locate vmdk and vmdf files"
+[moveto]: </images/moveto.png> "Figure 33. Move files"
 
 
 

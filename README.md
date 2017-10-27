@@ -482,10 +482,11 @@ All SimpliVity variables are mandatory and are described in Table 6.
 	<td>List of Omnistack hosts to be used, in list format, i.e. <code>[‘omni1.local’,’onmi2.local’...]</code>. If your OmniStack virtual machines do not have their names registered in DNS, you can use their IP addresses.  
 	</td>
   </tr>
+  <!--<tr>
     <td>rest_api_pause</td>
 	<td>TODO: Default value is 10.
 	</td>
-  </tr>	
+  </tr>	-->
    <tr>
 	<td>backup_policies </td>
 	<td>

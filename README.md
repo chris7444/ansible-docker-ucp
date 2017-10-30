@@ -97,7 +97,7 @@ In addition to the above, the playbooks set up:
 These nodes can live in any of the hosts and they are not redundant.
 
 
-Sizing considerations
+# Sizing considerations
 
 A node is a machine in the cluster (virtual or physical) with Docker Engine running on it. When provisioning each node, assign it a role: UCP Controller, DTR, or worker node so that they are protected from running application workloads.
 
@@ -108,7 +108,7 @@ To decide what size the node should be in terms of CPU, RAM, and storage resourc
 3. Ideally, Worker nodes size will vary based on your workloads so it is impossible to define a universal standard size.
 4. Other considerations like target density (average number of containers per node), whether one standard node type or several are preferred, and other operational considerations might also influence sizing.
 
-If possible, node size should be determined by experimentation and testing actual workloads, and they should be refined iteratively. A good starting point is to select a standard or default machine type in your environment and use this size only. If your standard machine type provides more resources than the UCP Controllers need, it makes sense to have a smaller node size for these. Whatever the starting choice, it’s important to monitoring resource usage and cost to improve the model.
+If possible, node size should be determined by experimentation and testing actual workloads, and they should be refined iteratively. A good starting point is to select a standard or default machine type in your environment and use this size only. If your standard machine type provides more resources than the UCP Controllers need, it makes sense to have a smaller node size for these. Whatever the starting choice, it is important to monitor resource usage and cost to improve the model.
 
 For Express Containers with Docker: Ops Edition, the following section describes sizing configurations.  The vCPU allocations are described in Table 1 while the memory allocation is described in Table 2.
 
@@ -942,7 +942,7 @@ For details of the impact of a host failure, see Table 13.
 |UCP Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover|
 |Workers Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover
 |DTR Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover
-|Central Logging	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|TODO: lose logs?|
+|Central Logging	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|The logs will be available in central logging but may not reach Logspout|
 |NFS	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No push/pull of images.|
 |UCP service	|Protected by UCP scale out design	|Seconds	|Potentially new leader elected	|
 |DTR service	|Protected by DTR scale out design	|Seconds	|DTR continues to be operational	|

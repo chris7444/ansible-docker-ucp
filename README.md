@@ -577,7 +577,7 @@ All Logspout-related variables are described in Table 10.
 
 | Variable                | Description                              |
 | ----------------------- | ---------------------------------------- |
-| logspout_version       | ```‘latest’``` |
+| logspout_version       | ```‘master’``` |
 
 
 ### Environment configuration

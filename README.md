@@ -1076,7 +1076,7 @@ You can specify a backup name, in this case 'manual_backup_test_01', as shown in
 
 ## Restore
 
-Right-click on the special VM, in this case `clh-VM-in-dockervols-Docker_CLH` and on the `Configure` tab, select `HPE SimpliVity Search Backups`.
+Right-click on the special VM, in this case `clh-VM-in-dockervols-Docker_CLH` and on the `Configure` tab, select `HPE SimpliVity Search Backups` as shown in Figure 29.
 
 ![Search backups][searchbackups]
 **Figure 29.** Search backups
@@ -1108,25 +1108,25 @@ Once the virtual machine has been restored, navigate to the datastore and locate
 Navigate to the folder named `1111111-1111-1111-1111-...` as shown in Figure 33. You will see files with names based on the Docker volume name that you used at the start, in this instance `test_01.vmdk` and `test_01-478...f1f.vmdf` 
 
 ![Locate vmdk and vmdf files][vmdkfiles]
-**Figure 32.** Locate vmdk and vmdf files
+**Figure 33.** Locate vmdk and vmdf files
 
 
-You need to move these two files to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` in the same datastore. Right click on the `.vmdk` file and choose `Move to...` as shown in Figure 33.
+You need to move these two files to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` in the same datastore. Right click on the `.vmdk` file and choose `Move to...` as shown in Figure 34.
 
 ![Move files][moveto]
-**Figure 33.** Move files
+**Figure 34.** Move files
 
 
-Set the destination folder to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` as shown in Figure 34.
+Set the destination folder to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` as shown in Figure 35.
 
 ![Move to destination][destination]
 
-**Figure 34.** Move to destination
+**Figure 35.** Move to destination
 
-It is only necessary to move the `.vmdk` file as the '.vmdf' file will automatically follow. The `dockvols` sub-directory named `1111111-1111-1111-1111-...` should now contain both files as shown in Figure 35.
+It is only necessary to move the `.vmdk` file as the `.vmdf` file will automatically follow. The `dockvols` sub-directory named `1111111-1111-1111-1111-...` should now contain both files as shown in Figure 36.
 
 ![Files moved to destination][moved]
-**Figure 35.** Files moved to destination
+**Figure 36.** Files moved to destination
 
 
 
@@ -1147,7 +1147,7 @@ You can verify that the volume contains the correct data by spinning up a contai
 <b>some test data here</b>
 </pre>
 
-
+The data you entered in the text file before performing the backup and deleting the volume is available once again after restoring the volume.
 
 
 # Solution Lifecycle Management
@@ -1161,7 +1161,7 @@ In this section, we will cover life cycle management of the different components
 
 ![Solution architecture][solnarchitecture]
 
-**Figure 27.** Solution architecture
+**Figure 37.** Solution architecture
 
 
 Based on the diagram above, lifecycle of the following stacks need to be maintained and managed.
@@ -1323,10 +1323,10 @@ This solution is built using Red Hat Enterprise Linux (see Table 19) as the base
 
 Each release of Docker Enterprise Edition contains three technology components – UCP, DTR and the Docker Daemon or Engine. It is imperative that the components belonging to the same version are deployed or upgraded together – see Table 20. 
 
-A banner will be displayed on the UI when an update is available for UCP or DTR. The admin can start the upgrade process by clicking the link.
+A banner will be displayed on the UI when an update is available for UCP or DTR. The admin can start the upgrade process by clicking the link shown in Figure 38.
 
 ![Docker update notification][dockerupdate]
-**Figure 28.** Docker update notification
+**Figure 38.** Docker update notification
 
 
 **Table 20.** Docker EE components

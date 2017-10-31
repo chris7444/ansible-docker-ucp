@@ -64,6 +64,12 @@ The following software versions were used to test the playbooks that are describ
 
 The Operations environment is comprised of three HPE SimpliVity 380 Gen10 servers. Since the SimpliVity technology relies on VMware virtualization, the servers are managed using vCenter. The load among the three hosts will be shared as per Figure 1.
 
+Uptime is paramount for any users implementing Docker containers in business critical environments. Express Containers offers various levels of high availability (HA) to support continuous availability. All containers and Docker services implemented in containers are protected by Docker’s swarm mode. Swarm mode can protect against individual hardware, network, and container failures based on the user’s declarative model. 
+
+Express Containers with Docker also deploys load balancers in the system to help with container traffic management. There are three load balancer VMs – UPC load balancer, DTR load balancer, and Docker worker node load balancer. Since these load balancers exist in VMs, they have some degree of HA but will likely incur some downtime during the restoration of these VMs due to a planned or unplanned outage. For optimal HA configuration, the user should consider implementing a HA load balancer architecture using the Virtual Router Redundancy Protocol (VRRP). For more information see http://www.haproxy.com/solutions/high-availability/. 
+
+
+
 
 ![Architecture Diagram][architecture]
 **Figure 1.** Solution Architecture
@@ -97,7 +103,7 @@ In addition to the above, the playbooks set up:
 These nodes can live in any of the hosts and they are not redundant.
 
 
-Sizing considerations
+# Sizing considerations
 
 A node is a machine in the cluster (virtual or physical) with Docker Engine running on it. When provisioning each node, assign it a role: UCP Controller, DTR, or worker node so that they are protected from running application workloads.
 
@@ -108,11 +114,11 @@ To decide what size the node should be in terms of CPU, RAM, and storage resourc
 3. Ideally, Worker nodes size will vary based on your workloads so it is impossible to define a universal standard size.
 4. Other considerations like target density (average number of containers per node), whether one standard node type or several are preferred, and other operational considerations might also influence sizing.
 
-If possible, node size should be determined by experimentation and testing actual workloads, and they should be refined iteratively. A good starting point is to select a standard or default machine type in your environment and use this size only. If your standard machine type provides more resources than the UCP Controllers need, it makes sense to have a smaller node size for these. Whatever the starting choice, it’s important to monitoring resource usage and cost to improve the model.
+If possible, node size should be determined by experimentation and testing actual workloads, and they should be refined iteratively. A good starting point is to select a standard or default machine type in your environment and use this size only. If your standard machine type provides more resources than the UCP Controllers need, it makes sense to have a smaller node size for these. Whatever the starting choice, it is important to monitor resource usage and cost to improve the model.
 
 For Express Containers with Docker: Ops Edition, the following section describes sizing configurations.  The vCPU allocations are described in Table 1 while the memory allocation is described in Table 2.
 
-**Table 1** vCPU
+**Table 1.** vCPU
 
 | vCPUs | simply01 | simply02 | simply03 |
 |:------|:--------:|:--------:|:--------:|
@@ -141,7 +147,7 @@ For Express Containers with Docker: Ops Edition, the following section describes
 
 
 
-**Table 2** Memory allocation
+**Table 2.** Memory allocation
 
 | RAM | simply01 | simply02 | simply03 |
 |:------|:--------:|:--------:|:--------:|
@@ -182,7 +188,7 @@ This section describes in detail how to provision the environment described prev
 
 You will need assemble the information required to assign values to each and every variable used by the playbooks before you start deployment. The variables are fully documented in the following sections “Editing the group variables” and “Editing the vault”. A summary of the information required is presented in Table 3.
 
-**Table 3** Summary of information required
+**Table 3.** Summary of information required
 
 |Component|	Details|
 |---------|-----------|
@@ -221,29 +227,83 @@ It would be possible to automate the creation the template. However, as this is 
 
 1. Log in to vCenter and create a new Virtual Machine. In the dialog box, shown in Figure 2, select ```Typical``` and press ```Next```.  
 ![Create New Virtual Machine][createnewvm]  
-**Figure 2** Create New Virtual Machine  
+**Figure 2.** Create New Virtual Machine  
   
 2. Specify the name and location for your template, as shown in Figure 3.  
 ![Specify name and location for the virtual machine][vmnamelocation]  
-**Figure 3** Specify name and location for the virtual machine  
+**Figure 3.** Specify name and location for the virtual machine  
   
 3. Choose the host/cluster on which you want to run this virtual machine, as shown in Figure 4.
+![Choose host / cluster][choosehost]  
+**Figure 4.** Choose host / cluster 
+
+
 4. Choose a datastore where the template files will be stored, as shown in Figure 5.
-5. Choose the OS, in this case Linux, RHEL7 64bit.
-6. Pick the network to attach to your template. In this example we're only using one NIC but depending on how you plan to architect your environment you might want to add more than one.
-7. Create a primary disk. The chosen size in this case is 50GB but 20GB should be typically enough.
-8. Confirm that the settings are right and press Finish.
-9. The next step is to virtually insert the RHEL7 DVD, using the Settings of the newly created VM as shown in Figure 10. Select your ISO file in the Datastore ISO File Device Type and make sure that the “Connect at power on” checkbox is checked.
-10. Finally, you can optionally remove the Floppy Disk as this is not required for the VM.
-11. Power on the server and open the console to install the OS. On the welcome screen, as shown in Figure 12, pick your language and press ```Continue```.
+![Select storage for template files][selectstorage]  
+**Figure 5.** Select storage for template files
+
+
+5. Choose the OS as shown in Figure 6, in this case Linux, RHEL7 64bit.
+![Choose operating system][chooseos]  
+**Figure 6.** Choose operating system
+
+6. Pick the network to attach to your template as shown in Figure 7. In this example we're only using one NIC but depending on how you plan to architect your environment you might want to add more than one.
+![Create network connections][createnetwork]  
+**Figure 7.** Create network connections
+
+
+7. Create a primary disk as shown in Figure 8. The chosen size in this case is 50GB but 20GB should be typically enough.
+![Create primary disk][createprimarydisk]  
+**Figure 8.** Create primary disk
+
+
+8. Confirm that the settings are right and press Finish as shown in Figure 9.
+![Confirm settings][confirmsettings]  
+**Figure 9.** Confirm settings
+
+
+
+9. The next step is to virtually insert the RHEL7 DVD, using the Settings of the newly created VM as shown in Figure 10. Select your ISO file in the Datastore ISO File Device Type and make sure that the “Connect at power on” checkbox is checked.  
+![Virtual machine properties][vmprops]  
+**Figure 10.** Virtual machine properties
+
+
+
+10. Finally, you can optionally remove the Floppy Disk, as shown in Figure 11, as this is not required for the VM.
+![Remove Floppy drive][removefloppy]  
+**Figure 11.** Remove Floppy drive
+
+11. Power on the server and open the console to install the OS. On the welcome screen, as shown in Figure 12, pick your language and press `Continue`.
+![Welcome screen][welcomescreen]  
+**Figure 12.** Welcome screen
+
 12. The installation summary screen will appear, as shown in Figure 13.
+![Installation summary][installsummary]  
+**Figure 13.** Installation summary
+
 13. Scroll down and click on Installation Destination, as shown in Figure 14.
+![Installation destination][installdestination]  
+**Figure 14.** Installation destination
+
 14. Select your installation drive, as shown in Figure 15, and click Done.
+![Select installation drive][installdrive]  
+**Figure 15.** Select installation drive
+
+
 15. Click Begin Installation, using all the other default settings, and wait for the configuration of user settings dialog, shown in Figure 16.
+![Configure user settings][configuser]  
+**Figure 16.** Configure user settings
+
+
 16. Select a root password, as shown in Figure 17.
+![Set root password][setrootpwd]  
+**Figure 17.** Set root password
+
+
+
 17. Click Done and wait for the install to finish. Reboot and log in into the system using the VM console.
-18.	The Red Hat packages required during the deployment of the solution come from two repositories: ```rhel-7-server-rpms``` and ```rhel 7-server-extras-rpms```. The first repository can be found on the Red Hat DVD but the second cannot. There are two options, with both requiring a Red Hat Network account.
-  - Use Red Hat subscription manager to register your system. This is the easiest way and will automatically give you access to the official Red Hat repositories. It does require having a Red Hat Network account though, so if you don’t have one, you can use a different option. Use the ```subscription-manager register``` command as follows.
+18.	The Red Hat packages required during the deployment of the solution come from two repositories: `rhel-7-server-rpms` and `rhel 7-server-extras-rpms`. The first repository can be found on the Red Hat DVD but the second cannot. There are two options, with both requiring a Red Hat Network account.
+  - Use Red Hat subscription manager to register your system. This is the easiest way and will automatically give you access to the official Red Hat repositories. It does require having a Red Hat Network account though, so if you don’t have one, you can use a different option. Use the `subscription-manager register` command as follows.
 ```
 # subscription-manager register --auto-attach
 ```
@@ -252,7 +312,7 @@ If you are behind a proxy, you must configure this before running the above comm
 # subscription-manager config --server.proxy_hostname=<proxy IP> --server.proxy_port=<proxy port>
 ```
 If you follow this “route”, the playbooks will automatically enable the “extras” repository on the VMs that need it.
-  - Use an internal repository. Instead of pulling the packages from Red Hat, you can create copies of the required repositories on a dedicated node. You can then configure the package manager to pull the packages from the dedicated node. Your ```/etc/yum.repos.d/redhat.repo``` could look as follows.
+  - Use an internal repository. Instead of pulling the packages from Red Hat, you can create copies of the required repositories on a dedicated node. You can then configure the package manager to pull the packages from the dedicated node. Your `/etc/yum.repos.d/redhat.repo` could look as follows.
 ```
 [RHEL7-Server]
 name=Red Hat Enterprise Linux $releasever - $basearch
@@ -577,7 +637,7 @@ All Logspout-related variables are described in Table 10.
 
 | Variable                | Description                              |
 | ----------------------- | ---------------------------------------- |
-| logspout_version       | ```‘latest’``` |
+| logspout_version       | ```‘master’``` |
 
 
 ### Environment configuration
@@ -853,16 +913,9 @@ If you navigate to `Settings > Security`, you should see the Image Scanning feat
 
 
 # Security considerations
-In addition to having all logs centralized in a single place and the image scanning feature enabled for the DTR nodes, there are another few guidelines that should be followed in order to keep your Docker environment as secure as possible.
+In addition to having all logs centralized in a single place and the image scanning feature enabled for the DTR nodes, there are other guidelines that should be followed in order to keep your Docker environment as secure as possible. The HPE Reference Configuration paper for securing Docker on HPE Hardware places a special emphasis on securing Docker in DevOps environments and covers best practices in terms of Docker security. The document can be found here: http://h20195.www2.hpe.com/V2/GetDocument.aspx?docname=a00020437enw. Some newer Docker security features that were not covered in the reference configuration are outlined below.
 
-## Securing the daemon socket
-By default, Docker communicates with the daemon using a non-networked socket. If it needs to be reachable over a network, TLS should be enabled. This will require you to create a Certificate Authority (CA) and server and client keys with OpenSSL. The whole procedure is explained in detail here: https://docs.docker.com/engine/security/https/.
 
-## Start with known images
-Developers can pick base images from the Docker Hub as a starting point. Although this allows them a great deal of freedom, some caution is needed as images from Docker Hub are not curated and may contain vulnerabilities. Instead use curated images from the Docker Store where possible. Use small base images to reduce the surface area of attack.
-
-## Enable Docker Content Trust
-Notary/Docker Content Trust is a tool for publishing and managing trusted collections of content. Publishers can digitally sign collections and consumers can verify integrity and origin of content. This ability is built on a straightforward key management and signing interface to create signed collections and configure trusted publishers. More information about Notary can be found here: https://success.docker.com/Architecture/Docker_Reference_Architecture%3A_Securing_Docker_EE_and_Security_Best_Practices#dtr-notary.
 
 ## Prevent tags from being overwritten
 By default, users with access to push to a repository, can push the images to a repository with the same tag multiple times. As an example, a user pushes an image to `library/wordpress:latest`, and later another user can push a different image with the same name and tag but different functionality. This might make it difficult to trace back the image to the build that generated it.
@@ -872,17 +925,6 @@ To prevent this from happening you can configure a repository to be immutable. O
 More information about immutable tags can be found here: 
 https://docs.docker.com/datacenter/dtr/2.3/guides/user/manage-images/prevent-tags-from-being-overwritten/ 
 
-## Image Versioning
-When deploying a service, use a proper version tag instead of just the `latest` tag.  This in combination with the immutable tags feature will ensure that a specific version is being run.
-
-## Launch services rather than individual containers
-
-Docker Swarm maintains the service state. By launching a service, Swarm monitors the health of the individual containers and will start additional containers should one fail. 
-
-
-## Use secrets
-Use secrets in preference to environment variables for passing credentials to a container. Docker secrets only reveals the secret to the container that requires it through a RAM based FS. The container can easily access the secret using the `/var/secrets` directory. 
-Secrets are encrypted and can be easily revoked. 
 
 
 ## Isolate swarm nodes to a specific team
@@ -891,18 +933,21 @@ With Docker EE Advanced, you can enable physical isolation of resources by organ
 More information about this subject can be found here: https://beta.docs.docker.com/datacenter/ucp/2.2/guides/admin/manage-users/isolate-nodes-between-teams/.
 
 
-## Docker Bench for Security
-Docker Bench for Security is a script that checks for dozens of common best-practices around deploying Docker containers in production. The tests are all automated, and are inspired by the CIS Docker Community Edition Benchmark v1.1.0.
+# Central Logging
 
-The Docker Bench for Security should be run on a regular basis to make sure that your system is as secure as you would expect it to be.
+Central logging is implemented following the best practice documented by Docker which is available at https://success.docker.com/Architecture/Docker_Reference_Architecture%3A_Docker_Logging_Design_and_Best_Practices.
 
-More information about this tool plus the files to run it can be found in its Github repository: https://github.com/docker/docker-bench-security.
+Two types of logs are collected and sent to the central logging VM: 
+- OS system logs, these logs include the logs generated by the docker engine itself
+- `stderr` / `stdout` from containers (including DTR and UCP containers)
 
+The first category of logs is collected by **rsyslog** and sent to the central logging VM. **rsyslog** on the individual VMs is configured using a template named `rsyslog.conf` located in <`directory`>/`file`/ where <`directory`> is the directory into which you cloned the playbook repository.
 
+The second category of logs is collected by the Docker Engine default logging driver (`json_file`) and all the corresponding logs are sent to the central logging VM by Logspout  running on all Docker nodes (VMs). Logspout is configured as a global service and hence the Docker swarm will make sure one instance of the container is always running on each and every Docker node in the swarm. More information on Logspout can be found at https://github.com/gliderlabs/logspout.
 
-## Read the HPE Reference Configuration paper for securing Docker on HPE Hardware
+**Note:** At the time of writing, some functionality required to run Logspout as a global service is only available in the `master` branch of Logspout so you need to specify the tag `'master'` rather than `'latest'` (v3.2.3) when pulling the Logspout image.
 
-This paper places a special emphasis on securing Docker in DevOps environments and covers all the best practices in terms of Docker security. The document can be found here: http://h20195.www2.hpe.com/V2/GetDocument.aspx?docname=a00020437enw
+Operators can SSH to the central logging VM to locate the logs in the `/var/log/messages` directory. Developers can see container logs using the command `docker logs`.
 
 
 
@@ -942,7 +987,7 @@ For details of the impact of a host failure, see Table 13.
 |UCP Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover|
 |Workers Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover
 |DTR Load Balancer	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No access to service during failover
-|Central Logging	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|TODO: lose logs?|
+|Central Logging	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|The logs will be available in central logging but may not reach Logspout|
 |NFS	|Protected by VMware Cluster HA	|Minutes	|VM is failed-over	|No push/pull of images.|
 |UCP service	|Protected by UCP scale out design	|Seconds	|Potentially new leader elected	|
 |DTR service	|Protected by DTR scale out design	|Seconds	|DTR continues to be operational	|
@@ -1076,7 +1121,7 @@ You can specify a backup name, in this case 'manual_backup_test_01', as shown in
 
 ## Restore
 
-Right-click on the special VM, in this case `clh-VM-in-dockervols-Docker_CLH` and on the `Configure` tab, select `HPE SimpliVity Search Backups`.
+Right-click on the special VM, in this case `clh-VM-in-dockervols-Docker_CLH` and on the `Configure` tab, select `HPE SimpliVity Search Backups` as shown in Figure 29.
 
 ![Search backups][searchbackups]
 **Figure 29.** Search backups
@@ -1108,25 +1153,25 @@ Once the virtual machine has been restored, navigate to the datastore and locate
 Navigate to the folder named `1111111-1111-1111-1111-...` as shown in Figure 33. You will see files with names based on the Docker volume name that you used at the start, in this instance `test_01.vmdk` and `test_01-478...f1f.vmdf` 
 
 ![Locate vmdk and vmdf files][vmdkfiles]
-**Figure 32.** Locate vmdk and vmdf files
+**Figure 33.** Locate vmdk and vmdf files
 
 
-You need to move these two files to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` in the same datastore. Right click on the `.vmdk` file and choose `Move to...` as shown in Figure 33.
+You need to move these two files to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` in the same datastore. Right click on the `.vmdk` file and choose `Move to...` as shown in Figure 34.
 
 ![Move files][moveto]
-**Figure 33.** Move files
+**Figure 34.** Move files
 
 
-Set the destination folder to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` as shown in Figure 34.
+Set the destination folder to the `dockvols` sub-directory named `1111111-1111-1111-1111-...` as shown in Figure 35.
 
 ![Move to destination][destination]
 
-**Figure 34.** Move to destination
+**Figure 35.** Move to destination
 
-It is only necessary to move the `.vmdk` file as the '.vmdf' file will automatically follow. The `dockvols` sub-directory named `1111111-1111-1111-1111-...` should now contain both files as shown in Figure 35.
+It is only necessary to move the `.vmdk` file as the `.vmdf` file will automatically follow. The `dockvols` sub-directory named `1111111-1111-1111-1111-...` should now contain both files as shown in Figure 36.
 
 ![Files moved to destination][moved]
-**Figure 35.** Files moved to destination
+**Figure 36.** Files moved to destination
 
 
 
@@ -1147,7 +1192,7 @@ You can verify that the volume contains the correct data by spinning up a contai
 <b>some test data here</b>
 </pre>
 
-
+The data you entered in the text file before performing the backup and deleting the volume is available once again after restoring the volume.
 
 
 # Solution Lifecycle Management
@@ -1161,7 +1206,7 @@ In this section, we will cover life cycle management of the different components
 
 ![Solution architecture][solnarchitecture]
 
-**Figure 27.** Solution architecture
+**Figure 37.** Solution architecture
 
 
 Based on the diagram above, lifecycle of the following stacks need to be maintained and managed.
@@ -1323,10 +1368,10 @@ This solution is built using Red Hat Enterprise Linux (see Table 19) as the base
 
 Each release of Docker Enterprise Edition contains three technology components – UCP, DTR and the Docker Daemon or Engine. It is imperative that the components belonging to the same version are deployed or upgraded together – see Table 20. 
 
-A banner will be displayed on the UI when an update is available for UCP or DTR. The admin can start the upgrade process by clicking the link.
+A banner will be displayed on the UI when an update is available for UCP or DTR. The admin can start the upgrade process by clicking the link shown in Figure 38.
 
 ![Docker update notification][dockerupdate]
-**Figure 28.** Docker update notification
+**Figure 38.** Docker update notification
 
 
 **Table 20.** Docker EE components
@@ -1387,17 +1432,34 @@ Prometheus and Grafana monitoring tools (see Table 21) run as containers within 
 
 ## High-Level dependency map
 
-See Figure 29 for a diagram representing the high-level dependency map.
+Based on the lifecycle management details provided above, Figure 39 is a consolidated diagram that shows the dependencies between the various components in the solution stack. Bi-directional arrows between components indicate that the two components have an interoperability dependence. Before upgrading a component to a newer version, you must ensure that the new version of that component is compatible the current version of any dependent components.
 
 ![High-level dependency map][dependencymap]
 
-**Figure 29.** High-level dependency map
+**Figure 39.** High-level dependency map
 
 
 [architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
 [provisioning]: </images/provisioning.png> "Provisioning Steps"
 [createnewvm]: </images/createnewvirtualmachine.png> "Figure 2. Create New Virtual Machine"
 [vmnamelocation]: </images/vmnamelocation.png> "Figure 3. Specify name and location for the virtual machine" 
+[choosehost]: </images/choosehost.png> "Figure 4. Choose host / cluster"
+[selectstorage]: </images/selectstorage.png> "Figure 5. Select storage for template files"
+[chooseos]: </images/chooseos.png> "Figure 6. Choose operating system"
+[createnetwork]: </images/createnetwork.png> "Figure 7. Create network connections"
+[createprimarydisk]: </images/createprimarydisk.png> "Figure 8. Create primary disk"
+[confirmsettings]: </images/confirmsettings.png> "Figure 9. Confirm settings"
+[vmprops]: </images/vmprops.png> "Figure 10. Virtual machine properties"
+[removefloppy]: </images/removefloppy.png> "Figure 11. Remove Floppy drive"
+[welcomescreen]: </images/welcomescreen.png> "Figure 12. Welcome screen"
+[installsummary]: </images/installsummary.png> "Figure 13. Installation summary"
+[installdestination]: </images/installdestination.png> "Figure 14. Installation destination"
+[installdrive]: </images/installdrive.png> "Figure 15. Select installation drive"
+[configuser]: </images/configuser.png> "Figure 16. Configure user settings"
+[setrootpwd]: </images/setrootpwd.png> "Figure 17. Set root password"
+
+
+
 [converttotemplate]: </images/converttotemplate.png> "Figure 18. Convert to template"
 [grafana]: </images/grafana.png> "Figure 19. Grafana UI"
 [ucpauth]: </images/ucpauth.png> "Figure 20. UCP authentication screen"
@@ -1414,17 +1476,15 @@ See Figure 29 for a diagram representing the high-level dependency map.
 [restorevm]: </images/restorevm.png> "Figure 30. Restore virtual machine"
 [restorevmdetails]: </images/restorevmdetails.png> "Figure 31. Restore virtual machine details"
 [browserestoredvm]: </images/browserestoredvm.png> "Figure 32. Browse to restored virtual machine"
-[vmdkfiles]: </images/vmdkfiles.png> "Figure 32. Locate vmdk and vmdf files"
-[moveto]: </images/moveto.png> "Figure 33. Move files"
-[destination]: </images/destination.png> "Figure 34. Move to destination"
-[moved]: </images/moved.png> "Figure 35. Files moved to destination"
+[vmdkfiles]: </images/vmdkfiles.png> "Figure 33. Locate vmdk and vmdf files"
+[moveto]: </images/moveto.png> "Figure 34. Move files"
+[destination]: </images/destination.png> "Figure 35. Move to destination"
+[moved]: </images/moved.png> "Figure 36. Files moved to destination"
 
 
-[solnarchitecture]: </images/solnarchitecture.png> "Figure 27. Solution architecture"
-[dockerupdate]: </images/dockerupdate.png> "Figure 28. Docker update notification"
-
-
-[dependencymap]: </images/dependencymap.png> "Figure 29. High-level dependency map"
+[solnarchitecture]: </images/solnarchitecture.png> "Figure 37. Solution architecture"
+[dockerupdate]: </images/dockerupdate.png> "Figure 38. Docker update notification"
+[dependencymap]: </images/dependencymap.png> "Figure 39. High-level dependency map"
 
 
 [create_vms]: </playbooks/create_vms.yml>

@@ -64,6 +64,12 @@ The following software versions were used to test the playbooks that are describ
 
 The Operations environment is comprised of three HPE SimpliVity 380 Gen10 servers. Since the SimpliVity technology relies on VMware virtualization, the servers are managed using vCenter. The load among the three hosts will be shared as per Figure 1.
 
+Uptime is paramount for any users implementing Docker containers in business critical environments. Express Containers offers various levels of high availability (HA) to support continuous availability. All containers and Docker services implemented in containers are protected by Docker’s swarm mode. Swarm mode can protect against individual hardware, network, and container failures based on the user’s declarative model. 
+
+Express Containers with Docker also deploys load balancers in the system to help with container traffic management. There are three load balancer VMs – UPC load balancer, DTR load balancer, and Docker worker node load balancer. Since these load balancers exist in VMs, they have some degree of HA but will likely incur some downtime during the restoration of these VMs due to a planned or unplanned outage. For optimal HA configuration, the user should consider implementing a HA load balancer architecture using the Virtual Router Redundancy Protocol (VRRP). For more information see http://www.haproxy.com/solutions/high-availability/. 
+
+
+
 
 ![Architecture Diagram][architecture]
 **Figure 1.** Solution Architecture

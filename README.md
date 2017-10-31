@@ -1387,11 +1387,11 @@ Prometheus and Grafana monitoring tools (see Table 21) run as containers within 
 
 ## High-Level dependency map
 
-See Figure 29 for a diagram representing the high-level dependency map.
+Based on the lifecycle management details provided above, Figure 39 is a consolidated diagram that shows the dependencies between the various components in the solution stack. Bi-directional arrows between components indicate that the two components have an interoperability dependence. Before upgrading a component to a newer version, you must ensure that the new version of that component is compatible the current version of any dependent components.
 
 ![High-level dependency map][dependencymap]
 
-**Figure 29.** High-level dependency map
+**Figure 39.** High-level dependency map
 
 
 [architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
@@ -1414,17 +1414,15 @@ See Figure 29 for a diagram representing the high-level dependency map.
 [restorevm]: </images/restorevm.png> "Figure 30. Restore virtual machine"
 [restorevmdetails]: </images/restorevmdetails.png> "Figure 31. Restore virtual machine details"
 [browserestoredvm]: </images/browserestoredvm.png> "Figure 32. Browse to restored virtual machine"
-[vmdkfiles]: </images/vmdkfiles.png> "Figure 32. Locate vmdk and vmdf files"
-[moveto]: </images/moveto.png> "Figure 33. Move files"
-[destination]: </images/destination.png> "Figure 34. Move to destination"
-[moved]: </images/moved.png> "Figure 35. Files moved to destination"
+[vmdkfiles]: </images/vmdkfiles.png> "Figure 33. Locate vmdk and vmdf files"
+[moveto]: </images/moveto.png> "Figure 34. Move files"
+[destination]: </images/destination.png> "Figure 35. Move to destination"
+[moved]: </images/moved.png> "Figure 36. Files moved to destination"
 
 
-[solnarchitecture]: </images/solnarchitecture.png> "Figure 27. Solution architecture"
-[dockerupdate]: </images/dockerupdate.png> "Figure 28. Docker update notification"
-
-
-[dependencymap]: </images/dependencymap.png> "Figure 29. High-level dependency map"
+[solnarchitecture]: </images/solnarchitecture.png> "Figure 37. Solution architecture"
+[dockerupdate]: </images/dockerupdate.png> "Figure 38. Docker update notification"
+[dependencymap]: </images/dependencymap.png> "Figure 39. High-level dependency map"
 
 
 [create_vms]: </playbooks/create_vms.yml>

@@ -243,34 +243,67 @@ It would be possible to automate the creation the template. However, as this is 
 **Figure 5.** Select storage for template files
 
 
-5. Choose the OS, in this case Linux, RHEL7 64bit.
+5. Choose the OS as shown in Figure 6, in this case Linux, RHEL7 64bit.
 ![Choose operating system][chooseos]  
 **Figure 6.** Choose operating system
 
-6. Pick the network to attach to your template. In this example we're only using one NIC but depending on how you plan to architect your environment you might want to add more than one.
+6. Pick the network to attach to your template as shown in Figure 7. In this example we're only using one NIC but depending on how you plan to architect your environment you might want to add more than one.
 ![Create network connections][createnetwork]  
 **Figure 7.** Create network connections
 
 
-7. Create a primary disk. The chosen size in this case is 50GB but 20GB should be typically enough.
+7. Create a primary disk as shown in Figure 8. The chosen size in this case is 50GB but 20GB should be typically enough.
 ![Create primary disk][createprimarydisk]  
 **Figure 8.** Create primary disk
 
 
+8. Confirm that the settings are right and press Finish as shown in Figure 9.
+![Confirm settings][confirmsettings]  
+**Figure 9.** Confirm settings
 
 
-8. Confirm that the settings are right and press Finish.
+
 9. The next step is to virtually insert the RHEL7 DVD, using the Settings of the newly created VM as shown in Figure 10. Select your ISO file in the Datastore ISO File Device Type and make sure that the “Connect at power on” checkbox is checked.
-10. Finally, you can optionally remove the Floppy Disk as this is not required for the VM.
-11. Power on the server and open the console to install the OS. On the welcome screen, as shown in Figure 12, pick your language and press ```Continue```.
+![Virtual machine properties][vmprops]  
+**Figure 10.** Virtual machine properties
+
+
+
+10. Finally, you can optionally remove the Floppy Disk, as shown in Figure 11, as this is not required for the VM.
+![Remove Floppy drive][removefloppy]  
+**Figure 11.** Remove Floppy drive
+
+11. Power on the server and open the console to install the OS. On the welcome screen, as shown in Figure 12, pick your language and press `Continue`.
+![Welcome screen][welcomescreen]  
+**Figure 12.** Welcome screen
+
 12. The installation summary screen will appear, as shown in Figure 13.
+![Installation summary][installsummary]  
+**Figure 13.** Installation summary
+
 13. Scroll down and click on Installation Destination, as shown in Figure 14.
+![Installation destination][installdestination]  
+**Figure 14.** Installation destination
+
 14. Select your installation drive, as shown in Figure 15, and click Done.
+![Select installation drive][installdrive]  
+**Figure 15.** Select installation drive
+
+
 15. Click Begin Installation, using all the other default settings, and wait for the configuration of user settings dialog, shown in Figure 16.
+![Configure user settings][configuser]  
+**Figure 16.** Configure user settings
+
+
 16. Select a root password, as shown in Figure 17.
+![Set root password][setrootpwd]  
+**Figure 17.** Set root password
+
+
+
 17. Click Done and wait for the install to finish. Reboot and log in into the system using the VM console.
-18.	The Red Hat packages required during the deployment of the solution come from two repositories: ```rhel-7-server-rpms``` and ```rhel 7-server-extras-rpms```. The first repository can be found on the Red Hat DVD but the second cannot. There are two options, with both requiring a Red Hat Network account.
-  - Use Red Hat subscription manager to register your system. This is the easiest way and will automatically give you access to the official Red Hat repositories. It does require having a Red Hat Network account though, so if you don’t have one, you can use a different option. Use the ```subscription-manager register``` command as follows.
+18.	The Red Hat packages required during the deployment of the solution come from two repositories: `rhel-7-server-rpms` and `rhel 7-server-extras-rpms`. The first repository can be found on the Red Hat DVD but the second cannot. There are two options, with both requiring a Red Hat Network account.
+  - Use Red Hat subscription manager to register your system. This is the easiest way and will automatically give you access to the official Red Hat repositories. It does require having a Red Hat Network account though, so if you don’t have one, you can use a different option. Use the `subscription-manager register` command as follows.
 ```
 # subscription-manager register --auto-attach
 ```
@@ -279,7 +312,7 @@ If you are behind a proxy, you must configure this before running the above comm
 # subscription-manager config --server.proxy_hostname=<proxy IP> --server.proxy_port=<proxy port>
 ```
 If you follow this “route”, the playbooks will automatically enable the “extras” repository on the VMs that need it.
-  - Use an internal repository. Instead of pulling the packages from Red Hat, you can create copies of the required repositories on a dedicated node. You can then configure the package manager to pull the packages from the dedicated node. Your ```/etc/yum.repos.d/redhat.repo``` could look as follows.
+  - Use an internal repository. Instead of pulling the packages from Red Hat, you can create copies of the required repositories on a dedicated node. You can then configure the package manager to pull the packages from the dedicated node. Your `/etc/yum.repos.d/redhat.repo` could look as follows.
 ```
 [RHEL7-Server]
 name=Red Hat Enterprise Linux $releasever - $basearch
@@ -1415,8 +1448,15 @@ Based on the lifecycle management details provided above, Figure 39 is a consoli
 [chooseos]: </images/chooseos.png> "Figure 6. Choose operating system"
 [createnetwork]: </images/createnetwork.png> "Figure 7. Create network connections"
 [createprimarydisk]: </images/createprimarydisk.png> "Figure 8. Create primary disk"
-
-
+[confirmsettings]: </images/confirmsettings.png> "Figure 9. Confirm settings"
+[vmprops]: </images/vmprops.png> "Figure 10. Virtual machine properties"
+[removefloppy]: </images/removefloppy.png> "Figure 11. Remove Floppy drive"
+[welcomescreen]: </images/welcomescreen.png> "Figure 12. Welcome screen"
+[installsummary]: </images/installsummary.png> "Figure 13. Installation summary"
+[installdestination]: </images/installdestination.png> "Figure 14. Installation destination"
+[installdrive]: </images/installdrive.png> "Figure 15. Select installation drive"
+[configuser]: </images/configuser.png> "Figure 16. Configure user settings"
+[setrootpwd]: </images/setrootpwd.png> "Figure 17. Set root password"
 
 
 

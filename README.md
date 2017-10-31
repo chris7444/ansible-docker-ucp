@@ -118,7 +118,7 @@ If possible, node size should be determined by experimentation and testing actua
 
 For Express Containers with Docker: Ops Edition, the following section describes sizing configurations.  The vCPU allocations are described in Table 1 while the memory allocation is described in Table 2.
 
-**Table 1** vCPU
+**Table 1.** vCPU
 
 | vCPUs | simply01 | simply02 | simply03 |
 |:------|:--------:|:--------:|:--------:|
@@ -147,7 +147,7 @@ For Express Containers with Docker: Ops Edition, the following section describes
 
 
 
-**Table 2** Memory allocation
+**Table 2.** Memory allocation
 
 | RAM | simply01 | simply02 | simply03 |
 |:------|:--------:|:--------:|:--------:|
@@ -188,7 +188,7 @@ This section describes in detail how to provision the environment described prev
 
 You will need assemble the information required to assign values to each and every variable used by the playbooks before you start deployment. The variables are fully documented in the following sections “Editing the group variables” and “Editing the vault”. A summary of the information required is presented in Table 3.
 
-**Table 3** Summary of information required
+**Table 3.** Summary of information required
 
 |Component|	Details|
 |---------|-----------|
@@ -227,17 +227,38 @@ It would be possible to automate the creation the template. However, as this is 
 
 1. Log in to vCenter and create a new Virtual Machine. In the dialog box, shown in Figure 2, select ```Typical``` and press ```Next```.  
 ![Create New Virtual Machine][createnewvm]  
-**Figure 2** Create New Virtual Machine  
+**Figure 2.** Create New Virtual Machine  
   
 2. Specify the name and location for your template, as shown in Figure 3.  
 ![Specify name and location for the virtual machine][vmnamelocation]  
-**Figure 3** Specify name and location for the virtual machine  
+**Figure 3.** Specify name and location for the virtual machine  
   
 3. Choose the host/cluster on which you want to run this virtual machine, as shown in Figure 4.
+![Choose host / cluster][choosehost]  
+**Figure 4.** Choose host / cluster 
+
+
 4. Choose a datastore where the template files will be stored, as shown in Figure 5.
+![Select storage for template files][selectstorage]  
+**Figure 5.** Select storage for template files
+
+
 5. Choose the OS, in this case Linux, RHEL7 64bit.
+![Choose operating system][chooseos]  
+**Figure 6.** Choose operating system
+
 6. Pick the network to attach to your template. In this example we're only using one NIC but depending on how you plan to architect your environment you might want to add more than one.
+![Create network connections][createnetwork]  
+**Figure 7.** Create network connections
+
+
 7. Create a primary disk. The chosen size in this case is 50GB but 20GB should be typically enough.
+![Create primary disk][createprimarydisk]  
+**Figure 8.** Create primary disk
+
+
+
+
 8. Confirm that the settings are right and press Finish.
 9. The next step is to virtually insert the RHEL7 DVD, using the Settings of the newly created VM as shown in Figure 10. Select your ISO file in the Datastore ISO File Device Type and make sure that the “Connect at power on” checkbox is checked.
 10. Finally, you can optionally remove the Floppy Disk as this is not required for the VM.
@@ -1389,6 +1410,16 @@ Based on the lifecycle management details provided above, Figure 39 is a consoli
 [provisioning]: </images/provisioning.png> "Provisioning Steps"
 [createnewvm]: </images/createnewvirtualmachine.png> "Figure 2. Create New Virtual Machine"
 [vmnamelocation]: </images/vmnamelocation.png> "Figure 3. Specify name and location for the virtual machine" 
+[choosehost]: </images/choosehost.png> "Figure 4. Choose host / cluster"
+[selectstorage]: </images/selectstorage.png> "Figure 5. Select storage for template files"
+[chooseos]: </images/chooseos.png> "Figure 6. Choose operating system"
+[createnetwork]: </images/createnetwork.png> "Figure 7. Create network connections"
+[createprimarydisk]: </images/createprimarydisk.png> "Figure 8. Create primary disk"
+
+
+
+
+
 [converttotemplate]: </images/converttotemplate.png> "Figure 18. Convert to template"
 [grafana]: </images/grafana.png> "Figure 19. Grafana UI"
 [ucpauth]: </images/ucpauth.png> "Figure 20. UCP authentication screen"

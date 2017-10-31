@@ -873,7 +873,7 @@ With Docker EE Advanced, you can enable physical isolation of resources by organ
 More information about this subject can be found here: https://beta.docs.docker.com/datacenter/ucp/2.2/guides/admin/manage-users/isolate-nodes-between-teams/.
 
 
-#Central Logging
+# Central Logging
 
 Central logging is implemented following the best practice documented by Docker which is available at https://success.docker.com/Architecture/Docker_Reference_Architecture%3A_Docker_Logging_Design_and_Best_Practices.
 
@@ -885,7 +885,7 @@ The first category of logs is collected by **rsyslog** and sent to the central l
 
 The second category of logs is collected by the Docker Engine default logging driver (`json_file`) and all the corresponding logs are sent to the central logging VM by Logspout  running on all Docker nodes (VMs). Logspout is configured as a global service and hence the Docker swarm will make sure one instance of the container is always running on each and every Docker node in the swarm. More information on Logspout can be found at https://github.com/gliderlabs/logspout.
 
-**Note:** At the time of writing, some functionality required to run Logspout as a global service is only available in the `master` branch of Logspout so you need to specify the tag `'master'’ rather than `'latest’` (v3.2.3) when pulling the Logspout image.
+**Note:** At the time of writing, some functionality required to run Logspout as a global service is only available in the `master` branch of Logspout so you need to specify the tag `'master'` rather than `'latest'` (v3.2.3) when pulling the Logspout image.
 
 Operators can SSH to the central logging VM to locate the logs in the `/var/log/messages` directory. Developers can see container logs using the command `docker logs`.
 

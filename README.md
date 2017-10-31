@@ -263,7 +263,7 @@ It would be possible to automate the creation the template. However, as this is 
 
 
 
-9. The next step is to virtually insert the RHEL7 DVD, using the Settings of the newly created VM as shown in Figure 10. Select your ISO file in the Datastore ISO File Device Type and make sure that the “Connect at power on” checkbox is checked.
+9. The next step is to virtually insert the RHEL7 DVD, using the Settings of the newly created VM as shown in Figure 10. Select your ISO file in the Datastore ISO File Device Type and make sure that the “Connect at power on” checkbox is checked.  
 ![Virtual machine properties][vmprops]  
 **Figure 10.** Virtual machine properties
 

@@ -71,7 +71,7 @@ Express Containers with Docker also deploys load balancers in the system to help
 
 
 
-![Architecture Diagram][architecture]
+![Solution Architecture][simplivity-ops-simple-architecture]
 **Figure 1.** Solution Architecture
 
 The Ansible playbooks can be modified to fit your environment and your high availability (HA) needs. By default, the Ansible Playbooks will set up a 3 node environment.  HPE and Docker recommend a minimal starter configuration of 3 physical nodes for running Docker in production.  The distribution of the Docker and non-Docker modules over the 3 physical nodes via virtual machines (VMs) is as follows:
@@ -1204,9 +1204,9 @@ Lifecycle management with respect to this solution refers to the maintenance and
 In this section, we will cover life cycle management of the different components that are used in this solution. The architectural diagram of the solution in Figure 27 shows the software and hardware stacks that make up the solution. Each stack is shown in a different color.
 
 
-![Solution architecture][solnarchitecture]
+![Solution stack][solutionstack]
 
-**Figure 37.** Solution architecture
+**Figure 37.** Solution stack
 
 
 Based on the diagram above, lifecycle of the following stacks need to be maintained and managed.
@@ -1439,7 +1439,7 @@ Based on the lifecycle management details provided above, Figure 39 is a consoli
 **Figure 39.** High-level dependency map
 
 
-[architecture]: </images/architecture.png> "Figure 1. Solution Architecture"
+[simplivity-ops-simple-architecture]: </images/simplivity-ops-simple-architecture.png> "Figure 1. Solution Architecture"
 [provisioning]: </images/provisioning.png> "Provisioning Steps"
 [createnewvm]: </images/createnewvirtualmachine.png> "Figure 2. Create New Virtual Machine"
 [vmnamelocation]: </images/vmnamelocation.png> "Figure 3. Specify name and location for the virtual machine" 
@@ -1482,7 +1482,7 @@ Based on the lifecycle management details provided above, Figure 39 is a consoli
 [moved]: </images/moved.png> "Figure 36. Files moved to destination"
 
 
-[solnarchitecture]: </images/solnarchitecture.png> "Figure 37. Solution architecture"
+[solutionstack]: </images/solutionstack.png> "Figure 37. Solution stack"
 [dockerupdate]: </images/dockerupdate.png> "Figure 38. Docker update notification"
 [dependencymap]: </images/dependencymap.png> "Figure 39. High-level dependency map"
 

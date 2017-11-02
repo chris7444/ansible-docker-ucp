@@ -1439,7 +1439,7 @@ Based on the lifecycle management details provided above, Figure 39 is a consoli
 **Figure 39.** High-level dependency map
 
 
-[simplivity-ops-simple-architecture]: </images/simplivity-ops-simple-architecture.png> "Figure 1. Solution Architecture"
+[simplivity-ops-simple-architecture]: </ops/images/simplivity-ops-simple-architecture.png> "Figure 1. Solution Architecture"
 [provisioning]: </images/provisioning.png> "Provisioning Steps"
 [createnewvm]: </images/createnewvirtualmachine.png> "Figure 2. Create New Virtual Machine"
 [vmnamelocation]: </images/vmnamelocation.png> "Figure 3. Specify name and location for the virtual machine" 

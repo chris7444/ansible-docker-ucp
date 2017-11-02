@@ -43,7 +43,7 @@ rhel_version: '7.4'
 dtr_version: 'latest'
 ucp_version: 'latest'
 images_folder: '/docker-images'
-license_file: '/root/ops/license.lic'
+license_file: '/root/clh/ops/license.lic'
 ucp_username: 'admin'
 
 # Monitoring configuration
